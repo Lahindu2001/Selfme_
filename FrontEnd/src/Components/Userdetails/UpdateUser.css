@@ -1,0 +1,79 @@
+/* ------------------- Update User Form Container ------------------- */
+.update-user-container {
+  max-width: 500px;
+  margin: 30px auto;
+  padding: 25px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Title inside update form */
+.update-user-container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 22px;
+  color: #333;
+}
+
+/* Form layout */
+.update-user-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Input fields */
+.update-user-container input {
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.update-user-container input:focus {
+  border-color: #28a745;
+  outline: none;
+  box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+}
+
+/* Buttons inside update form */
+.update-user-container button {
+  padding: 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 10px;
+}
+
+.update-user-container button:hover {
+  background-color: #218838;
+}
+
+.update-user-container button:active {
+  background-color: #1e7e34;
+}
+
+/* ------------------- Responsive Design ------------------- */
+@media (max-width: 600px) {
+  .update-user-container {
+    padding: 15px;
+    margin: 15px;
+  }
+  .update-user-container h1 {
+    font-size: 18px;
+  }
+  .update-user-container input,
+  .update-user-container button {
+    font-size: 13px;
+    padding: 10px;
+  }
+}
