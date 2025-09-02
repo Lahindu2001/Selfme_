@@ -14,10 +14,10 @@ const getAllSupplyRequests = async (req, res, next) => {
 
 // Insert supply request
 const addSupplyRequest = async (req, res, next) => {
-    const { supplier_id, supplier_name, supplier_contact, supplier_brandname, status } = req.body;
+    const { supplier_name, supplier_contact, supplier_brandname, status } = req.body;
     let supplyRequest;
     try {
-        supplyRequest = new SupplyRequest({ supplier_id, supplier_name, supplier_contact, supplier_brandname, status });
+        supplyRequest = new SupplyRequest({ supplier_name, supplier_contact, supplier_brandname, status });
         await supplyRequest.save();
     } catch (err) {
         console.log(err);
@@ -42,12 +42,12 @@ const getbyId = async (req, res, next) => {
 // Update supply request
 const updateSupplyRequest = async (req, res, next) => {
     const id = req.params.id;
-    const { supplier_id, supplier_name, supplier_contact, supplier_brandname, status } = req.body;
+    const { supplier_name, supplier_contact, supplier_brandname, status } = req.body;
     let supplyRequest;
     try {
         supplyRequest = await SupplyRequest.findByIdAndUpdate(
             id,
-            { supplier_id, supplier_name, supplier_contact, supplier_brandname, status },
+            { supplier_name, supplier_contact, supplier_brandname, status },
             { new: true }
         );
     } catch (err) {
