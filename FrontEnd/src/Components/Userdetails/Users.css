@@ -199,13 +199,16 @@
   line-height: 1.5;
 }
 
-/* Enhanced Search Bar */
+/* Enhanced Search Bar - Centered */
 .search-bar {
   margin: 25px 0;
+  display: flex;
+  justify-content: center; /* Center the input horizontally */
+  align-items: center; /* Center vertically if needed */
 }
 
 .search-bar input {
-  width: 100%;
+  width: 50%;
   padding: 18px 25px;
   border: 2px solid #e9ecef;
   border-radius: 15px;
@@ -213,6 +216,7 @@
   transition: all 0.3s ease;
   background: white;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  text-align: center; /* Optional: Center text inside input */
 }
 
 .search-bar input:focus {
@@ -294,7 +298,8 @@
 }
 
 /* Status and Role Badges */
-.role-badge, .status-badge {
+.role-badge,
+.status-badge {
   padding: 6px 15px;
   border-radius: 25px;
   font-size: 0.8rem;
@@ -590,7 +595,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 100%) {
+@media (max-width: 768px) {
   .Title {
     font-size: 2.5rem;
   }
@@ -600,7 +605,7 @@
   }
 }
 
-@media (max-width: 100%) {
+@media (max-width: 576px) {
   .users-section {
     padding: 15px;
   }
@@ -643,14 +648,15 @@
     height: 35px;
   }
   
-  .role-badge, .status-badge {
+  .role-badge,
+  .status-badge {
     font-size: 0.7rem;
     padding: 4px 10px;
     min-width: 60px;
   }
 }
 
-@media (max-width: 100%) {
+@media (max-width: 400px) {
   .Title {
     font-size: 1.8rem;
   }

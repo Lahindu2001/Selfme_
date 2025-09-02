@@ -7,6 +7,7 @@ import Users from "./Components/Userdetails/Users";
 import AdminPanel from "./Components/AdminPanel/Admin";
 import InventoryManage from "./Components/InventoryMange/InventoryMange";
 import ProductManager from "./Components/ProductManager/ProductManager";
+import SupplyRequest from "./Components/SupplyRequest/SupplyRequest";
 
 function App() {
   return (
@@ -27,6 +28,9 @@ function App() {
 
           {/* Product Management */}
           <Route path="/ProductManager" element={<ProductManager />} />
+
+          {/* Supply Request */}
+          <Route path="/SupplyRequest" element={<SupplyRequest />} />
 
           {/* Catch-all Redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />

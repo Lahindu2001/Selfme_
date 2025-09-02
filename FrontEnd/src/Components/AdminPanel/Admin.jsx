@@ -25,15 +25,26 @@ function Admin() {
             <p>Track and update solar panels, wires & safety products.</p>
             </Link>
           </div>
+
           <div className="card">
            <Link to="/ProductManager" className="activehome">
               <h2>Product Management</h2>
               <p>Create and modify solar packages for customers.</p>
             </Link>
           </div>
+
           <div className="card">
-            <h2>Finance Management</h2>
-            <p>Monitor payments, invoices, and financial reports.</p>
+           <Link to="/SupplyRequest" className="activehome">
+              <h2>Supply Request</h2>
+              <p>Streamline supply orders, track requests, and manage inventory efficiently.</p>
+            </Link>
+          </div>
+
+
+
+          <div className="card">
+            <h2>tet1</h2>
+            <p>test1</p>
           </div>
         </div>
       </div>

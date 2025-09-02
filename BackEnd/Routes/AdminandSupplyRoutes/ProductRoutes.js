@@ -4,7 +4,7 @@ const multer = require("multer");
 const path = require("path");
 
 // Import Package Controller
-const ProductController = require("../Controlers/PakageController");
+const ProductController = require("../../Controllers/AdminandSupplyControllers/PakageController");
 
 // Multer config
 const storage = multer.diskStorage({

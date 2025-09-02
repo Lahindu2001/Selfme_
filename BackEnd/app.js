@@ -1,8 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const userRouter = require("./Routes/UserRoutes");
-const inventoryRouter = require("./Routes/InventoryRoutes");
-const productRouter = require("./Routes/ProductRoutes");
+const userRouter = require("./Routes/AdminandSupplyRoutes/UserRoutes");
+const inventoryRouter = require("./Routes/AdminandSupplyRoutes/InventoryRoutes");
+const productRouter = require("./Routes/AdminandSupplyRoutes/ProductRoutes");
+const supplyRequestRouter = require("./Routes/AdminandSupplyRoutes/SupplyRequestRoutes");
 const path = require("path");
 const fs = require("fs");
 const cors = require("cors");
@@ -26,6 +27,7 @@ app.use("/uploads", express.static(uploadDir));
 app.use("/users", userRouter);
 app.use("/inventory", inventoryRouter);
 app.use("/products", productRouter);
+app.use("/supply-requests", supplyRequestRouter);
 
 // ------------------- DATABASE -------------------
 mongoose

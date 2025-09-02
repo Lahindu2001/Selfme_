@@ -1,0 +1,522 @@
+import React, { useState, useEffect } from 'react';
+import Nav from '../Nav/Nav';
+import axios from 'axios';
+import jsPDF from 'jspdf';
+
+const URL = 'http://localhost:5000/supply-requests';
+
+function SupplyRequest() {
+  // ------------------- STATES -------------------
+  const [supplyRequests, setSupplyRequests] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showAddSupplyRequestForm, setShowAddSupplyRequestForm] = useState(false);
+  const [editingSupplyRequestId, setEditingSupplyRequestId] = useState(null);
+
+  // ------------------- SELECTED FIELDS FOR PDF -------------------
+  const [selectedFields, setSelectedFields] = useState({
+    supplier_id: true,
+    supplier_name: true,
+    supplier_contact: true,
+    supplier_brandname: true,
+    status: true,
+    created_at: true
+  });
+
+  // ------------------- FORM INPUTS -------------------
+  const defaultInputs = {
+    supplier_id: '',
+    supplier_name: '',
+    supplier_contact: '',
+    supplier_brandname: '',
+    status: 'Pending'
+  };
+
+  const [inputs, setInputs] = useState(defaultInputs);
+  const [editInputs, setEditInputs] = useState(defaultInputs);
+
+  // ------------------- COMPANY INFORMATION -------------------
+  const companyInfo = {
+    name: 'SelfMe',
+    tagline: 'FUTURE OF SUN - SOLAR POWER',
+    address: ['No/346, Madalanda, Dompe,', 'Colombo, Sri Lanka'],
+    phone: '+94 717 882 883',
+    email: 'Selfmepvtltd@gmail.com',
+    website: 'www.selfme.com'
+  };
+
+  // ------------------- FETCH SUPPLY REQUESTS -------------------
+  const fetchSupplyRequests = async () => {
+    try {
+      const res = await axios.get(URL);
+      setSupplyRequests(res.data.supplyRequests || []);
+    } catch (err) {
+      console.error('Error fetching supply requests:', err);
+      setSupplyRequests([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchSupplyRequests();
+  }, []);
+
+  // ------------------- LOGO CONVERSION -------------------
+  const getLogoAsBase64 = () => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        const base64 = canvas.toDataURL('image/png');
+        resolve(base64);
+      };
+      img.onerror = () => {
+        console.warn('Could not load logo, proceeding without it');
+        resolve(null);
+      };
+      img.src = '/logo192.png';
+    });
+  };
+
+  // ------------------- PROFESSIONAL PDF GENERATION -------------------
+  const generatePDF = async (data, title) => {
+    if (!data.length) return alert('No supply requests to download!');
+
+    try {
+      const logoBase64 = await getLogoAsBase64();
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+
+      const addLetterhead = () => {
+        if (logoBase64) {
+          doc.addImage(logoBase64, 'PNG', 15, 10, 30, 30);
+        }
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(28);
+        doc.setTextColor(0, 0, 139);
+        doc.text(companyInfo.name, logoBase64 ? 55 : pageWidth / 2, 25, { align: logoBase64 ? 'left' : 'center' });
+
+        doc.setFontSize(12);
+        doc.setTextColor(0, 128, 255);
+        doc.text(companyInfo.tagline, logoBase64 ? 55 : pageWidth / 2, 35, { align: logoBase64 ? 'left' : 'center' });
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(60, 60, 60);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(0, 0, 139);
+        doc.text('Address:', 15, 50);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(60, 60, 60);
+        companyInfo.address.forEach((line, index) => {
+          doc.text(line, 15, 57 + (index * 7));
+        });
+
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(0, 0, 139);
+        doc.text('Contact Information:', pageWidth - 85, 50);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(60, 60, 60);
+        doc.text(`Phone: ${companyInfo.phone}`, pageWidth - 85, 57);
+        doc.text(`Email: ${companyInfo.email}`, pageWidth - 85, 64);
+        doc.text(`Website: ${companyInfo.website}`, pageWidth - 85, 71);
+
+        doc.setLineWidth(1.5);
+        doc.setDrawColor(0, 0, 139);
+        doc.line(15, 80, pageWidth - 15, 80);
+
+        doc.setLineWidth(0.8);
+        doc.setDrawColor(0, 128, 255);
+        doc.line(15, 82, pageWidth - 15, 82);
+      };
+
+      const addFooter = (pageNum, totalPages) => {
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(9);
+        doc.setTextColor(100, 100, 100);
+
+        doc.setLineWidth(0.5);
+        doc.setDrawColor(200, 200, 200);
+        doc.line(15, pageHeight - 30, pageWidth - 15, pageHeight - 30);
+
+        const footerText = `This document is generated by ${companyInfo.name} Supply Request System`;
+        doc.text(footerText, pageWidth / 2, pageHeight - 22, { align: 'center' });
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.text(`Page ${pageNum} of ${totalPages}`, pageWidth - 15, pageHeight - 12, { align: 'right' });
+        const genDate = new Date().toLocaleDateString('en-GB');
+        const genTime = new Date().toLocaleTimeString('en-GB', { hour12: false });
+        doc.text(`Generated: ${genDate} at ${genTime}`, 15, pageHeight - 12);
+
+        doc.setTextColor(0, 0, 139);
+        doc.text(companyInfo.website, pageWidth / 2, pageHeight - 5, { align: 'center' });
+      };
+
+      let totalPages = 1;
+      let tempY = 95;
+      data.forEach(() => {
+        let fieldsCount = Object.keys(selectedFields).filter(field => selectedFields[field]).length;
+        let itemHeight = Math.ceil(fieldsCount / 2) * 12 + 35;
+
+        if (tempY + itemHeight > pageHeight - 45) {
+          totalPages++;
+          tempY = 95;
+        }
+        tempY += itemHeight;
+      });
+
+      let currentPage = 1;
+      let y = 95;
+
+      addLetterhead();
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(18);
+      doc.setTextColor(40, 40, 40);
+      const titleText = title.toUpperCase();
+      doc.text(titleText, pageWidth / 2, 90, { align: 'center' });
+
+      data.forEach((request, idx) => {
+        let fieldsCount = Object.keys(selectedFields).filter(field => selectedFields[field]).length;
+        let itemHeight = Math.ceil(fieldsCount / 2) * 12 + 35;
+
+        if (y + itemHeight > pageHeight - 45) {
+          addFooter(currentPage, totalPages);
+          doc.addPage();
+          currentPage++;
+          addLetterhead();
+          y = 95;
+        }
+
+        doc.setFillColor(240, 248, 255);
+        doc.rect(15, y - 3, pageWidth - 30, 18, 'F');
+
+        doc.setLineWidth(0.8);
+        doc.setDrawColor(0, 0, 139);
+        doc.rect(15, y - 3, pageWidth - 30, 18);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.setTextColor(0, 0, 139);
+        doc.text(`SUPPLY REQUEST #${String(idx + 1).padStart(3, '0')}`, 20, y + 8);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(11);
+        doc.setTextColor(60, 60, 60);
+        doc.text(`Supplier ID: ${request.supplier_id || 'N/A'}`, pageWidth - 70, y + 8);
+
+        y += 25;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(60, 60, 60);
+
+        let leftY = y;
+        let rightY = y;
+        let isLeft = true;
+
+        Object.keys(selectedFields).forEach(field => {
+          if (selectedFields[field] && field !== 'supplier_id') {
+            let label = field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            let value = request[field] || 'N/A';
+
+            if (field === 'created_at') {
+              value = new Date(value).toLocaleDateString('en-GB');
+            }
+
+            if (typeof value === 'string' && value.length > 35) {
+              value = value.substring(0, 32) + '...';
+            }
+
+            const x = isLeft ? 25 : pageWidth / 2 + 10;
+            const currentY = isLeft ? leftY : rightY;
+
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(0, 0, 139);
+            doc.text(`${label}:`, x, currentY);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(60, 60, 60);
+            doc.text(String(value), x + 50, currentY);
+
+            if (isLeft) {
+              leftY += 12;
+            } else {
+              rightY += 12;
+            }
+
+            isLeft = !isLeft;
+          }
+        });
+
+        y = Math.max(leftY, rightY) + 15;
+
+        if (idx < data.length - 1) {
+          doc.setLineWidth(0.3);
+          doc.setDrawColor(220, 220, 220);
+          doc.line(25, y - 5, pageWidth - 25, y - 5);
+          y += 15;
+        }
+      });
+
+      addFooter(currentPage, totalPages);
+
+      const timestamp = new Date().toISOString().split('T')[0];
+      const fileName = `${companyInfo.name}_${title.replace(/\s+/g, '_')}_${timestamp}.pdf`;
+
+      doc.save(fileName);
+      alert(`Professional report "${fileName}" downloaded successfully!`);
+
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error generating PDF. Please try again.');
+    }
+  };
+
+  // ------------------- HANDLE INPUT CHANGE -------------------
+  const handleChange = e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleEditChange = e => setEditInputs(prev => ({ ...prev, [e.target.name]: e.target.value }));
+
+  // ------------------- ADD SUPPLY REQUEST -------------------
+  const handleAddSupplyRequest = async e => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(URL, { ...inputs });
+      setSupplyRequests([...supplyRequests, res.data]);
+      setInputs(defaultInputs);
+      setShowAddSupplyRequestForm(false);
+      alert('Supply request added successfully!');
+      window.location.reload();
+    } catch (err) {
+      console.error('Error adding supply request:', err);
+      alert('Failed to add supply request!');
+    }
+  };
+
+  // ------------------- EDIT SUPPLY REQUEST -------------------
+  const startEdit = request => {
+    setEditingSupplyRequestId(request._id);
+    setEditInputs({ ...request });
+  };
+
+  const handleUpdateSupplyRequest = async e => {
+    e.preventDefault();
+    try {
+      const res = await axios.put(`${URL}/${editingSupplyRequestId}`, { ...editInputs });
+      setSupplyRequests(supplyRequests.map(r => (r._id === editingSupplyRequestId ? res.data : r)));
+      setEditingSupplyRequestId(null);
+      setEditInputs(defaultInputs);
+      alert('Supply request updated successfully!');
+      window.location.reload();
+    } catch (err) {
+      console.error('Error updating supply request:', err);
+      alert('Failed to update supply request!');
+    }
+  };
+
+  // ------------------- DELETE SUPPLY REQUEST -------------------
+  const handleDeleteSupplyRequest = async id => {
+    if (!window.confirm('Are you sure you want to delete this supply request?')) return;
+    try {
+      await axios.delete(`${URL}/${id}`);
+      setSupplyRequests(supplyRequests.filter(r => r._id !== id));
+      alert('Supply request deleted successfully!');
+    } catch (err) {
+      console.error('Error deleting supply request:', err);
+      alert('Failed to delete supply request!');
+    }
+  };
+
+  // ------------------- DOWNLOAD FUNCTIONS -------------------
+  const handleDownloadAll = () => generatePDF(supplyRequests, 'Complete Supply Request Directory Report');
+  const handleDownloadSingle = request => generatePDF([request], `Individual Supply Request Report - ${request.supplier_name || 'Unnamed'}`);
+
+  // ------------------- FILTERED SUPPLY REQUESTS -------------------
+  const filteredSupplyRequests = supplyRequests.filter(request =>
+    (request.supplier_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (request.supplier_contact?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (String(request.supplier_id) || '').includes(searchTerm)
+  );
+
+  // ------------------- ENUMS -------------------
+  const statusOptions = ['Pending', 'Active', 'Inactive'];
+
+  // ------------------- RENDER -------------------
+  return (
+    <div className="users-section">
+      <Nav />
+      <div className="title-container">
+        <h2 className="Title">Supply Request Management System</h2>
+        <p className="subtitle">{companyInfo.name} - {companyInfo.tagline}</p>
+      </div>
+
+      <button className="add-user-toggle" onClick={() => setShowAddSupplyRequestForm(!showAddSupplyRequestForm)}>
+        {showAddSupplyRequestForm ? '✕ Hide Add Supply Request Form' : '➕ Show Add Supply Request Form'}
+      </button>
+
+      {showAddSupplyRequestForm && (
+        <div className="add-user-container">
+          <h3>📝 Add New Supply Request</h3>
+          <form className="add-user-form" onSubmit={handleAddSupplyRequest}>
+            {Object.keys(defaultInputs).map(field => (
+              <div className="form-group" key={field}>
+                <label htmlFor={field}>{field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().toUpperCase()}</label>
+                {field === 'status' ? (
+                  <select name={field} value={inputs[field]} onChange={handleChange} required>
+                    {statusOptions.map(stat => <option key={stat} value={stat}>{stat}</option>)}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    id={field}
+                    name={field}
+                    placeholder={`Enter ${field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim()}`}
+                    value={inputs[field]}
+                    onChange={handleChange}
+                    required
+                  />
+                )}
+              </div>
+            ))}
+            <button type="submit" className="submit-btn">Add Supply Request</button>
+          </form>
+        </div>
+      )}
+
+      <div className="search-bar">
+        <input
+          type="text"
+          placeholder="🔍 Search by Supplier Name, Contact or ID..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+        />
+      </div>
+
+      <div className="download-options professional-section">
+        <h3>📄 Professional Report Generation</h3>
+        <p>Select the fields to include in your professional letterhead report:</p>
+        <div className="field-checkboxes">
+          {Object.keys(selectedFields).map(field => (
+            <label key={field} className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={selectedFields[field]}
+                onChange={() => setSelectedFields(prev => ({ ...prev, [field]: !prev[field] }))}
+              />
+              <span>{field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().replace(/\b\w/g, l => l.toUpperCase())}</span>
+            </label>
+          ))}
+        </div>
+        <div className="download-buttons">
+          <button className="download-all-btn" onClick={handleDownloadAll}>
+            📊 Download Complete Directory ({supplyRequests.length} requests)
+          </button>
+          <p className="download-note">
+            Reports include professional letterhead with {companyInfo.name} logo, contact details, and formatted layouts.
+          </p>
+        </div>
+      </div>
+
+      <div className="users-table-container">
+        <div className="table-header">
+          <span className="table-user-count">📦 Total Requests: {supplyRequests.length}</span>
+          <span className="filtered-count">
+            {searchTerm && `(Showing ${filteredSupplyRequests.length} filtered results)`}
+          </span>
+        </div>
+        <table className="users-table">
+          <thead>
+            <tr>
+              {Object.keys(defaultInputs).map(field => (
+                <th key={field}>{field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().replace(/\b\w/g, l => l.toUpperCase())}</th>
+              ))}
+              <th>Created At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredSupplyRequests.map(request => (
+              <tr key={request._id}>
+                {editingSupplyRequestId === request._id ? (
+                  <td colSpan={Object.keys(defaultInputs).length + 2}>
+                    <div className="update-user-container">
+                      <h1>✏️ Update Supply Request Information</h1>
+                      <form onSubmit={handleUpdateSupplyRequest}>
+                        {Object.keys(defaultInputs).map(field => (
+                          <div className="form-group" key={field}>
+                            <label htmlFor={field}>{field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().toUpperCase()}</label>
+                            {field === 'status' ? (
+                              <select name={field} value={editInputs[field]} onChange={handleEditChange} required>
+                                {statusOptions.map(stat => <option key={stat} value={stat}>{stat}</option>)}
+                              </select>
+                            ) : (
+                              <input
+                                type="text"
+                                name={field}
+                                placeholder={field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().toUpperCase()}
+                                value={editInputs[field]}
+                                onChange={handleEditChange}
+                                required
+                              />
+                            )}
+                          </div>
+                        ))}
+                        <button type="submit" className="submit-btn">✅ Update Supply Request</button>
+                        <button type="button" className="cancel-button" onClick={() => setEditingSupplyRequestId(null)}>❌ Cancel</button>
+                      </form>
+                    </div>
+                  </td>
+                ) : (
+                  <>
+                    {Object.keys(defaultInputs).map(field => (
+                      <td key={field}>
+                        {field === 'status' ? (
+                          <span className={`status-badge ${request[field]?.toLowerCase()}`}>
+                            {request[field] || 'N/A'}
+                          </span>
+                        ) : (
+                          request[field] || 'N/A'
+                        )}
+                      </td>
+                    ))}
+                    <td>{new Date(request.created_at).toLocaleDateString('en-GB')}</td>
+                    <td className="actions-cell">
+                      <button className="action-btn edit-btn" onClick={() => startEdit(request)} title="Edit Supply Request">
+                        ✏️
+                      </button>
+                      <button className="action-btn delete-btn" onClick={() => handleDeleteSupplyRequest(request._id)} title="Delete Supply Request">
+                        🗑️
+                      </button>
+                      <button className="action-btn download-btn" onClick={() => handleDownloadSingle(request)} title="Download Supply Request Report">
+                        📄
+                      </button>
+                    </td>
+                  </>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {filteredSupplyRequests.length === 0 && (
+          <div className="no-users-message">
+            <p>📭 No supply requests found matching your search criteria.</p>
+            {searchTerm && (
+              <button className="clear-search-btn" onClick={() => setSearchTerm('')}>
+                Clear Search
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default SupplyRequest;

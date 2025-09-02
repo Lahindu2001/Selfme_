@@ -1,4 +1,4 @@
-const Inventory = require("../Model/InventoryModel");
+const Inventory = require("../../Model/AdminandSupplyModel/InventoryModel");
 
 // ------------------- GET ALL ITEMS -------------------
 const getAllItems = async (req, res, next) => {

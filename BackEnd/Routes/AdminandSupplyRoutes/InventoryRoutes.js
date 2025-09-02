@@ -2,10 +2,10 @@ const express = require("express");
 router = express.Router();
 
 //insert Model
-const User = require("../Model/InventoryModel") ;
+const User = require("../../Model/AdminandSupplyModel/InventoryModel") ;
 
 // Import Inventory Controller
-const InventoryController = require("../Controlers/InventoryController");
+const InventoryController = require("../../Controllers/AdminandSupplyControllers/InventoryController");
 
 // Routes
 router.get("/", InventoryController.getAllItems);       // Get all items

@@ -1,9 +1,9 @@
 const express = require("express");
 router = express.Router();
 //insert Model
-const User = require("../Model/UserModel") ;
+const User = require("../../Model/AdminandSupplyModel/UserModel") ;
 //insert user controller+
-const UserController = require("../Controlers/UserControlers");
+const UserController = require("../../Controllers/AdminandSupplyControllers/UserControlers");
 
 router.get("/",UserController.getAllUsers);
 router.post("/",UserController.addUsers);
