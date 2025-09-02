@@ -590,7 +590,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
+@media (max-width: 100%) {
   .Title {
     font-size: 2.5rem;
   }
@@ -600,7 +600,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 100%) {
   .users-section {
     padding: 15px;
   }
@@ -650,7 +650,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 100%) {
   .Title {
     font-size: 1.8rem;
   }
