@@ -12,13 +12,8 @@ function Admin() {
         <p className="dashboard-subtitle">Welcome to Solar ERP Admin Panel</p>
 
         <div className="card-grid">
-          <div className="card">
-          <Link to="/userdetails" className="activehome">
-            <h2>User Management</h2>
-            <p>Manage system users, roles & permissions.</p>
-          </Link>
-            
-          </div>
+          
+          
           <div className="card">
           <Link to="/InventoryMange" className="activehome">
             <h2>Inventory Management</h2>

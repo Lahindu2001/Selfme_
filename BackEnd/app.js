@@ -1,6 +1,5 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const userRouter = require("./Routes/AdminandSupplyRoutes/UserRoutes");
 const inventoryRouter = require("./Routes/AdminandSupplyRoutes/InventoryRoutes");
 const productRouter = require("./Routes/AdminandSupplyRoutes/ProductRoutes");
 const supplyRequestRouter = require("./Routes/AdminandSupplyRoutes/SupplyRequestRoutes");
@@ -24,7 +23,6 @@ if (!fs.existsSync(uploadDir)) {
 app.use("/uploads", express.static(uploadDir));
 
 // ------------------- ROUTES -------------------
-app.use("/users", userRouter);
 app.use("/inventory", inventoryRouter);
 app.use("/products", productRouter);
 app.use("/supply-requests", supplyRequestRouter);

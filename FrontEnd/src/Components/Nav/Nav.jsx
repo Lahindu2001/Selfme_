@@ -14,14 +14,7 @@ function Nav() {
             <h1>Admin Home</h1>
           </NavLink>
         </li>
-        <li className="home-li">
-          <NavLink
-            to="/userdetails"
-            className={({ isActive }) => `home-a ${isActive ? 'active' : ''}`}
-          >
-            <h1>User Management</h1>
-          </NavLink>
-        </li>
+        
         <li className="home-li">
           <NavLink
             to="/InventoryMange"

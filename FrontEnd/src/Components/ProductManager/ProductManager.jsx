@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Nav from '../Nav/Nav';
 import axios from 'axios';
 import jsPDF from 'jspdf';
+import './ProductManager.css';
 
 const URL = 'http://localhost:5000/products';
 
