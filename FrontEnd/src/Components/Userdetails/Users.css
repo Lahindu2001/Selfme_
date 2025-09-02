@@ -1,366 +1,700 @@
-/* ------------------- Main Section ------------------- */
+/* Complete Users.css - Professional Design for SelfMe */
+
+/* Main Container */
 .users-section {
-  width: 100%; /* Full page width */
-  min-height: 100vh; /* Ensure section takes full viewport height */
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* Center content vertically */
-  align-items: center; /* Center content horizontally */
-  font-family: Arial, sans-serif;
-  box-sizing: border-box;
-  margin: 0;
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f6fa 0%, #e9ecef 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* ------------------- Title ------------------- */
+/* Title Section */
 .title-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 10px 0;
-  padding: 10px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
-  border-radius: 4px;
-  width: 100%;
-  max-width: 1200px; /* Constrain inner content for readability */
+  text-align: center;
+  margin: 20px 0 30px 0;
+  padding: 30px 20px;
+  background: linear-gradient(135deg, #4b0082 0%, #6a5acd 50%, #00b4d8 100%);
+  border-radius: 20px;
+  color: white;
+  box-shadow: 0 10px 30px rgba(75, 0, 130, 0.4);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Main title styling */
-.users-section .Title {
-  font-size: 22px;
-  color: #444;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+.title-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.Title {
+  font-size: 3rem;
+  font-weight: 800;
   margin: 0;
-  padding: 0;
+  text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
+  letter-spacing: 2px;
+  position: relative;
+  z-index: 1;
 }
 
-/* ------------------- Search Bar ------------------- */
-.search-bar {
+.subtitle {
+  font-size: 1.1rem;
+  margin: 12px 0 0 0;
+  opacity: 0.95;
+  font-style: italic;
+  font-weight: 300;
+  position: relative;
+  z-index: 1;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Add User Toggle Button */
+.add-user-toggle {
+  background: linear-gradient(135deg, #4b0082, #6a5acd);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 25px;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(75, 0, 130, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.add-user-toggle:hover {
+  background: linear-gradient(135deg, #5a0a92, #7b6bd3);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(75, 0, 130, 0.5);
+}
+
+.add-user-toggle:active {
+  transform: translateY(-1px);
+}
+
+/* Professional Download Section */
+.professional-section {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 2px solid #e9ecef;
+  border-radius: 15px;
+  padding: 30px;
+  margin: 30px 0;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.professional-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #4b0082, #00b4d8);
+}
+
+.professional-section h3 {
+  color: #4b0082;
+  font-size: 1.6rem;
+  margin-bottom: 15px;
   display: flex;
-  justify-content: center;
-  margin: 10px 0;
-  width: 100%;
-  max-width: 1200px; /* Constrain input width for readability */
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.professional-section p {
+  color: #6c757d;
+  margin-bottom: 25px;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Field Checkboxes */
+.field-checkboxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.checkbox-label:hover {
+  background: #e3f2fd;
+  border-color: #00b4d8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 180, 216, 0.2);
+}
+
+.checkbox-label input[type="checkbox"] {
+  margin: 0;
+  transform: scale(1.2);
+  accent-color: #4b0082;
+}
+
+.checkbox-label input[type="checkbox"]:checked + span {
+  color: #4b0082;
+  font-weight: 600;
+}
+
+.checkbox-label span {
+  font-size: 0.95rem;
+  color: #495057;
+  transition: color 0.2s ease;
+}
+
+/* Download Buttons */
+.download-buttons {
+  text-align: center;
+}
+
+.download-all-btn {
+  background: linear-gradient(135deg, #00b4d8, #0096c7);
+  color: white;
+  border: none;
+  padding: 18px 40px;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(0, 180, 216, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.download-all-btn:hover {
+  background: linear-gradient(135deg, #0096c7, #007acc);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 180, 216, 0.4);
+}
+
+.download-note {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-style: italic;
+  margin-top: 15px;
+  line-height: 1.5;
+}
+
+/* Enhanced Search Bar */
+.search-bar {
+  margin: 25px 0;
 }
 
 .search-bar input {
-  padding: 10px;
   width: 100%;
-  max-width: 400px; /* Slightly wider input for full-page layout */
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-  transition: border-color 0.3s;
+  padding: 18px 25px;
+  border: 2px solid #e9ecef;
+  border-radius: 15px;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  background: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .search-bar input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  border-color: #00b4d8;
+  box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.1);
+  transform: translateY(-2px);
 }
 
-/* ------------------- Download & Filter Options ------------------- */
-.download-options {
-  padding: 15px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin: 10px 0;
-  width: 100%;
-  max-width: 1200px; /* Constrain for readability */
-  box-sizing: border-box;
+.search-bar input::placeholder {
+  color: #adb5bd;
+  font-weight: 500;
 }
 
-.download-options h3 {
-  margin: 0 0 10px;
-  color: #555;
-  font-size: 18px;
-}
-
-.download-options label {
-  margin-right: 15px;
-  font-size: 14px;
-  color: #333;
-}
-
-.download-options input[type="checkbox"] {
-  margin-right: 5px;
-}
-
-.download-options select {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-  margin: 0 10px;
-}
-
-.download-options button {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.download-options button:hover {
-  background-color: #0056b3;
-}
-
-/* ------------------- Users Table ------------------- */
+/* Enhanced Table */
 .users-table-container {
-  width: 100%;
-  max-width: 1200px; /* Constrain table for readability */
-  overflow-x: auto; /* Enable horizontal scrolling for small screens */
-  margin: 10px 0;
-  box-sizing: border-box;
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  margin-top: 25px;
+  border: 1px solid #e9ecef;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 30px;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-bottom: 2px solid #dee2e6;
 }
 
 .table-user-count {
-  display: block;
-  font-size: 16px;
-  color: #555;
-  font-weight: 400;
-  background-color: #f1f3f5;
-  padding: 8px 12px;
-  border-radius: 3px;
-  border: 1px solid #e0e0e0;
-  margin: 0 auto 10px; /* Center horizontally with auto margins */
-  text-align: center; /* Center text within the span */
-  width: fit-content; /* Fit to content width */
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #4b0082;
+}
+
+.filtered-count {
+  font-size: 1rem;
+  color: #6c757d;
+  font-style: italic;
+  font-weight: 500;
 }
 
 .users-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.users-table th,
-.users-table td {
-  padding: 12px 15px;
-  text-align: left;
-  border-bottom: 1px solid #e0e0e0;
-  font-size: 14px;
-  color: #333;
+  font-size: 0.95rem;
 }
 
 .users-table th {
-  background-color: #f1f3f5;
+  background: linear-gradient(135deg, #4b0082, #6a5acd);
+  color: white;
+  padding: 18px 15px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 3px solid #00b4d8;
+}
+
+.users-table td {
+  padding: 15px;
+  border-bottom: 1px solid #f1f3f4;
+  vertical-align: middle;
+  transition: background-color 0.2s ease;
+}
+
+.users-table tbody tr:hover {
+  background-color: #f8f9ff;
+  transform: scale(1.001);
+}
+
+.users-table tbody tr:nth-child(even) {
+  background-color: #fbfbfb;
+}
+
+/* Status and Role Badges */
+.role-badge, .status-badge {
+  padding: 6px 15px;
+  border-radius: 25px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  text-align: center;
+  min-width: 80px;
+}
+
+.role-badge.admin {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.role-badge.inventory-manager {
+  background: linear-gradient(135deg, #fd7e14, #e55a00);
+  color: white;
+  box-shadow: 0 2px 8px rgba(253, 126, 20, 0.3);
+}
+
+.role-badge.finance-manager {
+  background: linear-gradient(135deg, #198754, #146c43);
+  color: white;
+  box-shadow: 0 2px 8px rgba(25, 135, 84, 0.3);
+}
+
+.role-badge.technician {
+  background: linear-gradient(135deg, #0dcaf0, #0aa2c0);
+  color: #000;
+  box-shadow: 0 2px 8px rgba(13, 202, 240, 0.3);
+}
+
+.role-badge.customer {
+  background: linear-gradient(135deg, #6f42c1, #5a2d91);
+  color: white;
+  box-shadow: 0 2px 8px rgba(111, 66, 193, 0.3);
+}
+
+.status-badge.active {
+  background: linear-gradient(135deg, #d1edff, #b6d4fe);
+  color: #0a58ca;
+  border: 2px solid #0dcaf0;
+  box-shadow: 0 2px 8px rgba(13, 202, 240, 0.2);
+}
+
+.status-badge.inactive {
+  background: linear-gradient(135deg, #f8d7da, #f1aeb5);
+  color: #721c24;
+  border: 2px solid #dc3545;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+}
+
+/* Action Buttons */
+.actions-cell {
+  text-align: center;
+  white-space: nowrap;
+  padding: 10px !important;
+}
+
+.action-btn {
+  background: white;
+  border: 2px solid #e9ecef;
+  padding: 10px;
+  margin: 0 3px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.edit-btn:hover {
+  background: #e3f2fd;
+  border-color: #2196f3;
+}
+
+.delete-btn:hover {
+  background: #ffebee;
+  border-color: #f44336;
+}
+
+.download-btn:hover {
+  background: #f3e5f5;
+  border-color: #9c27b0;
+}
+
+/* No Users Message */
+.no-users-message {
+  text-align: center;
+  padding: 50px;
+  color: #6c757d;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  margin: 25px;
+  border-radius: 15px;
+  border: 2px dashed #dee2e6;
+}
+
+.no-users-message p {
+  font-size: 1.3rem;
+  margin: 0 0 20px 0;
+  font-weight: 500;
+}
+
+.clear-search-btn {
+  background: linear-gradient(135deg, #6c757d, #495057);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
   font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.clear-search-btn:hover {
+  background: linear-gradient(135deg, #495057, #343a40);
+  transform: translateY(-2px);
+}
+
+/* Form Enhancements */
+.add-user-container {
+  background: linear-gradient(135deg, white, #f8f9fa);
+  border: 2px solid #e9ecef;
+  border-radius: 15px;
+  padding: 35px;
+  margin: 25px 0;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.add-user-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #4b0082, #00b4d8);
+}
+
+.add-user-container h3 {
+  color: #4b0082;
+  margin-bottom: 25px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.add-user-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 700;
+  color: #495057;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group select {
+  padding: 12px 16px;
+  border: 2px solid #ced4da;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #00b4d8;
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+  transform: translateY(-1px);
+}
+
+.submit-btn,
+.add-user-form button[type="submit"] {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #198754, #20c997);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  justify-self: center;
+  max-width: 250px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.submit-btn:hover,
+.add-user-form button[type="submit"]:hover {
+  background: linear-gradient(135deg, #157347, #1aa679);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(25, 135, 84, 0.3);
+}
+
+/* Update Form */
+.update-user-container {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  padding: 30px;
+  border-radius: 12px;
+  margin: 15px;
+  border: 2px solid #dee2e6;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.update-user-container h1 {
+  color: #4b0082;
+  font-size: 1.6rem;
+  margin-bottom: 25px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.update-user-container form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.update-user-container input,
+.update-user-container select {
+  padding: 12px 16px;
+  border: 2px solid #ced4da;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.update-user-container input:focus,
+.update-user-container select:focus {
+  border-color: #00b4d8;
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+}
+
+.update-user-container button {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.users-table tr:hover {
-  background-color: #f9f9f9;
-}
-
-.users-table td {
-  vertical-align: middle;
-}
-
-/* ------------------- Buttons ------------------- */
-.update-button {
-  padding: 8px 15px;
-  background-color: #28a745;
+.update-user-container button[type="submit"] {
+  background: linear-gradient(135deg, #198754, #20c997);
   color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 13px;
-  cursor: pointer;
-  margin-right: 5px;
-  transition: background-color 0.3s;
+  grid-column: span 1;
 }
 
-.update-button:hover {
-  background-color: #218838;
-}
-
-.delete-button {
-  padding: 8px 15px;
-  background-color: #dc3545;
+.cancel-button {
+  background: linear-gradient(135deg, #6c757d, #495057);
   color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  grid-column: span 1;
 }
 
-.delete-button:hover {
-  background-color: #c82333;
-}
-
-/* ------------------- Add User Form (Standardized Design) ------------------- */
-.add-user-container {
-  padding: 25px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  margin: 10px 0;
-  width: 100%;
-  max-width: 600px; /* Slightly wider for full-page layout */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out;
-  box-sizing: border-box;
-}
-
-.add-user-container:hover {
+.update-user-container button:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.add-user-container h3 {
-  margin-bottom: 20px;
-  color: #333;
-  font-size: 24px;
-  font-weight: 600;
-  text-align: center;
-  letter-spacing: 0.5px;
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .Title {
+    font-size: 2.5rem;
+  }
+  
+  .field-checkboxes {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
 }
 
-.add-user-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  width: 100%;
-}
-
-.add-user-form .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.add-user-form label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-}
-
-.add-user-form input {
-  padding: 12px 15px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  font-size: 16px;
-  font-family: Arial, sans-serif;
-  background-color: #f9f9f9;
-  transition: all 0.3s ease;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.add-user-form input:focus {
-  outline: none;
-  border-color: #007bff;
-  background-color: #ffffff;
-  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
-}
-
-.add-user-form input::placeholder {
-  color: #999;
-  font-style: italic;
-}
-
-.add-user-form button {
-  padding: 12px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.add-user-form button:hover {
-  background-color: #0056b3;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.add-user-toggle {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  margin: 10px 0;
-  display: block;
-}
-
-/* ------------------- Responsive Design ------------------- */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .users-section {
-    padding: 10px;
-  }
-  .title-container {
-    padding: 8px;
-  }
-  .users-section .Title {
-    font-size: 18px;
-  }
-  .search-bar {
-    padding: 0 10px;
-  }
-  .search-bar input {
-    font-size: 14px;
-    max-width: 100%;
-  }
-  .download-options {
-    padding: 10px;
-  }
-  .download-options label,
-  .download-options select,
-  .download-options button {
-    font-size: 12px;
-  }
-  .update-button,
-  .delete-button,
-  .add-user-toggle {
-    font-size: 12px;
-    padding: 8px 15px;
-  }
-  .add-user-container {
     padding: 15px;
-    max-width: 100%; /* Full width on small screens */
   }
-  .add-user-container h3 {
-    font-size: 20px;
+  
+  .Title {
+    font-size: 2rem;
   }
-  .add-user-form input {
-    padding: 10px;
-    font-size: 14px;
+  
+  .subtitle {
+    font-size: 1rem;
   }
-  .add-user-form button {
-    padding: 10px;
-    font-size: 14px;
+  
+  .field-checkboxes {
+    grid-template-columns: 1fr;
   }
-  .users-table-container {
-    padding: 0 10px;
-    max-width: 100%; /* Full width on small screens */
+  
+  .add-user-form {
+    grid-template-columns: 1fr;
   }
-  .table-user-count {
-    font-size: 14px;
-    padding: 6px 10px;
-    margin: 0 auto 10px; /* Keep centered on small screens */
+  
+  .table-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
   }
+  
+  .users-table {
+    font-size: 0.85rem;
+  }
+  
   .users-table th,
   .users-table td {
-    padding: 10px;
-    font-size: 12px;
+    padding: 10px 8px;
+  }
+  
+  .action-btn {
+    font-size: 1rem;
+    padding: 8px;
+    width: 35px;
+    height: 35px;
+  }
+  
+  .role-badge, .status-badge {
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    min-width: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .Title {
+    font-size: 1.8rem;
+  }
+  
+  .professional-section,
+  .add-user-container {
+    padding: 20px;
+  }
+  
+  .users-table {
+    font-size: 0.8rem;
+  }
+  
+  .users-table th,
+  .users-table td {
+    padding: 8px 5px;
+  }
+  
+  .update-user-container form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .add-user-toggle,
+  .download-options,
+  .search-bar,
+  .action-btn {
+    display: none !important;
+  }
+  
+  .users-section {
+    background: white;
+  }
+  
+  .title-container {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+  
+  .users-table th {
+    background: #f8f9fa !important;
+    color: black !important;
   }
 }
