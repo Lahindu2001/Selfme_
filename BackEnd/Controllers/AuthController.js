@@ -1,4 +1,3 @@
-
 // BackEnd/Controllers/AuthController.js
 const User = require('../Model/UserModel');
 const bcrypt = require('bcrypt');
@@ -65,7 +64,13 @@ const login = async (req, res) => {
       { expiresIn: '1h' }  // Session expires in 1 hour; adjust as needed
     );
 
-    res.json({ token, role: user.role });
+    // Return token and user data
+    res.json({
+      token,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }

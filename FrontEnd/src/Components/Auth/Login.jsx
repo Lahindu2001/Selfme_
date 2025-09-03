@@ -3,16 +3,24 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { setAuthToken } from '../../utils/auth';
 import './Auth.css'; // Import the CSS file
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post('http://localhost:5000/auth/login', { email, password });
+      // Store token and user data in localStorage
       setAuthToken(res.data.token);
+      localStorage.setItem('authUser', JSON.stringify({
+        firstName: res.data.firstName,
+        lastName: res.data.lastName,
+        role: res.data.role
+      }));
       // Redirect based on role
       switch (res.data.role) {
         case 'Admin':
@@ -28,7 +36,7 @@ const Login = () => {
           navigate('/TechnicianManager');
           break;
         case 'Customer':
-          navigate('/'); // Updated to navigate to Home.jsx
+          navigate('/'); // Navigate to Home.jsx
           break;
         default:
           setError('Unknown role');
@@ -37,6 +45,7 @@ const Login = () => {
       setError(err.response?.data?.message || 'Login failed');
     }
   };
+
   return (
     <div className="auth-container">
       <h2>Login</h2>
@@ -66,4 +75,5 @@ const Login = () => {
     </div>
   );
 };
+
 export default Login;
