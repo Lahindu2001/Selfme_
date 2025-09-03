@@ -366,3 +366,16 @@
     font-size: 12px;
   }
 }
+
+.logout-btn {
+  padding: 10px 20px;
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+.logout-btn:hover {
+  background-color: #cc0000;
+}

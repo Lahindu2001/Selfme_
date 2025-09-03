@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Nav from '../Nav/Nav';
 import axios from 'axios';
 import jsPDF from 'jspdf';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { removeAuthToken } from '../../utils/auth'; // Import auth utility
 
 const URL = 'http://localhost:5000/inventory';
 
@@ -11,6 +13,7 @@ function InventoryManage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingItemId, setEditingItemId] = useState(null);
+  const navigate = useNavigate(); // Hook for navigation
 
   // ------------------- SELECTED FIELDS FOR PDF -------------------
   const [selectedFields, setSelectedFields] = useState({
@@ -381,6 +384,12 @@ function InventoryManage() {
   const locations = ['Warehouse A', 'Warehouse B', 'Warehouse C'];
   const statusOptions = ['Active', 'Inactive'];
 
+  // ------------------- LOGOUT FUNCTION -------------------
+  const handleLogout = () => {
+    removeAuthToken(); // Clear the token
+    navigate('/login'); // Navigate to login page
+  };
+
   // ------------------- RENDER -------------------
   return (
     <div className="users-section">
@@ -567,6 +576,9 @@ function InventoryManage() {
           </div>
         )}
       </div>
+
+      {/* Add logout button */}
+      <button className="logout-btn" onClick={handleLogout}>Logout</button>
     </div>
   );
 }
