@@ -1,18 +1,18 @@
 // FrontEnd/src/App.jsx
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom"; // Remove BrowserRouter import
+import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 
 // ------------------- Import Components -------------------
 import AdminPanel from "./Components/AdminPanel/Admin";
-import InventoryManage from "./Components/InventoryMange/InventoryMange"; // Fix typo if needed
+import InventoryManage from "./Components/InventoryMange/InventoryMange";
 import ProductManager from "./Components/ProductManager/ProductManager";
 import SupplyRequest from "./Components/SupplyRequest/SupplyRequest";
 import Login from "./Components/Auth/Login";
 import Signup from "./Components/Auth/Signup";
 import FinanceManager from "./Components/FinanceManager/FinanceManager";
 import TechnicianManager from "./Components/TechnicianManager/TechnicianManager";
-import CustomerDashboard from "./Components/CustomerDashboard/CustomerDashboard";
+import Home from "./Components/Home/Home"; // Import Home component
 import { isAuthenticated } from "./utils/auth";
 
 function App() {
@@ -49,12 +49,9 @@ function App() {
           element={isAuthenticated() ? <TechnicianManager /> : <Navigate to="/login" />}
         />
         <Route
-          path="/CustomerDashboard"
-          element={isAuthenticated() ? <CustomerDashboard /> : <Navigate to="/login" />}
+          path="/"
+          element={isAuthenticated() ? <Home /> : <Navigate to="/login" />}
         />
-
-        {/* Redirect root to login */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
 
         {/* Catch-all Redirect */}
         <Route path="*" element={<Navigate to="/login" replace />} />

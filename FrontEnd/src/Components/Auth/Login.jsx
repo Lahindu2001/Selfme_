@@ -1,16 +1,13 @@
-// FrontEnd/src/Components/Auth/Login.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { setAuthToken } from '../../utils/auth';
 import './Auth.css'; // Import the CSS file
-
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -31,7 +28,7 @@ const Login = () => {
           navigate('/TechnicianManager');
           break;
         case 'Customer':
-          navigate('/CustomerDashboard');
+          navigate('/'); // Updated to navigate to Home.jsx
           break;
         default:
           setError('Unknown role');
@@ -40,7 +37,6 @@ const Login = () => {
       setError(err.response?.data?.message || 'Login failed');
     }
   };
-
   return (
     <div className="auth-container">
       <h2>Login</h2>
@@ -70,5 +66,4 @@ const Login = () => {
     </div>
   );
 };
-
 export default Login;
