@@ -6,13 +6,13 @@ import "./App.css";
 // ------------------- Import Components -------------------
 import AdminPanel from "./Components/AdminPanel/Admin";
 import InventoryManage from "./Components/InventoryMange/InventoryMange";
-import ProductManager from "./Components/ProductManager/ProductManager";
-import SupplyRequest from "./Components/SupplyRequest/SupplyRequest";
+import ProductManager from "./Components/AdminPanel/ProductManager/ProductManager";
+import SupplyRequest from "./Components/AdminPanel/SupplyRequest/SupplyRequest";
 import Login from "./Components/Auth/Login";
 import Signup from "./Components/Auth/Signup";
 import FinanceManager from "./Components/FinanceManager/FinanceManager";
 import TechnicianManager from "./Components/TechnicianManager/TechnicianManager";
-import Home from "./Components/Home/Home"; // Import Home component
+import Home from "./Components/UserManager/Home"; // Import Home component
 import { isAuthenticated } from "./utils/auth";
 
 function App() {
