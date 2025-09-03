@@ -23,19 +23,7 @@ function Admin() {
         </div>
 
         <div className="card-grid">
-          <div className="card">
-            <Link to="/InventoryMange" className="activehome">
-              <h2>Inventory Management</h2>
-              <p>Track and update solar panels, wires & safety products.</p>
-            </Link>
-          </div>
-
-          <div className="card">
-            <Link to="/ProductManager" className="activehome">
-              <h2>Product Management</h2>
-              <p>Create and modify solar packages for customers.</p>
-            </Link>
-          </div>
+      
 
           <div className="card">
             <Link to="/SupplyRequest" className="activehome">

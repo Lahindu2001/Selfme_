@@ -12,11 +12,19 @@ const TechnicianManager = () => {
   };
 
   return (
-    <div>
-      <h2>Technician Dashboard</h2>
-      <p>Welcome to Technician Management!</p>
-      <button onClick={handleLogout}>Logout</button>
+<div className="home-container">
+      <div className="dashboard">
+        <div className="dashboard-header">
+          <div>
+            <h1 className="dashboard-title">Technician Dashboard</h1>
+            <p className="dashboard-subtitle">SelfMe - FUTURE OF SUN - SOLAR POWER</p>
+          </div>
+          <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        </div>
+      </div>
     </div>
+
+
   );
 };
 

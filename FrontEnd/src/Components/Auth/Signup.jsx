@@ -43,9 +43,10 @@ const Signup = () => {
     <div className="auth-container">
       <h2>Signup</h2>
       <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+        
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
         <select value={role} onChange={(e) => setRole(e.target.value)}>
           <option value="Admin">Admin</option>
           <option value="Inventory">Inventory</option>
