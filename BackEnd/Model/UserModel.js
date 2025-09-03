@@ -1,13 +1,14 @@
+
 // BackEnd/Models/UserModel.js
 const mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, maxlength: 100 },
-  password: { type: String, required: true, maxlength: 255 },  // Hashed
   firstName: { type: String, maxlength: 150 },
   lastName: { type: String, maxlength: 150 },
   email: { type: String, required: true, unique: true, maxlength: 150 },
+  password: { type: String, required: true, maxlength: 255 },  // Hashed
+  nic: { type: String, required: true, maxlength: 100 },
   phone: { type: String, maxlength: 20 },
   dob: { type: Date },
   address: { type: String, maxlength: 255 },

@@ -1,3 +1,4 @@
+
 // BackEnd/Controllers/AuthController.js
 const User = require('../Model/UserModel');
 const bcrypt = require('bcrypt');
@@ -8,7 +9,7 @@ const JWT_SECRET = 'your_jwt_secret_key_here';  // Change this to a strong secre
 // Signup
 const signup = async (req, res) => {
   try {
-    const { username, email, password, role, firstName, lastName, phone, dob, address, ceboNo } = req.body;
+    const { firstName, lastName, email, password, nic, phone, dob, address, ceboNo, role } = req.body;
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -21,16 +22,16 @@ const signup = async (req, res) => {
 
     // Create user
     const newUser = new User({
-      username,
-      email,
-      password: hashedPassword,
-      role,
       firstName,
       lastName,
+      email,
+      password: hashedPassword,
+      nic,
       phone,
       dob,
       address,
-      ceboNo
+      ceboNo,
+      role
     });
 
     await newUser.save();
