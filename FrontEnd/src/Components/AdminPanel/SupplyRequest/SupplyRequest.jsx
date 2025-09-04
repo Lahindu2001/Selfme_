@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Nav from '../../Nav/Nav';
 import axios from 'axios';
 import jsPDF from 'jspdf';
+import './SupplyRequest.css';
 
 const URL = 'http://localhost:5000/supply-requests';
 
@@ -11,25 +12,26 @@ function SupplyRequest() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddSupplyRequestForm, setShowAddSupplyRequestForm] = useState(false);
   const [editingSupplyRequestId, setEditingSupplyRequestId] = useState(null);
-
+  
   // ------------------- SELECTED FIELDS FOR PDF -------------------
   const [selectedFields, setSelectedFields] = useState({
-    supplier_name: true,
-    supplier_contact: true,
     supplier_brandname: true,
+    supplier_contact: true,
+    supplier_address: true,
     status: true,
     created_at: true
   });
 
   // ------------------- FORM INPUTS -------------------
   const defaultInputs = {
-    supplier_name: '',
-    supplier_contact: '',
     supplier_brandname: '',
+    supplier_contact: '',
+    supplier_address: '',
     status: 'Pending'
   };
   const [inputs, setInputs] = useState(defaultInputs);
   const [editInputs, setEditInputs] = useState(defaultInputs);
+  const [errors, setErrors] = useState({});
 
   // ------------------- COMPANY INFORMATION -------------------
   const companyInfo = {
@@ -39,6 +41,22 @@ function SupplyRequest() {
     phone: '+94 717 882 883',
     email: 'Selfmepvtltd@gmail.com',
     website: 'www.selfme.com'
+  };
+
+  // ------------------- VALIDATION -------------------
+  const validateInputs = (inputs, isEdit = false) => {
+    const newErrors = {};
+    if (!inputs.supplier_brandname.match(/^[a-zA-Z\s]*$/)) {
+      newErrors.supplier_brandname = 'Brand name must contain only letters and spaces';
+    }
+    if (!inputs.supplier_contact.match(/^\d{10}$/)) {
+      newErrors.supplier_contact = 'Contact must be exactly 10 digits';
+    }
+    if (!inputs.supplier_address) {
+      newErrors.supplier_address = 'Address is required';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   // ------------------- FETCH SUPPLY REQUESTS -------------------
@@ -241,22 +259,33 @@ function SupplyRequest() {
   };
 
   // ------------------- HANDLE INPUT CHANGE -------------------
-  const handleChange = e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  const handleEditChange = e => setEditInputs(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setInputs(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: '' }));
+  };
+
+  const handleEditChange = e => {
+    const { name, value } = e.target;
+    setEditInputs(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: '' }));
+  };
 
   // ------------------- ADD SUPPLY REQUEST -------------------
   const handleAddSupplyRequest = async e => {
     e.preventDefault();
+    if (!validateInputs(inputs)) return;
     try {
       const res = await axios.post(URL, { ...inputs });
       setSupplyRequests([...supplyRequests, res.data]);
       setInputs(defaultInputs);
       setShowAddSupplyRequestForm(false);
+      setErrors({});
       alert('Supply request added successfully!');
       window.location.reload();
     } catch (err) {
       console.error('Error adding supply request:', err);
-      alert('Failed to add supply request!');
+      alert('Failed to add supply request: ' + err.response?.data?.message || err.message);
     }
   };
 
@@ -264,20 +293,23 @@ function SupplyRequest() {
   const startEdit = request => {
     setEditingSupplyRequestId(request._id);
     setEditInputs({ ...request });
+    setErrors({});
   };
 
   const handleUpdateSupplyRequest = async e => {
     e.preventDefault();
+    if (!validateInputs(editInputs, true)) return;
     try {
       const res = await axios.put(`${URL}/${editingSupplyRequestId}`, { ...editInputs });
       setSupplyRequests(supplyRequests.map(r => (r._id === editingSupplyRequestId ? res.data : r)));
       setEditingSupplyRequestId(null);
       setEditInputs(defaultInputs);
+      setErrors({});
       alert('Supply request updated successfully!');
       window.location.reload();
     } catch (err) {
       console.error('Error updating supply request:', err);
-      alert('Failed to update supply request!');
+      alert('Failed to update supply request: ' + err.response?.data?.message || err.message);
     }
   };
 
@@ -296,12 +328,13 @@ function SupplyRequest() {
 
   // ------------------- DOWNLOAD FUNCTIONS -------------------
   const handleDownloadAll = () => generatePDF(supplyRequests, 'Complete Supply Request Directory Report');
-  const handleDownloadSingle = request => generatePDF([request], `Individual Supply Request Report - ${request.supplier_name || 'Unnamed'}`);
+  const handleDownloadSingle = request => generatePDF([request], `Individual Supply Request Report - ${request.supplier_brandname || 'Unnamed'}`);
 
   // ------------------- FILTERED SUPPLY REQUESTS -------------------
   const filteredSupplyRequests = supplyRequests.filter(request =>
-    (request.supplier_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (request.supplier_brandname?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
     (request.supplier_contact?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (request.supplier_address?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
     (String(request.supplier_id) || '').includes(searchTerm)
   );
 
@@ -310,7 +343,7 @@ function SupplyRequest() {
 
   // ------------------- RENDER -------------------
   return (
-    <div className="users-section">
+    <div className="supply-request-section">
       <Nav />
       <div className="title-container">
         <h2 className="Title">Supply Request Management System</h2>
@@ -338,9 +371,11 @@ function SupplyRequest() {
                     placeholder={`Enter ${field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim()}`}
                     value={inputs[field]}
                     onChange={handleChange}
+                    maxLength={field === 'supplier_contact' ? 10 : undefined}
                     required
                   />
                 )}
+                {errors[field] && <span className="error">{errors[field]}</span>}
               </div>
             ))}
             <button type="submit" className="submit-btn">Add Supply Request</button>
@@ -350,7 +385,7 @@ function SupplyRequest() {
       <div className="search-bar">
         <input
           type="text"
-          placeholder="🔍 Search by Supplier Name, Contact or ID..."
+          placeholder="🔍 Search by Supplier Brandname, Contact, Address or ID..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
         />
@@ -419,9 +454,11 @@ function SupplyRequest() {
                                 placeholder={field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().toUpperCase()}
                                 value={editInputs[field]}
                                 onChange={handleEditChange}
+                                maxLength={field === 'supplier_contact' ? 10 : undefined}
                                 required
                               />
                             )}
+                            {errors[field] && <span className="error">{errors[field]}</span>}
                           </div>
                         ))}
                         <button type="submit" className="submit-btn">✅ Update Supply Request</button>

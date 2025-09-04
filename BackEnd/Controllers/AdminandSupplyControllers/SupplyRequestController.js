@@ -7,6 +7,7 @@ const getAllSupplyRequests = async (req, res, next) => {
         supplyRequests = await SupplyRequest.find();
     } catch (err) {
         console.log(err);
+        return res.status(500).json({ message: "Server error while fetching supply requests" });
     }
     if (!supplyRequests) return res.status(404).json({ message: "Supply requests not found" });
     return res.status(200).json({ supplyRequests });
@@ -14,13 +15,14 @@ const getAllSupplyRequests = async (req, res, next) => {
 
 // Insert supply request
 const addSupplyRequest = async (req, res, next) => {
-    const { supplier_name, supplier_contact, supplier_brandname, status } = req.body;
+    const { supplier_brandname, supplier_contact, supplier_address, status } = req.body;
     let supplyRequest;
     try {
-        supplyRequest = new SupplyRequest({ supplier_name, supplier_contact, supplier_brandname, status });
+        supplyRequest = new SupplyRequest({ supplier_brandname, supplier_contact, supplier_address, status });
         await supplyRequest.save();
     } catch (err) {
         console.log(err);
+        return res.status(400).json({ message: "Unable to add supply request", error: err.message });
     }
     if (!supplyRequest) return res.status(404).json({ message: "Unable to add supply request" });
     return res.status(200).json({ supplyRequest });
@@ -34,6 +36,7 @@ const getbyId = async (req, res, next) => {
         supplyRequest = await SupplyRequest.findById(id);
     } catch (err) {
         console.log(err);
+        return res.status(500).json({ message: "Server error while fetching supply request" });
     }
     if (!supplyRequest) return res.status(404).json({ message: "Supply request not found" });
     return res.status(200).json({ supplyRequest });
@@ -42,17 +45,17 @@ const getbyId = async (req, res, next) => {
 // Update supply request
 const updateSupplyRequest = async (req, res, next) => {
     const id = req.params.id;
-    const { supplier_name, supplier_contact, supplier_brandname, status } = req.body;
+    const { supplier_brandname, supplier_contact, supplier_address, status } = req.body;
     let supplyRequest;
     try {
         supplyRequest = await SupplyRequest.findByIdAndUpdate(
             id,
-            { supplier_name, supplier_contact, supplier_brandname, status },
+            { supplier_brandname, supplier_contact, supplier_address, status },
             { new: true }
         );
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ message: "Server error while updating supply request" });
+        return res.status(400).json({ message: "Unable to update supply request", error: err.message });
     }
     if (!supplyRequest) return res.status(404).json({ message: "Unable to update supply request" });
     return res.status(200).json({ supplyRequest });
@@ -66,6 +69,7 @@ const deleteSupplyRequest = async (req, res, next) => {
         supplyRequest = await SupplyRequest.findByIdAndDelete(id);
     } catch (err) {
         console.log(err);
+        return res.status(500).json({ message: "Server error while deleting supply request" });
     }
     if (!supplyRequest) return res.status(404).json({ message: "Unable to delete supply request" });
     return res.status(200).json({ supplyRequest });
