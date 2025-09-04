@@ -6,7 +6,6 @@ import "./App.css";
 // ------------------- Import Components -------------------
 import AdminPanel from "./Components/AdminPanel/Admin";
 import InventoryManage from "./Components/InventoryMange/InventoryMange";
-import ProductManager from "./Components/AdminPanel/ProductManager/ProductManager";
 import SupplyRequest from "./Components/AdminPanel/SupplyRequest/SupplyRequest";
 import Login from "./Components/Auth/Login";
 import Signup from "./Components/Auth/Signup";
@@ -32,10 +31,7 @@ function App() {
           path="/InventoryMange"
           element={isAuthenticated() ? <InventoryManage /> : <Navigate to="/login" />}
         />
-        <Route
-          path="/ProductManager"
-          element={isAuthenticated() ? <ProductManager /> : <Navigate to="/login" />}
-        />
+        
         <Route
           path="/SupplyRequest"
           element={isAuthenticated() ? <SupplyRequest /> : <Navigate to="/login" />}
