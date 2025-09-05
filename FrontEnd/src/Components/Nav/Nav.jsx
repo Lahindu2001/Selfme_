@@ -24,6 +24,17 @@ function Nav() {
             <h1>Supply Request Management</h1>
           </NavLink>
         </li>
+
+        <li className="home-li">
+          <NavLink
+            to="/SupplyProducts"
+            className={({ isActive }) => `home-a ${isActive ? 'active' : ''}`}
+          >
+            
+            <h1>Supply Product Management</h1>
+          </NavLink>
+        </li>
+
       </ul>
     </div>
   );

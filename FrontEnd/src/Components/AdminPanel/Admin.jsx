@@ -1,18 +1,17 @@
 import React from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import { removeAuthToken } from '../../utils/auth'; // Import auth utility
+import { removeAuthToken } from '../../utils/auth';
 import "./Admin.css";
 
 function Admin() {
-  const navigate = useNavigate(); // Hook for navigation
-  // Retrieve user data from localStorage
+  const navigate = useNavigate();
   const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
-  const firstName = authUser.firstName || 'Admin'; // Use firstName, default to 'Admin'
+  const firstName = authUser.firstName || 'Admin';
 
   const handleLogout = () => {
-    removeAuthToken(); // Clear the token
-    localStorage.removeItem('authUser'); // Clear user data
-    navigate('/login'); // Navigate to login page
+    removeAuthToken();
+    localStorage.removeItem('authUser');
+    navigate('/login');
   };
 
   return (
@@ -33,6 +32,12 @@ function Admin() {
             <Link to="/SupplyRequest" className="activehome">
               <h2>Supply Request</h2>
               <p>Streamline supply orders, track requests, and manage inventory efficiently.</p>
+            </Link>
+          </div>
+          <div className="card">
+            <Link to="/SupplyProducts" className="activehome">
+              <h2>Supply Products</h2>
+              <p>Manage supply product inventory and details.</p>
             </Link>
           </div>
           <div className="card">

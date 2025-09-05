@@ -1,12 +1,11 @@
-// BackEnd/app.js
 const express = require("express");
 const mongoose = require("mongoose");
 const supplyRequestRouter = require("./Routes/AdminandSupplyRoutes/SupplyRequestRoutes");
-const authRouter = require("./Routes/AuthRoutes");  // NEW: Add this
+const supplyProductsRouter = require("./Routes/AdminandSupplyRoutes/supplyProductsRoutes");
+const authRouter = require("./Routes/AuthRoutes");
 const path = require("path");
 const fs = require("fs");
 const cors = require("cors");
-
 const app = express();
 
 // ------------------- MIDDLEWARE -------------------
@@ -20,11 +19,12 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 // Serve static files from uploads folder
-app.use("/uploads", express.static(uploadDir));
+app.use("/Uploads", express.static(uploadDir));
 
 // ------------------- ROUTES -------------------
 app.use("/supply-requests", supplyRequestRouter);
-app.use("/auth", authRouter);  // NEW: Add this
+app.use("/supply-products", supplyProductsRouter);
+app.use("/auth", authRouter);
 
 // ------------------- DATABASE -------------------
 mongoose
