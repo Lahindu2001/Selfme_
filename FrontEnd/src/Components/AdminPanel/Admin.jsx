@@ -2,18 +2,15 @@ import React from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../utils/auth';
 import "./Admin.css";
-
 function Admin() {
   const navigate = useNavigate();
   const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
   const firstName = authUser.firstName || 'Admin';
-
   const handleLogout = () => {
     removeAuthToken();
     localStorage.removeItem('authUser');
     navigate('/login');
   };
-
   return (
     <div className="home-container">
       <div className="dashboard">
@@ -35,7 +32,7 @@ function Admin() {
             </Link>
           </div>
           <div className="card">
-            <Link to="#" className="activehome">
+            <Link to="/SupplyProducts" className="activehome">
               <h2>Supply Products</h2>
               <p>Manage supply product inventory and details.</p>
             </Link>
@@ -49,5 +46,4 @@ function Admin() {
     </div>
   );
 }
-
 export default Admin;
