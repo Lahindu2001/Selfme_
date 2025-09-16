@@ -3,10 +3,12 @@ import Nav from '../../Nav/Nav';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import './supplyProducts.css';
-const URL = 'http://localhost:5000/supply-products';
+const SUPPLY_PRODUCTS_URL = 'http://localhost:5000/supply-products';
+const SUPPLIERS_URL = 'http://localhost:5000/supply-requests';
 function SupplyProducts() {
   // ------------------- STATES -------------------
   const [supplyProducts, setSupplyProducts] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProductId, setEditingProductId] = useState(null);
@@ -39,18 +41,28 @@ function SupplyProducts() {
     email: 'Selfmepvtltd@gmail.com',
     website: 'www.selfme.com'
   };
-  // ------------------- FETCH SUPPLY PRODUCTS -------------------
+  // ------------------- FETCH SUPPLY PRODUCTS AND SUPPLIERS -------------------
   const fetchSupplyProducts = async () => {
     try {
-      const res = await axios.get(URL);
+      const res = await axios.get(SUPPLY_PRODUCTS_URL);
       setSupplyProducts(res.data.supplyProducts || []);
     } catch (err) {
       console.error('Error fetching supply products:', err);
       setSupplyProducts([]);
     }
   };
+  const fetchSuppliers = async () => {
+    try {
+      const res = await axios.get(SUPPLIERS_URL);
+      setSuppliers(res.data.supplyRequests || []);
+    } catch (err) {
+      console.error('Error fetching suppliers:', err);
+      setSuppliers([]);
+    }
+  };
   useEffect(() => {
     fetchSupplyProducts();
+    fetchSuppliers();
   }, []);
   // ------------------- LOGO CONVERSION -------------------
   const getLogoAsBase64 = () => {
@@ -187,7 +199,9 @@ function SupplyProducts() {
         Object.keys(selectedFields).forEach(field => {
           if (selectedFields[field]) {
             let label = field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-            let value = field === 'product_image' ? (product[field] ? 'Uploaded' : 'N/A') : (product[field] || 'N/A');
+            let value = field === 'product_image' ? (product[field] ? 'Uploaded' : 'N/A') : 
+                        field === 'supplier_name' ? (product[field]?.supplier_brandname || 'N/A') : 
+                        (product[field] || 'N/A');
             if (typeof value === 'string' && value.length > 35) {
               value = value.substring(0, 32) + '...';
             }
@@ -246,9 +260,9 @@ function SupplyProducts() {
     try {
       const formData = new FormData();
       Object.keys(inputs).forEach(key => {
-        if (inputs[key] !== null) formData.append(key, inputs[key]);
+        if (inputs[key] !== null && inputs[key] !== '') formData.append(key, inputs[key]);
       });
-      const res = await axios.post(URL, formData, {
+      const res = await axios.post(SUPPLY_PRODUCTS_URL, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setSupplyProducts([...supplyProducts, res.data.supplyProduct]);
@@ -266,7 +280,7 @@ function SupplyProducts() {
     setEditingProductId(product._id);
     setEditInputs({
       serial_number: product.serial_number,
-      supplier_name: product.supplier_name,
+      supplier_name: product.supplier_name?._id || '',
       product_item: product.product_item,
       quantity: product.quantity,
       product_image: null,
@@ -278,9 +292,9 @@ function SupplyProducts() {
     try {
       const formData = new FormData();
       Object.keys(editInputs).forEach(key => {
-        if (editInputs[key] !== null) formData.append(key, editInputs[key]);
+        if (editInputs[key] !== null && editInputs[key] !== '') formData.append(key, editInputs[key]);
       });
-      const res = await axios.put(`${URL}/${editingProductId}`, formData, {
+      const res = await axios.put(`${SUPPLY_PRODUCTS_URL}/${editingProductId}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setSupplyProducts(supplyProducts.map(p => (p._id === editingProductId ? res.data.supplyProduct : p)));
@@ -297,7 +311,7 @@ function SupplyProducts() {
   const handleDeleteSupplyProduct = async id => {
     if (!window.confirm('Are you sure you want to delete this supply product?')) return;
     try {
-      await axios.delete(`${URL}/${id}`);
+      await axios.delete(`${SUPPLY_PRODUCTS_URL}/${id}`);
       setSupplyProducts(supplyProducts.filter(p => p._id !== id));
       alert('Supply product deleted successfully!');
     } catch (err) {
@@ -330,15 +344,32 @@ function SupplyProducts() {
             {Object.keys(defaultInputs).map(field => (
               <div className="form-group" key={field}>
                 <label htmlFor={field}>{field.replace('_', ' ').toUpperCase()}</label>
-                <input
-                  type={field === 'product_image' ? 'file' : field === 'quantity' || field === 'unit_price' ? 'number' : 'text'}
-                  id={field}
-                  name={field}
-                  placeholder={`Enter ${field.replace('_', ' ')}`}
-                  value={field !== 'product_image' ? inputs[field] : undefined}
-                  onChange={handleChange}
-                  required={field === 'serial_number' || field === 'supplier_name' || field === 'product_item' || field === 'quantity' || field === 'unit_price'}
-                />
+                {field === 'supplier_name' ? (
+                  <select
+                    id={field}
+                    name={field}
+                    value={inputs[field]}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="" disabled>Select Supplier</option>
+                    {suppliers.map(supplier => (
+                      <option key={supplier._id} value={supplier._id}>
+                        {supplier.supplier_brandname}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type={field === 'product_image' ? 'file' : field === 'quantity' || field === 'unit_price' ? 'number' : 'text'}
+                    id={field}
+                    name={field}
+                    placeholder={`Enter ${field.replace('_', ' ')}`}
+                    value={field !== 'product_image' ? inputs[field] : undefined}
+                    onChange={handleChange}
+                    required={field === 'serial_number' || field === 'product_item' || field === 'quantity' || field === 'unit_price'}
+                  />
+                )}
               </div>
             ))}
             <button type="submit" className="submit-btn">Add Supply Product</button>
@@ -404,14 +435,31 @@ function SupplyProducts() {
                         {Object.keys(defaultInputs).map(field => (
                           <div className="form-group" key={field}>
                             <label htmlFor={field}>{field.replace('_', ' ').toUpperCase()}</label>
-                            <input
-                              type={field === 'product_image' ? 'file' : field === 'quantity' || field === 'unit_price' ? 'number' : 'text'}
-                              name={field}
-                              placeholder={field.replace('_', ' ').toUpperCase()}
-                              value={field !== 'product_image' ? editInputs[field] : undefined}
-                              onChange={handleEditChange}
-                              required={field === 'serial_number' || field === 'supplier_name' || field === 'product_item' || field === 'quantity' || field === 'unit_price'}
-                            />
+                            {field === 'supplier_name' ? (
+                              <select
+                                id={field}
+                                name={field}
+                                value={editInputs[field]}
+                                onChange={handleEditChange}
+                                required
+                              >
+                                <option value="" disabled>Select Supplier</option>
+                                {suppliers.map(supplier => (
+                                  <option key={supplier._id} value={supplier._id}>
+                                    {supplier.supplier_brandname}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <input
+                                type={field === 'product_image' ? 'file' : field === 'quantity' || field === 'unit_price' ? 'number' : 'text'}
+                                name={field}
+                                placeholder={field.replace('_', ' ').toUpperCase()}
+                                value={field !== 'product_image' ? editInputs[field] : undefined}
+                                onChange={handleEditChange}
+                                required={field === 'serial_number' || field === 'product_item' || field === 'quantity' || field === 'unit_price'}
+                              />
+                            )}
                           </div>
                         ))}
                         <button type="submit" className="submit-btn">✅ Update Supply Product</button>
@@ -425,6 +473,8 @@ function SupplyProducts() {
                       <td key={field}>
                         {field === 'product_image' && product[field] ? (
                           <img src={`http://localhost:5000${product[field]}`} alt="product" width="60" />
+                        ) : field === 'supplier_name' ? (
+                          product[field]?.supplier_brandname || 'N/A'
                         ) : (
                           product[field] || 'N/A'
                         )}

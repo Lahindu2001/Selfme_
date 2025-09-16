@@ -1,4 +1,5 @@
 const SupplyProduct = require("../../Model/AdminandSupplyModel/supplyProductsModel");
+const Supplier = require("../../Model/AdminandSupplyModel/SupplyRequestModel");
 // ------------------- ADD SUPPLY PRODUCT -------------------
 const addSupplyProduct = async (req, res) => {
   const { serial_number, supplier_name, product_item, quantity, unit_price } = req.body;
@@ -6,10 +7,15 @@ const addSupplyProduct = async (req, res) => {
   try {
     const lastProduct = await SupplyProduct.findOne().sort({ pid: -1 });
     const newPid = lastProduct ? lastProduct.pid + 1 : 1;
+    // Verify supplier exists
+    const supplier = await Supplier.findById(supplier_name);
+    if (!supplier) {
+      return res.status(400).json({ message: "Invalid supplier ID" });
+    }
     const newSupplyProduct = new SupplyProduct({
       pid: newPid,
       serial_number,
-      supplier_name,
+      supplier_name, // Now an ObjectId referencing Supplier
       product_item,
       quantity: Number(quantity) || 0,
       product_image,
@@ -29,13 +35,20 @@ const updateSupplyProduct = async (req, res) => {
   const product_image = req.file ? `/Uploads/${req.file.filename}` : undefined;
   const updateData = {
     serial_number,
-    supplier_name,
+    supplier_name, // Now an ObjectId referencing Supplier
     product_item,
     quantity: Number(quantity) || 0,
     unit_price: Number(unit_price) || 0,
   };
   if (product_image !== undefined) updateData.product_image = product_image;
   try {
+    // Verify supplier exists
+    if (supplier_name) {
+      const supplier = await Supplier.findById(supplier_name);
+      if (!supplier) {
+        return res.status(400).json({ message: "Invalid supplier ID" });
+      }
+    }
     const updatedSupplyProduct = await SupplyProduct.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
@@ -50,7 +63,7 @@ const updateSupplyProduct = async (req, res) => {
 // ------------------- GET ALL SUPPLY PRODUCTS -------------------
 const getAllSupplyProducts = async (req, res) => {
   try {
-    const supplyProducts = await SupplyProduct.find();
+    const supplyProducts = await SupplyProduct.find().populate('supplier_name', 'supplier_brandname');
     return res.status(200).json({ supplyProducts });
   } catch (err) {
     console.error(err);
@@ -60,7 +73,7 @@ const getAllSupplyProducts = async (req, res) => {
 // ------------------- GET SUPPLY PRODUCT BY ID -------------------
 const getSupplyProductById = async (req, res) => {
   try {
-    const supplyProduct = await SupplyProduct.findById(req.params.id);
+    const supplyProduct = await SupplyProduct.findById(req.params.id).populate('supplier_name', 'supplier_brandname');
     if (!supplyProduct) return res.status(404).json({ message: "Supply product not found" });
     return res.status(200).json({ supplyProduct });
   } catch (err) {
