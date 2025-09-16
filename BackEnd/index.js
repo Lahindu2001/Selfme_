@@ -1,7 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const supplyRequestRouter = require("./Routes/AdminandSupplyRoutes/SupplyRequestRoutes");
-const supplyProductsRouter = require("./Routes/AdminandSupplyRoutes/supplyProductsRoutes");
 const authRouter = require("./Routes/AuthRoutes");
 const path = require("path");
 const fs = require("fs");
@@ -23,7 +22,7 @@ app.use("/Uploads", express.static(uploadDir));
 
 // ------------------- ROUTES -------------------
 app.use("/supply-requests", supplyRequestRouter);
-app.use("/supply-products", supplyProductsRouter);
+
 app.use("/auth", authRouter);
 
 // ------------------- DATABASE -------------------

@@ -7,7 +7,7 @@ import "./App.css";
 import AdminPanel from "./Components/AdminPanel/Admin";
 import InventoryManage from "./Components/InventoryMange/InventoryMange";
 import SupplyRequest from "./Components/AdminPanel/SupplyRequest/SupplyRequest";
-import SupplyProducts from "./Components/AdminPanel/SupplyProducts/SupplyProducts";
+
 import Login from "./Components/Auth/Login";
 import Signup from "./Components/Auth/Signup";
 import FinanceManager from "./Components/FinanceManager/FinanceManager";
@@ -38,10 +38,7 @@ function App() {
           element={isAuthenticated() ? <SupplyRequest /> : <Navigate to="/login" />}
         />
 
-        <Route
-          path="/SupplyProducts"
-          element={isAuthenticated() ? <SupplyProducts /> : <Navigate to="/login" />}
-        />
+        
 
 
         <Route

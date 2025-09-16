@@ -1,12 +1,6 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-
-// Counter schema for auto-incrementing supplier_id
-const counterSchema = new Schema({
-  _id: { type: String, required: true },
-  sequence_value: { type: Number, default: 0 }
-});
-const Counter = mongoose.model("Counter", counterSchema);
+const Counter = require('./counterModel');
 
 const supplyRequestSchema = new Schema({
   supplier_id: { type: Number, unique: true },

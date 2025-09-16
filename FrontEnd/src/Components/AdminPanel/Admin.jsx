@@ -35,7 +35,7 @@ function Admin() {
             </Link>
           </div>
           <div className="card">
-            <Link to="/SupplyProducts" className="activehome">
+            <Link to="#" className="activehome">
               <h2>Supply Products</h2>
               <p>Manage supply product inventory and details.</p>
             </Link>
