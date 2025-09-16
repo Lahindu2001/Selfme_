@@ -13,7 +13,7 @@ const Signup = () => {
   const [dob, setDob] = useState('');
   const [address, setAddress] = useState('');
   const [ceboNo, setCeboNo] = useState('');
-  const [role, setRole] = useState('Customer');
+  const [role] = useState('Customer'); // Fixed to Customer, no setter needed
   const [nicType, setNicType] = useState('New'); // Default to New NIC
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
@@ -131,6 +131,7 @@ const Signup = () => {
     if (!validateName(firstName)) newErrors.firstName = 'First name can only contain letters';
     if (!validateName(lastName)) newErrors.lastName = 'Last name can only contain letters';
     if (!validateEmail(email)) newErrors.email = 'Invalid email format';
+    if (!password) newErrors.password = 'Password is required';
     if (!validateNic(nic, nicType)) newErrors.nic = nicType === 'New' ? 'NIC must be exactly 12 digits' : 'NIC must be 9 digits followed by V or X';
     if (phone && !validatePhone(phone)) newErrors.phone = 'Phone number must be exactly 10 digits';
     if (ceboNo && !validateCeboNo(ceboNo)) newErrors.ceboNo = 'CEBO number must be exactly 10 digits';
@@ -152,7 +153,7 @@ const Signup = () => {
         dob,
         address,
         ceboNo,
-        role,
+        role: 'Customer' // Explicitly set role to Customer
       });
       window.alert('Signup successful! Redirecting to login...');
       navigate('/login');
@@ -196,15 +197,6 @@ const Signup = () => {
           {errors.email && <p className="error">{errors.email}</p>}
         </div>
         <div className="form-group">
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="Admin">Admin</option>
-            <option value="Inventory">Inventory</option>
-            <option value="Finance">Finance</option>
-            <option value="Technician">Technician</option>
-            <option value="Customer">Customer</option>
-          </select>
-        </div>
-        <div className="form-group">
           <input
             type="password"
             placeholder="Password"
@@ -212,6 +204,7 @@ const Signup = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          {errors.password && <p className="error">{errors.password}</p>}
         </div>
         <div className="form-group">
           <select value={nicType} onChange={(e) => setNicType(e.target.value)}>
