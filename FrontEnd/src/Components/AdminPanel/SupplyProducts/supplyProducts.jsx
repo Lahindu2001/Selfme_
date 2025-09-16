@@ -3,8 +3,10 @@ import Nav from '../../Nav/Nav';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import './supplyProducts.css';
+
 const SUPPLY_PRODUCTS_URL = 'http://localhost:5000/supply-products';
 const SUPPLIERS_URL = 'http://localhost:5000/supply-requests';
+
 function SupplyProducts() {
   // ------------------- STATES -------------------
   const [supplyProducts, setSupplyProducts] = useState([]);
@@ -12,7 +14,6 @@ function SupplyProducts() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProductId, setEditingProductId] = useState(null);
-  // ------------------- SELECTED FIELDS FOR PDF -------------------
   const [selectedFields, setSelectedFields] = useState({
     serial_number: true,
     supplier_name: true,
@@ -21,7 +22,6 @@ function SupplyProducts() {
     product_image: true,
     unit_price: true
   });
-  // ------------------- FORM INPUTS -------------------
   const defaultInputs = {
     serial_number: '',
     supplier_name: '',
@@ -32,6 +32,8 @@ function SupplyProducts() {
   };
   const [inputs, setInputs] = useState(defaultInputs);
   const [editInputs, setEditInputs] = useState(defaultInputs);
+  const [errors, setErrors] = useState({});
+
   // ------------------- COMPANY INFORMATION -------------------
   const companyInfo = {
     name: 'SelfMe',
@@ -41,6 +43,267 @@ function SupplyProducts() {
     email: 'Selfmepvtltd@gmail.com',
     website: 'www.selfme.com'
   };
+
+  // ------------------- VALIDATION FUNCTIONS -------------------
+  const validateSerialNumber = (value) => value === '' || /^[a-zA-Z0-9]*$/.test(value);
+  const validateSupplierName = (value) => value !== '';
+  const validateProductItem = (value) => value === '' || /^[A-Za-z]*$/.test(value);
+  const validateQuantity = (value) => value === '' || /^[1-9][0-9]*$/.test(value);
+  const validateUnitPrice = (value) => {
+    if (value === '') return true;
+    if (value === '0' || value === '0.0' || value === '0.00') return false;
+    return /^[1-9][0-9]*(\.[0-9]{1,2})?$/.test(value);
+  };
+
+  // ------------------- INPUT HANDLERS -------------------
+  const handleSerialNumber = (e) => {
+    const value = e.target.value;
+    if (value === '' || /^[a-zA-Z0-9]*$/.test(value)) {
+      setInputs((prev) => ({ ...prev, serial_number: value }));
+      setErrors((prev) => ({
+        ...prev,
+        serial_number: value && !/^[a-zA-Z0-9]+$/.test(value) ? 'Serial number can only contain letters and numbers' : ''
+      }));
+    }
+  };
+
+  const handleEditSerialNumber = (e) => {
+    const value = e.target.value;
+    if (value === '' || /^[a-zA-Z0-9]*$/.test(value)) {
+      setEditInputs((prev) => ({ ...prev, serial_number: value }));
+      setErrors((prev) => ({
+        ...prev,
+        serial_number: value && !/^[a-zA-Z0-9]+$/.test(value) ? 'Serial number can only contain letters and numbers' : ''
+      }));
+    }
+  };
+
+  const handleSupplierName = (e) => {
+    const value = e.target.value;
+    setInputs((prev) => ({ ...prev, supplier_name: value }));
+    setErrors((prev) => ({
+      ...prev,
+      supplier_name: value && !validateSupplierName(value) ? 'Supplier name is required' : ''
+    }));
+  };
+
+  const handleEditSupplierName = (e) => {
+    const value = e.target.value;
+    setEditInputs((prev) => ({ ...prev, supplier_name: value }));
+    setErrors((prev) => ({
+      ...prev,
+      supplier_name: value && !validateSupplierName(value) ? 'Supplier name is required' : ''
+    }));
+  };
+
+  const handleProductItem = (e) => {
+    const value = e.target.value;
+    if (value === '' || /^[A-Za-z]*$/.test(value)) {
+      setInputs((prev) => ({ ...prev, product_item: value }));
+      setErrors((prev) => ({
+        ...prev,
+        product_item: value && !/^[A-Za-z]+$/.test(value) ? 'Product item can only contain letters' : ''
+      }));
+    }
+  };
+
+  const handleEditProductItem = (e) => {
+    const value = e.target.value;
+    if (value === '' || /^[A-Za-z]*$/.test(value)) {
+      setEditInputs((prev) => ({ ...prev, product_item: value }));
+      setErrors((prev) => ({
+        ...prev,
+        product_item: value && !/^[A-Za-z]+$/.test(value) ? 'Product item can only contain letters' : ''
+      }));
+    }
+  };
+
+  const handleQuantity = (e) => {
+    const value = e.target.value;
+    if (/^[0-9]*$/.test(value)) {
+      setInputs((prev) => ({ ...prev, quantity: value }));
+      setErrors((prev) => ({
+        ...prev,
+        quantity: value && !/^[1-9][0-9]*$/.test(value) ? 'Quantity must be a positive integer' : ''
+      }));
+    }
+  };
+
+  const handleEditQuantity = (e) => {
+    const value = e.target.value;
+    if (/^[0-9]*$/.test(value)) {
+      setEditInputs((prev) => ({ ...prev, quantity: value }));
+      setErrors((prev) => ({
+        ...prev,
+        quantity: value && !/^[1-9][0-9]*$/.test(value) ? 'Quantity must be a positive integer' : ''
+      }));
+    }
+  };
+
+  const handleUnitPrice = (e) => {
+    const value = e.target.value;
+    if (value === '' || /^[0-9]*\.?[0-9]{0,2}$/.test(value)) {
+      setInputs((prev) => ({ ...prev, unit_price: value }));
+      setErrors((prev) => ({
+        ...prev,
+        unit_price: value && (value === '0' || value === '0.0' || value === '0.00') ? 'Unit price cannot be zero' :
+                    value && !/^[1-9][0-9]*(\.[0-9]{1,2})?$/.test(value) ? 'Unit price must be a non-negative number with up to 2 decimal places, not starting with zero' : ''
+      }));
+    }
+  };
+
+  const handleEditUnitPrice = (e) => {
+    const value = e.target.value;
+    if (value === '' || /^[0-9]*\.?[0-9]{0,2}$/.test(value)) {
+      setEditInputs((prev) => ({ ...prev, unit_price: value }));
+      setErrors((prev) => ({
+        ...prev,
+        unit_price: value && (value === '0' || value === '0.0' || value === '0.00') ? 'Unit price cannot be zero' :
+                    value && !/^[1-9][0-9]*(\.[0-9]{1,2})?$/.test(value) ? 'Unit price must be a non-negative number with up to 2 decimal places, not starting with zero' : ''
+      }));
+    }
+  };
+
+  const handleProductImage = (e) => {
+    const file = e.target.files[0];
+    setInputs((prev) => ({ ...prev, product_image: file }));
+    setErrors((prev) => ({ ...prev, product_image: '' }));
+  };
+
+  const handleEditProductImage = (e) => {
+    const file = e.target.files[0];
+    setEditInputs((prev) => ({ ...prev, product_image: file }));
+    setErrors((prev) => ({ ...prev, product_image: '' }));
+  };
+
+  // ------------------- HANDLE KEY PRESS -------------------
+  const handleKeyPress = (e, field) => {
+    if (field === 'serial_number' && !/[a-zA-Z0-9]/.test(e.key)) {
+      e.preventDefault();
+    }
+    if (field === 'product_item' && !/[A-Za-z]/.test(e.key)) {
+      e.preventDefault();
+    }
+    if (field === 'quantity' && !/[0-9]/.test(e.key)) {
+      e.preventDefault();
+    }
+    if (field === 'unit_price' && !/[0-9.]/.test(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  // ------------------- ADD SUPPLY PRODUCT -------------------
+  const handleAddSupplyProduct = async (e) => {
+    e.preventDefault();
+    const newErrors = {};
+    if (!inputs.serial_number || !/^[a-zA-Z0-9]+$/.test(inputs.serial_number)) {
+      newErrors.serial_number = 'Serial number must contain letters or numbers and cannot be empty';
+    }
+    if (!inputs.supplier_name) {
+      newErrors.supplier_name = 'Supplier name is required';
+    }
+    if (!inputs.product_item || !/^[A-Za-z]+$/.test(inputs.product_item)) {
+      newErrors.product_item = 'Product item must contain only letters and cannot be empty';
+    }
+    if (!inputs.quantity || !/^[1-9][0-9]*$/.test(inputs.quantity)) {
+      newErrors.quantity = 'Quantity must be a positive integer';
+    }
+    if (!inputs.unit_price || inputs.unit_price === '0' || inputs.unit_price === '0.0' || inputs.unit_price === '0.00' || !/^[1-9][0-9]*(\.[0-9]{1,2})?$/.test(inputs.unit_price)) {
+      newErrors.unit_price = 'Unit price must be a non-negative number with up to 2 decimal places, not zero or starting with zero';
+    }
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+    try {
+      const formData = new FormData();
+      Object.keys(inputs).forEach(key => {
+        if (inputs[key] !== null && inputs[key] !== '') formData.append(key, inputs[key]);
+      });
+      const res = await axios.post(SUPPLY_PRODUCTS_URL, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setSupplyProducts([...supplyProducts, res.data.supplyProduct]);
+      setInputs(defaultInputs);
+      setShowAddForm(false);
+      setErrors({});
+      alert('Supply product added successfully!');
+      window.location.reload();
+    } catch (err) {
+      console.error('Error adding supply product:', err);
+      setErrors({ submit: err.response?.data?.message || 'Failed to add supply product' });
+    }
+  };
+
+  // ------------------- EDIT SUPPLY PRODUCT -------------------
+  const startEdit = (product) => {
+    setEditingProductId(product._id);
+    setEditInputs({
+      serial_number: product.serial_number,
+      supplier_name: product.supplier_name?._id || '',
+      product_item: product.product_item,
+      quantity: product.quantity,
+      product_image: null,
+      unit_price: product.unit_price
+    });
+    setErrors({});
+  };
+
+  const handleUpdateSupplyProduct = async (e) => {
+    e.preventDefault();
+    const newErrors = {};
+    if (!editInputs.serial_number || !/^[a-zA-Z0-9]+$/.test(editInputs.serial_number)) {
+      newErrors.serial_number = 'Serial number must contain letters or numbers and cannot be empty';
+    }
+    if (!editInputs.supplier_name) {
+      newErrors.supplier_name = 'Supplier name is required';
+    }
+    if (!editInputs.product_item || !/^[A-Za-z]+$/.test(editInputs.product_item)) {
+      newErrors.product_item = 'Product item must contain only letters and cannot be empty';
+    }
+    if (!editInputs.quantity || !/^[1-9][0-9]*$/.test(editInputs.quantity)) {
+      newErrors.quantity = 'Quantity must be a positive integer';
+    }
+    if (!editInputs.unit_price || editInputs.unit_price === '0' || editInputs.unit_price === '0.0' || editInputs.unit_price === '0.00' || !/^[1-9][0-9]*(\.[0-9]{1,2})?$/.test(editInputs.unit_price)) {
+      newErrors.unit_price = 'Unit price must be a non-negative number with up to 2 decimal places, not zero or starting with zero';
+    }
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+    try {
+      const formData = new FormData();
+      Object.keys(editInputs).forEach(key => {
+        if (editInputs[key] !== null && editInputs[key] !== '') formData.append(key, editInputs[key]);
+      });
+      const res = await axios.put(`${SUPPLY_PRODUCTS_URL}/${editingProductId}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setSupplyProducts(supplyProducts.map(p => (p._id === editingProductId ? res.data.supplyProduct : p)));
+      setEditingProductId(null);
+      setEditInputs(defaultInputs);
+      setErrors({});
+      alert('Supply product updated successfully!');
+      window.location.reload();
+    } catch (err) {
+      console.error('Error updating supply product:', err);
+      setErrors({ submit: err.response?.data?.message || 'Failed to update supply product' });
+    }
+  };
+
+  // ------------------- DELETE SUPPLY PRODUCT -------------------
+  const handleDeleteSupplyProduct = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this supply product?')) return;
+    try {
+      await axios.delete(`${SUPPLY_PRODUCTS_URL}/${id}`);
+      setSupplyProducts(supplyProducts.filter(p => p._id !== id));
+      alert('Supply product deleted successfully!');
+    } catch (err) {
+      console.error('Error deleting supply product:', err);
+      alert('Failed to delete supply product!');
+    }
+  };
+
   // ------------------- FETCH SUPPLY PRODUCTS AND SUPPLIERS -------------------
   const fetchSupplyProducts = async () => {
     try {
@@ -51,6 +314,7 @@ function SupplyProducts() {
       setSupplyProducts([]);
     }
   };
+
   const fetchSuppliers = async () => {
     try {
       const res = await axios.get(SUPPLIERS_URL);
@@ -60,10 +324,12 @@ function SupplyProducts() {
       setSuppliers([]);
     }
   };
+
   useEffect(() => {
     fetchSupplyProducts();
     fetchSuppliers();
   }, []);
+
   // ------------------- LOGO CONVERSION -------------------
   const getLogoAsBase64 = () => {
     return new Promise((resolve, reject) => {
@@ -81,9 +347,10 @@ function SupplyProducts() {
         console.warn('Could not load logo, proceeding without it');
         resolve(null);
       };
-      img.src = '/newLogo.png'; // Updated to new logo file
+      img.src = '/newLogo.png';
     });
   };
+
   // ------------------- OFFICIAL PDF GENERATION -------------------
   const generatePDF = async (data, title) => {
     if (!data.length) return alert('No supply products to download!');
@@ -211,93 +478,16 @@ function SupplyProducts() {
       alert('Error generating PDF. Please try again.');
     }
   };
-  // ------------------- HANDLE INPUT CHANGE -------------------
-  const handleChange = e => {
-    if (e.target.name === 'product_image') {
-      setInputs(prev => ({ ...prev, product_image: e.target.files[0] }));
-    } else {
-      setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    }
-  };
-  const handleEditChange = e => {
-    if (e.target.name === 'product_image') {
-      setEditInputs(prev => ({ ...prev, product_image: e.target.files[0] }));
-    } else {
-      setEditInputs(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    }
-  };
-  // ------------------- ADD SUPPLY PRODUCT -------------------
-  const handleAddSupplyProduct = async e => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      Object.keys(inputs).forEach(key => {
-        if (inputs[key] !== null && inputs[key] !== '') formData.append(key, inputs[key]);
-      });
-      const res = await axios.post(SUPPLY_PRODUCTS_URL, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      setSupplyProducts([...supplyProducts, res.data.supplyProduct]);
-      setInputs(defaultInputs);
-      setShowAddForm(false);
-      alert('Supply product added successfully!');
-      window.location.reload();
-    } catch (err) {
-      console.error('Error adding supply product:', err);
-      alert('Failed to add supply product!');
-    }
-  };
-  // ------------------- EDIT SUPPLY PRODUCT -------------------
-  const startEdit = product => {
-    setEditingProductId(product._id);
-    setEditInputs({
-      serial_number: product.serial_number,
-      supplier_name: product.supplier_name?._id || '',
-      product_item: product.product_item,
-      quantity: product.quantity,
-      product_image: null,
-      unit_price: product.unit_price
-    });
-  };
-  const handleUpdateSupplyProduct = async e => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      Object.keys(editInputs).forEach(key => {
-        if (editInputs[key] !== null && editInputs[key] !== '') formData.append(key, editInputs[key]);
-      });
-      const res = await axios.put(`${SUPPLY_PRODUCTS_URL}/${editingProductId}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      setSupplyProducts(supplyProducts.map(p => (p._id === editingProductId ? res.data.supplyProduct : p)));
-      setEditingProductId(null);
-      setEditInputs(defaultInputs);
-      alert('Supply product updated successfully!');
-      window.location.reload();
-    } catch (err) {
-      console.error('Error updating supply product:', err);
-      alert('Failed to update supply product!');
-    }
-  };
-  // ------------------- DELETE SUPPLY PRODUCT -------------------
-  const handleDeleteSupplyProduct = async id => {
-    if (!window.confirm('Are you sure you want to delete this supply product?')) return;
-    try {
-      await axios.delete(`${SUPPLY_PRODUCTS_URL}/${id}`);
-      setSupplyProducts(supplyProducts.filter(p => p._id !== id));
-      alert('Supply product deleted successfully!');
-    } catch (err) {
-      console.error('Error deleting supply product:', err);
-      alert('Failed to delete supply product!');
-    }
-  };
+
   // ------------------- DOWNLOAD FUNCTIONS -------------------
   const handleDownloadAll = () => generatePDF(supplyProducts, 'Supply Product Directory Report');
-  const handleDownloadSingle = product => generatePDF([product], `Supply Product Report - ${product.product_item}`);
+  const handleDownloadSingle = (product) => generatePDF([product], `Supply Product Report - ${product.product_item}`);
+
   // ------------------- FILTERED SUPPLY PRODUCTS -------------------
   const filteredSupplyProducts = supplyProducts.filter(product =>
     (product.product_item?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   );
+
   // ------------------- RENDER -------------------
   return (
     <div className="supply-products-section">
@@ -313,38 +503,72 @@ function SupplyProducts() {
         <div className="add-user-container">
           <h3>📝 Add New Supply Product</h3>
           <form className="add-user-form" onSubmit={handleAddSupplyProduct}>
-            {Object.keys(defaultInputs).map(field => (
-              <div className="form-group" key={field}>
-                <label htmlFor={field}>{field.replace('_', ' ').toUpperCase()}</label>
-                {field === 'supplier_name' ? (
-                  <select
-                    id={field}
-                    name={field}
-                    value={inputs[field]}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="" disabled>Select Supplier</option>
-                    {suppliers.map(supplier => (
-                      <option key={supplier._id} value={supplier._id}>
-                        {supplier.supplier_brandname}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type={field === 'product_image' ? 'file' : field === 'quantity' || field === 'unit_price' ? 'number' : 'text'}
-                    id={field}
-                    name={field}
-                    placeholder={`Enter ${field.replace('_', ' ')}`}
-                    value={field !== 'product_image' ? inputs[field] : undefined}
-                    onChange={handleChange}
-                    required={field === 'serial_number' || field === 'product_item' || field === 'quantity' || field === 'unit_price'}
-                  />
-                )}
-              </div>
-            ))}
-            <button type="submit" className="submit-btn">Add Supply Product</button>
+            <div className="form-group">
+              <input
+                type="text"
+                placeholder="Serial Number"
+                value={inputs.serial_number}
+                onChange={handleSerialNumber}
+                onKeyPress={(e) => handleKeyPress(e, 'serial_number')}
+                required
+              />
+              {errors.serial_number && <p className="error">{errors.serial_number}</p>}
+            </div>
+            <div className="form-group">
+              <select value={inputs.supplier_name} onChange={handleSupplierName} required>
+                <option value="" disabled>Select Supplier</option>
+                {suppliers.map(supplier => (
+                  <option key={supplier._id} value={supplier._id}>
+                    {supplier.supplier_brandname}
+                  </option>
+                ))}
+              </select>
+              {errors.supplier_name && <p className="error">{errors.supplier_name}</p>}
+            </div>
+            <div className="form-group">
+              <input
+                type="text"
+                placeholder="Product Item"
+                value={inputs.product_item}
+                onChange={handleProductItem}
+                onKeyPress={(e) => handleKeyPress(e, 'product_item')}
+                required
+              />
+              {errors.product_item && <p className="error">{errors.product_item}</p>}
+            </div>
+            <div className="form-group">
+              <input
+                type="text"
+                placeholder="Quantity"
+                value={inputs.quantity}
+                onChange={handleQuantity}
+                onKeyPress={(e) => handleKeyPress(e, 'quantity')}
+                required
+              />
+              {errors.quantity && <p className="error">{errors.quantity}</p>}
+            </div>
+            <div className="form-group">
+              <input
+                type="file"
+                onChange={handleProductImage}
+              />
+              {errors.product_image && <p className="error">{errors.product_image}</p>}
+            </div>
+            <div className="form-group">
+              <input
+                type="text"
+                placeholder="Unit Price"
+                value={inputs.unit_price}
+                onChange={handleUnitPrice}
+                onKeyPress={(e) => handleKeyPress(e, 'unit_price')}
+                required
+              />
+              {errors.unit_price && <p className="error">{errors.unit_price}</p>}
+            </div>
+            <button type="submit" className="submit-btn">
+              Add Supply Product
+            </button>
+            {errors.submit && <p className="error">{errors.submit}</p>}
           </form>
         </div>
       )}
@@ -404,38 +628,73 @@ function SupplyProducts() {
                     <div className="update-user-container">
                       <h1>✏️ Update Supply Product Information</h1>
                       <form onSubmit={handleUpdateSupplyProduct}>
-                        {Object.keys(defaultInputs).map(field => (
-                          <div className="form-group" key={field}>
-                            <label htmlFor={field}>{field.replace('_', ' ').toUpperCase()}</label>
-                            {field === 'supplier_name' ? (
-                              <select
-                                id={field}
-                                name={field}
-                                value={editInputs[field]}
-                                onChange={handleEditChange}
-                                required
-                              >
-                                <option value="" disabled>Select Supplier</option>
-                                {suppliers.map(supplier => (
-                                  <option key={supplier._id} value={supplier._id}>
-                                    {supplier.supplier_brandname}
-                                  </option>
-                                ))}
-                              </select>
-                            ) : (
-                              <input
-                                type={field === 'product_image' ? 'file' : field === 'quantity' || field === 'unit_price' ? 'number' : 'text'}
-                                name={field}
-                                placeholder={field.replace('_', ' ').toUpperCase()}
-                                value={field !== 'product_image' ? editInputs[field] : undefined}
-                                onChange={handleEditChange}
-                                required={field === 'serial_number' || field === 'product_item' || field === 'quantity' || field === 'unit_price'}
-                              />
-                            )}
-                          </div>
-                        ))}
-                        <button type="submit" className="submit-btn">✅ Update Supply Product</button>
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            placeholder="Serial Number"
+                            value={editInputs.serial_number}
+                            onChange={handleEditSerialNumber}
+                            onKeyPress={(e) => handleKeyPress(e, 'serial_number')}
+                            required
+                          />
+                          {errors.serial_number && <p className="error">{errors.serial_number}</p>}
+                        </div>
+                        <div className="form-group">
+                          <select value={editInputs.supplier_name} onChange={handleEditSupplierName} required>
+                            <option value="" disabled>Select Supplier</option>
+                            {suppliers.map(supplier => (
+                              <option key={supplier._id} value={supplier._id}>
+                                {supplier.supplier_brandname}
+                              </option>
+                            ))}
+                          </select>
+                          {errors.supplier_name && <p className="error">{errors.supplier_name}</p>}
+                        </div>
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            placeholder="Product Item"
+                            value={editInputs.product_item}
+                            onChange={handleEditProductItem}
+                            onKeyPress={(e) => handleKeyPress(e, 'product_item')}
+                            required
+                          />
+                          {errors.product_item && <p className="error">{errors.product_item}</p>}
+                        </div>
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            placeholder="Quantity"
+                            value={editInputs.quantity}
+                            onChange={handleEditQuantity}
+                            onKeyPress={(e) => handleKeyPress(e, 'quantity')}
+                            required
+                          />
+                          {errors.quantity && <p className="error">{errors.quantity}</p>}
+                        </div>
+                        <div className="form-group">
+                          <input
+                            type="file"
+                            onChange={handleEditProductImage}
+                          />
+                          {errors.product_image && <p className="error">{errors.product_image}</p>}
+                        </div>
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            placeholder="Unit Price"
+                            value={editInputs.unit_price}
+                            onChange={handleEditUnitPrice}
+                            onKeyPress={(e) => handleKeyPress(e, 'unit_price')}
+                            required
+                          />
+                          {errors.unit_price && <p className="error">{errors.unit_price}</p>}
+                        </div>
+                        <button type="submit" className="submit-btn">
+                          ✅ Update Supply Product
+                        </button>
                         <button type="button" className="cancel-button" onClick={() => setEditingProductId(null)}>❌ Cancel</button>
+                        {errors.submit && <p className="error">{errors.submit}</p>}
                       </form>
                     </div>
                   </td>
@@ -483,4 +742,5 @@ function SupplyProducts() {
     </div>
   );
 }
+
 export default SupplyProducts;

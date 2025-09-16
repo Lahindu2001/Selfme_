@@ -12,8 +12,6 @@ function SupplyRequest() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddSupplyRequestForm, setShowAddSupplyRequestForm] = useState(false);
   const [editingSupplyRequestId, setEditingSupplyRequestId] = useState(null);
-  
-  // ------------------- SELECTED FIELDS FOR PDF -------------------
   const [selectedFields, setSelectedFields] = useState({
     supplier_brandname: true,
     supplier_contact: true,
@@ -21,8 +19,6 @@ function SupplyRequest() {
     status: true,
     created_at: true
   });
-
-  // ------------------- FORM INPUTS -------------------
   const defaultInputs = {
     supplier_brandname: '',
     supplier_contact: '',
@@ -43,20 +39,189 @@ function SupplyRequest() {
     website: 'www.selfme.com'
   };
 
-  // ------------------- VALIDATION -------------------
-  const validateInputs = (inputs, isEdit = false) => {
+  // ------------------- VALIDATION FUNCTIONS -------------------
+  const validateSupplierBrandname = (value) => value === '' || /^[A-Za-z]*$/.test(value);
+  const validateSupplierContact = (value) => value === '' || /^\d{10}$/.test(value);
+  const validateSupplierAddress = (value) => value === '' || /^[a-zA-Z0-9\s,.]*$/.test(value);
+  const validateStatus = (value) => ['Pending', 'Active', 'Inactive'].includes(value);
+
+  // ------------------- INPUT HANDLERS -------------------
+  const handleSupplierBrandname = (e) => {
+    const value = e.target.value;
+    if (value === '' || /^[A-Za-z]*$/.test(value)) {
+      setInputs((prev) => ({ ...prev, supplier_brandname: value }));
+      setErrors((prev) => ({
+        ...prev,
+        supplier_brandname: value && !/^[A-Za-z]+$/.test(value) ? 'Only letters are allowed' : ''
+      }));
+    }
+  };
+
+  const handleEditSupplierBrandname = (e) => {
+    const value = e.target.value;
+    if (value === '' || /^[A-Za-z]*$/.test(value)) {
+      setEditInputs((prev) => ({ ...prev, supplier_brandname: value }));
+      setErrors((prev) => ({
+        ...prev,
+        supplier_brandname: value && !/^[A-Za-z]+$/.test(value) ? 'Only letters are allowed' : ''
+      }));
+    }
+  };
+
+  const handleSupplierContact = (e) => {
+    const value = e.target.value;
+    if (/^\d{0,10}$/.test(value)) {
+      setInputs((prev) => ({ ...prev, supplier_contact: value }));
+      setErrors((prev) => ({
+        ...prev,
+        supplier_contact: value && !/^\d{10}$/.test(value) ? 'Phone number must be exactly 10 digits' : ''
+      }));
+    }
+  };
+
+  const handleEditSupplierContact = (e) => {
+    const value = e.target.value;
+    if (/^\d{0,10}$/.test(value)) {
+      setEditInputs((prev) => ({ ...prev, supplier_contact: value }));
+      setErrors((prev) => ({
+        ...prev,
+        supplier_contact: value && !/^\d{10}$/.test(value) ? 'Phone number must be exactly 10 digits' : ''
+      }));
+    }
+  };
+
+  const handleSupplierAddress = (e) => {
+    const value = e.target.value;
+    if (value === '' || /^[a-zA-Z0-9\s,.]*$/.test(value)) {
+      setInputs((prev) => ({ ...prev, supplier_address: value }));
+      setErrors((prev) => ({
+        ...prev,
+        supplier_address: value && !/^[a-zA-Z0-9\s,.]+$/.test(value) ? 'Address can only contain letters, numbers, spaces, commas, and periods' : ''
+      }));
+    }
+  };
+
+  const handleEditSupplierAddress = (e) => {
+    const value = e.target.value;
+    if (value === '' || /^[a-zA-Z0-9\s,.]*$/.test(value)) {
+      setEditInputs((prev) => ({ ...prev, supplier_address: value }));
+      setErrors((prev) => ({
+        ...prev,
+        supplier_address: value && !/^[a-zA-Z0-9\s,.]+$/.test(value) ? 'Address can only contain letters, numbers, spaces, commas, and periods' : ''
+      }));
+    }
+  };
+
+  const handleStatus = (e) => {
+    const value = e.target.value;
+    setInputs((prev) => ({ ...prev, status: value }));
+    setErrors((prev) => ({ ...prev, status: '' }));
+  };
+
+  const handleEditStatus = (e) => {
+    const value = e.target.value;
+    setEditInputs((prev) => ({ ...prev, status: value }));
+    setErrors((prev) => ({ ...prev, status: '' }));
+  };
+
+  // ------------------- HANDLE KEY PRESS -------------------
+  const handleKeyPress = (e, field) => {
+    if (field === 'supplier_brandname' && !/[A-Za-z]/.test(e.key)) {
+      e.preventDefault();
+    }
+    if (field === 'supplier_contact' && !/[0-9]/.test(e.key)) {
+      e.preventDefault();
+    }
+    if (field === 'supplier_address' && !/[a-zA-Z0-9\s,.]/.test(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  // ------------------- ADD SUPPLY REQUEST -------------------
+  const handleAddSupplyRequest = async (e) => {
+    e.preventDefault();
     const newErrors = {};
-    if (!inputs.supplier_brandname.match(/^[a-zA-Z\s]*$/)) {
-      newErrors.supplier_brandname = 'Brand name must contain only letters and spaces';
+    if (!inputs.supplier_brandname || !/^[A-Za-z]+$/.test(inputs.supplier_brandname)) {
+      newErrors.supplier_brandname = 'Brand name must contain only letters and cannot be empty';
     }
-    if (!inputs.supplier_contact.match(/^\d{10}$/)) {
-      newErrors.supplier_contact = 'Contact must be exactly 10 digits';
+    if (!inputs.supplier_contact || !/^\d{10}$/.test(inputs.supplier_contact)) {
+      newErrors.supplier_contact = 'Phone number must be exactly 10 digits';
     }
-    if (!inputs.supplier_address) {
-      newErrors.supplier_address = 'Address is required';
+    if (!inputs.supplier_address || !/^[a-zA-Z0-9\s,.]+$/.test(inputs.supplier_address)) {
+      newErrors.supplier_address = 'Address must contain letters, numbers, spaces, commas, or periods and cannot be empty';
+    }
+    if (!validateStatus(inputs.status)) {
+      newErrors.status = 'Invalid status';
     }
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+    try {
+      const res = await axios.post(URL, { ...inputs });
+      setSupplyRequests([...supplyRequests, res.data]);
+      setInputs(defaultInputs);
+      setShowAddSupplyRequestForm(false);
+      setErrors({});
+      alert('Supply request added successfully!');
+      window.location.reload();
+    } catch (err) {
+      console.error('Error adding supply request:', err);
+      setErrors({ submit: err.response?.data?.message || 'Failed to add supply request' });
+    }
+  };
+
+  // ------------------- EDIT SUPPLY REQUEST -------------------
+  const startEdit = (request) => {
+    setEditingSupplyRequestId(request._id);
+    setEditInputs({ ...request });
+    setErrors({});
+  };
+
+  const handleUpdateSupplyRequest = async (e) => {
+    e.preventDefault();
+    const newErrors = {};
+    if (!editInputs.supplier_brandname || !/^[A-Za-z]+$/.test(editInputs.supplier_brandname)) {
+      newErrors.supplier_brandname = 'Brand name must contain only letters and cannot be empty';
+    }
+    if (!editInputs.supplier_contact || !/^\d{10}$/.test(editInputs.supplier_contact)) {
+      newErrors.supplier_contact = 'Phone number must be exactly 10 digits';
+    }
+    if (!editInputs.supplier_address || !/^[a-zA-Z0-9\s,.]+$/.test(editInputs.supplier_address)) {
+      newErrors.supplier_address = 'Address must contain letters, numbers, spaces, commas, or periods and cannot be empty';
+    }
+    if (!validateStatus(editInputs.status)) {
+      newErrors.status = 'Invalid status';
+    }
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+    try {
+      const res = await axios.put(`${URL}/${editingSupplyRequestId}`, { ...editInputs });
+      setSupplyRequests(supplyRequests.map(r => (r._id === editingSupplyRequestId ? res.data : r)));
+      setEditingSupplyRequestId(null);
+      setEditInputs(defaultInputs);
+      setErrors({});
+      alert('Supply request updated successfully!');
+      window.location.reload();
+    } catch (err) {
+      console.error('Error updating supply request:', err);
+      setErrors({ submit: err.response?.data?.message || 'Failed to update supply request' });
+    }
+  };
+
+  // ------------------- DELETE SUPPLY REQUEST -------------------
+  const handleDeleteSupplyRequest = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this supply request?')) return;
+    try {
+      await axios.delete(`${URL}/${id}`);
+      setSupplyRequests(supplyRequests.filter(r => r._id !== id));
+      alert('Supply request deleted successfully!');
+    } catch (err) {
+      console.error('Error deleting supply request:', err);
+      alert('Failed to delete supply request!');
+    }
   };
 
   // ------------------- FETCH SUPPLY REQUESTS -------------------
@@ -91,7 +256,7 @@ function SupplyRequest() {
         console.warn('Could not load logo, proceeding without it');
         resolve(null);
       };
-      img.src = '/newLogo.png'; // Updated to new logo file
+      img.src = '/newLogo.png';
     });
   };
 
@@ -151,8 +316,8 @@ function SupplyRequest() {
 
       data.forEach((_, idx) => {
         let fieldsCount = Object.keys(selectedFields).filter(field => selectedFields[field]).length;
-        let itemHeight = fieldsCount * 10 + 20; // 10mm per field + 20mm header
-        if (tempY + itemHeight > pageHeight - 40) { // Reserve 40mm for signature and footer
+        let itemHeight = fieldsCount * 10 + 20;
+        if (tempY + itemHeight > pageHeight - 40) {
           totalPages++;
           lastRecordIdxPerPage.push(currentPageRecords[currentPageRecords.length - 1] || -1);
           currentPageRecords = [];
@@ -232,77 +397,9 @@ function SupplyRequest() {
     }
   };
 
-  // ------------------- HANDLE INPUT CHANGE -------------------
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setInputs(prev => ({ ...prev, [name]: value }));
-    setErrors(prev => ({ ...prev, [name]: '' }));
-  };
-
-  const handleEditChange = e => {
-    const { name, value } = e.target;
-    setEditInputs(prev => ({ ...prev, [name]: value }));
-    setErrors(prev => ({ ...prev, [name]: '' }));
-  };
-
-  // ------------------- ADD SUPPLY REQUEST -------------------
-  const handleAddSupplyRequest = async e => {
-    e.preventDefault();
-    if (!validateInputs(inputs)) return;
-    try {
-      const res = await axios.post(URL, { ...inputs });
-      setSupplyRequests([...supplyRequests, res.data]);
-      setInputs(defaultInputs);
-      setShowAddSupplyRequestForm(false);
-      setErrors({});
-      alert('Supply request added successfully!');
-      window.location.reload();
-    } catch (err) {
-      console.error('Error adding supply request:', err);
-      alert('Failed to add supply request: ' + err.response?.data?.message || err.message);
-    }
-  };
-
-  // ------------------- EDIT SUPPLY REQUEST -------------------
-  const startEdit = request => {
-    setEditingSupplyRequestId(request._id);
-    setEditInputs({ ...request });
-    setErrors({});
-  };
-
-  const handleUpdateSupplyRequest = async e => {
-    e.preventDefault();
-    if (!validateInputs(editInputs, true)) return;
-    try {
-      const res = await axios.put(`${URL}/${editingSupplyRequestId}`, { ...editInputs });
-      setSupplyRequests(supplyRequests.map(r => (r._id === editingSupplyRequestId ? res.data : r)));
-      setEditingSupplyRequestId(null);
-      setEditInputs(defaultInputs);
-      setErrors({});
-      alert('Supply request updated successfully!');
-      window.location.reload();
-    } catch (err) {
-      console.error('Error updating supply request:', err);
-      alert('Failed to update supply request: ' + err.response?.data?.message || err.message);
-    }
-  };
-
-  // ------------------- DELETE SUPPLY REQUEST -------------------
-  const handleDeleteSupplyRequest = async id => {
-    if (!window.confirm('Are you sure you want to delete this supply request?')) return;
-    try {
-      await axios.delete(`${URL}/${id}`);
-      setSupplyRequests(supplyRequests.filter(r => r._id !== id));
-      alert('Supply request deleted successfully!');
-    } catch (err) {
-      console.error('Error deleting supply request:', err);
-      alert('Failed to delete supply request!');
-    }
-  };
-
   // ------------------- DOWNLOAD FUNCTIONS -------------------
   const handleDownloadAll = () => generatePDF(supplyRequests, 'Supply Request Directory Report');
-  const handleDownloadSingle = request => generatePDF([request], `Supply Request Report - ${request.supplier_brandname || 'Unnamed'}`);
+  const handleDownloadSingle = (request) => generatePDF([request], `Supply Request Report - ${request.supplier_brandname || 'Unnamed'}`);
 
   // ------------------- FILTERED SUPPLY REQUESTS -------------------
   const filteredSupplyRequests = supplyRequests.filter(request =>
@@ -330,29 +427,50 @@ function SupplyRequest() {
         <div className="add-user-container">
           <h3>📝 Add New Supply Request</h3>
           <form className="add-user-form" onSubmit={handleAddSupplyRequest}>
-            {Object.keys(defaultInputs).map(field => (
-              <div className="form-group" key={field}>
-                <label htmlFor={field}>{field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().toUpperCase()}</label>
-                {field === 'status' ? (
-                  <select name={field} value={inputs[field]} onChange={handleChange} required>
-                    {statusOptions.map(stat => <option key={stat} value={stat}>{stat}</option>)}
-                  </select>
-                ) : (
-                  <input
-                    type="text"
-                    id={field}
-                    name={field}
-                    placeholder={`Enter ${field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim()}`}
-                    value={inputs[field]}
-                    onChange={handleChange}
-                    maxLength={field === 'supplier_contact' ? 10 : undefined}
-                    required
-                  />
-                )}
-                {errors[field] && <span className="error">{errors[field]}</span>}
-              </div>
-            ))}
-            <button type="submit" className="submit-btn">Add Supply Request</button>
+            <div className="form-group">
+              <input
+                type="text"
+                placeholder="Supplier Brandname"
+                value={inputs.supplier_brandname}
+                onChange={handleSupplierBrandname}
+                onKeyPress={(e) => handleKeyPress(e, 'supplier_brandname')}
+                required
+              />
+              {errors.supplier_brandname && <p className="error">{errors.supplier_brandname}</p>}
+            </div>
+            <div className="form-group">
+              <input
+                type="text"
+                placeholder="Supplier Contact"
+                value={inputs.supplier_contact}
+                onChange={handleSupplierContact}
+                onKeyPress={(e) => handleKeyPress(e, 'supplier_contact')}
+                maxLength={10}
+                required
+              />
+              {errors.supplier_contact && <p className="error">{errors.supplier_contact}</p>}
+            </div>
+            <div className="form-group">
+              <input
+                type="text"
+                placeholder="Supplier Address"
+                value={inputs.supplier_address}
+                onChange={handleSupplierAddress}
+                onKeyPress={(e) => handleKeyPress(e, 'supplier_address')}
+                required
+              />
+              {errors.supplier_address && <p className="error">{errors.supplier_address}</p>}
+            </div>
+            <div className="form-group">
+              <select value={inputs.status} onChange={handleStatus} required>
+                {statusOptions.map(stat => <option key={stat} value={stat}>{stat}</option>)}
+              </select>
+              {errors.status && <p className="error">{errors.status}</p>}
+            </div>
+            <button type="submit" className="submit-btn">
+              Add Supply Request
+            </button>
+            {errors.submit && <p className="error">{errors.submit}</p>}
           </form>
         </div>
       )}
@@ -414,29 +532,51 @@ function SupplyRequest() {
                     <div className="update-user-container">
                       <h1>✏️ Update Supply Request Information</h1>
                       <form onSubmit={handleUpdateSupplyRequest}>
-                        {Object.keys(defaultInputs).map(field => (
-                          <div className="form-group" key={field}>
-                            <label htmlFor={field}>{field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().toUpperCase()}</label>
-                            {field === 'status' ? (
-                              <select name={field} value={editInputs[field]} onChange={handleEditChange} required>
-                                {statusOptions.map(stat => <option key={stat} value={stat}>{stat}</option>)}
-                              </select>
-                            ) : (
-                              <input
-                                type="text"
-                                name={field}
-                                placeholder={field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().toUpperCase()}
-                                value={editInputs[field]}
-                                onChange={handleEditChange}
-                                maxLength={field === 'supplier_contact' ? 10 : undefined}
-                                required
-                              />
-                            )}
-                            {errors[field] && <span className="error">{errors[field]}</span>}
-                          </div>
-                        ))}
-                        <button type="submit" className="submit-btn">✅ Update Supply Request</button>
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            placeholder="Supplier Brandname"
+                            value={editInputs.supplier_brandname}
+                            onChange={handleEditSupplierBrandname}
+                            onKeyPress={(e) => handleKeyPress(e, 'supplier_brandname')}
+                            required
+                          />
+                          {errors.supplier_brandname && <p className="error">{errors.supplier_brandname}</p>}
+                        </div>
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            placeholder="Supplier Contact"
+                            value={editInputs.supplier_contact}
+                            onChange={handleEditSupplierContact}
+                            onKeyPress={(e) => handleKeyPress(e, 'supplier_contact')}
+                            maxLength={10}
+                            required
+                          />
+                          {errors.supplier_contact && <p className="error">{errors.supplier_contact}</p>}
+                        </div>
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            placeholder="Supplier Address"
+                            value={editInputs.supplier_address}
+                            onChange={handleEditSupplierAddress}
+                            onKeyPress={(e) => handleKeyPress(e, 'supplier_address')}
+                            required
+                          />
+                          {errors.supplier_address && <p className="error">{errors.supplier_address}</p>}
+                        </div>
+                        <div className="form-group">
+                          <select value={editInputs.status} onChange={handleEditStatus} required>
+                            {statusOptions.map(stat => <option key={stat} value={stat}>{stat}</option>)}
+                          </select>
+                          {errors.status && <p className="error">{errors.status}</p>}
+                        </div>
+                        <button type="submit" className="submit-btn">
+                          ✅ Update Supply Request
+                        </button>
                         <button type="button" className="cancel-button" onClick={() => setEditingSupplyRequestId(null)}>❌ Cancel</button>
+                        {errors.submit && <p className="error">{errors.submit}</p>}
                       </form>
                     </div>
                   </td>
