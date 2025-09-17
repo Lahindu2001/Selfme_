@@ -1,12 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import Nav from '../../Nav/Nav';
+import { useNavigate } from 'react-router-dom';
+import { removeAuthToken } from '../../../utils/auth';
 import axios from 'axios';
 import jsPDF from 'jspdf';
+import Nav from '../../Nav/Nav'; // Adjust path based on your folder structure
 import './SupplyRequest.css';
 
 const URL = 'http://localhost:5000/supply-requests';
 
 function SupplyRequest() {
+  const navigate = useNavigate();
+  const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+  const firstName = authUser.firstName || 'Admin';
+
+  const handleLogout = () => {
+    removeAuthToken();
+    localStorage.removeItem('authUser');
+    navigate('/login');
+  };
+
   // ------------------- STATES -------------------
   const [supplyRequests, setSupplyRequests] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,13 +29,13 @@ function SupplyRequest() {
     supplier_contact: true,
     supplier_address: true,
     status: true,
-    created_at: true
+    created_at: true,
   });
   const defaultInputs = {
     supplier_brandname: '',
     supplier_contact: '',
     supplier_address: '',
-    status: 'Pending'
+    status: 'Pending',
   };
   const [inputs, setInputs] = useState(defaultInputs);
   const [editInputs, setEditInputs] = useState(defaultInputs);
@@ -36,7 +48,7 @@ function SupplyRequest() {
     address: ['No/346, Madalanda, Dompe,', 'Colombo, Sri Lanka'],
     phone: '+94 717 882 883',
     email: 'Selfmepvtltd@gmail.com',
-    website: 'www.selfme.com'
+    website: 'www.selfme.com',
   };
 
   // ------------------- VALIDATION FUNCTIONS -------------------
@@ -52,7 +64,7 @@ function SupplyRequest() {
       setInputs((prev) => ({ ...prev, supplier_brandname: value }));
       setErrors((prev) => ({
         ...prev,
-        supplier_brandname: value && !/^[A-Za-z]+$/.test(value) ? 'Only letters are allowed' : ''
+        supplier_brandname: value && !/^[A-Za-z]+$/.test(value) ? 'Only letters are allowed' : '',
       }));
     }
   };
@@ -63,7 +75,7 @@ function SupplyRequest() {
       setEditInputs((prev) => ({ ...prev, supplier_brandname: value }));
       setErrors((prev) => ({
         ...prev,
-        supplier_brandname: value && !/^[A-Za-z]+$/.test(value) ? 'Only letters are allowed' : ''
+        supplier_brandname: value && !/^[A-Za-z]+$/.test(value) ? 'Only letters are allowed' : '',
       }));
     }
   };
@@ -74,7 +86,7 @@ function SupplyRequest() {
       setInputs((prev) => ({ ...prev, supplier_contact: value }));
       setErrors((prev) => ({
         ...prev,
-        supplier_contact: value && !/^\d{10}$/.test(value) ? 'Phone number must be exactly 10 digits' : ''
+        supplier_contact: value && !/^\d{10}$/.test(value) ? 'Phone number must be exactly 10 digits' : '',
       }));
     }
   };
@@ -85,7 +97,7 @@ function SupplyRequest() {
       setEditInputs((prev) => ({ ...prev, supplier_contact: value }));
       setErrors((prev) => ({
         ...prev,
-        supplier_contact: value && !/^\d{10}$/.test(value) ? 'Phone number must be exactly 10 digits' : ''
+        supplier_contact: value && !/^\d{10}$/.test(value) ? 'Phone number must be exactly 10 digits' : '',
       }));
     }
   };
@@ -96,7 +108,7 @@ function SupplyRequest() {
       setInputs((prev) => ({ ...prev, supplier_address: value }));
       setErrors((prev) => ({
         ...prev,
-        supplier_address: value && !/^[a-zA-Z0-9\s,.]+$/.test(value) ? 'Address can only contain letters, numbers, spaces, commas, and periods' : ''
+        supplier_address: value && !/^[a-zA-Z0-9\s,.]+$/.test(value) ? 'Address can only contain letters, numbers, spaces, commas, and periods' : '',
       }));
     }
   };
@@ -107,7 +119,7 @@ function SupplyRequest() {
       setEditInputs((prev) => ({ ...prev, supplier_address: value }));
       setErrors((prev) => ({
         ...prev,
-        supplier_address: value && !/^[a-zA-Z0-9\s,.]+$/.test(value) ? 'Address can only contain letters, numbers, spaces, commas, and periods' : ''
+        supplier_address: value && !/^[a-zA-Z0-9\s,.]+$/.test(value) ? 'Address can only contain letters, numbers, spaces, commas, and periods' : '',
       }));
     }
   };
@@ -199,7 +211,7 @@ function SupplyRequest() {
     }
     try {
       const res = await axios.put(`${URL}/${editingSupplyRequestId}`, { ...editInputs });
-      setSupplyRequests(supplyRequests.map(r => (r._id === editingSupplyRequestId ? res.data : r)));
+      setSupplyRequests(supplyRequests.map((r) => (r._id === editingSupplyRequestId ? res.data : r)));
       setEditingSupplyRequestId(null);
       setEditInputs(defaultInputs);
       setErrors({});
@@ -216,7 +228,7 @@ function SupplyRequest() {
     if (!window.confirm('Are you sure you want to delete this supply request?')) return;
     try {
       await axios.delete(`${URL}/${id}`);
-      setSupplyRequests(supplyRequests.filter(r => r._id !== id));
+      setSupplyRequests(supplyRequests.filter((r) => r._id !== id));
       alert('Supply request deleted successfully!');
     } catch (err) {
       console.error('Error deleting supply request:', err);
@@ -315,7 +327,7 @@ function SupplyRequest() {
       let currentPageRecords = [];
 
       data.forEach((_, idx) => {
-        let fieldsCount = Object.keys(selectedFields).filter(field => selectedFields[field]).length;
+        let fieldsCount = Object.keys(selectedFields).filter((field) => selectedFields[field]).length;
         let itemHeight = fieldsCount * 10 + 20;
         if (tempY + itemHeight > pageHeight - 40) {
           totalPages++;
@@ -337,7 +349,7 @@ function SupplyRequest() {
       doc.text(title, pageWidth / 2, 45, { align: 'center' });
 
       data.forEach((request, idx) => {
-        let fieldsCount = Object.keys(selectedFields).filter(field => selectedFields[field]).length;
+        let fieldsCount = Object.keys(selectedFields).filter((field) => selectedFields[field]).length;
         let itemHeight = fieldsCount * 10 + 20;
         if (y + itemHeight > pageHeight - 40) {
           addSignatureField();
@@ -359,9 +371,9 @@ function SupplyRequest() {
         doc.setDrawColor(150, 150, 150);
         doc.rect(15, y, pageWidth - 30, fieldsCount * 10 + 5, 'S');
         y += 5;
-        Object.keys(selectedFields).forEach(field => {
+        Object.keys(selectedFields).forEach((field) => {
           if (selectedFields[field]) {
-            let label = field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            let label = field.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
             let value = request[field] || 'N/A';
             if (field === 'created_at') {
               value = new Date(value).toLocaleDateString('en-GB');
@@ -402,11 +414,12 @@ function SupplyRequest() {
   const handleDownloadSingle = (request) => generatePDF([request], `Supply Request Report - ${request.supplier_brandname || 'Unnamed'}`);
 
   // ------------------- FILTERED SUPPLY REQUESTS -------------------
-  const filteredSupplyRequests = supplyRequests.filter(request =>
-    (request.supplier_brandname?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-    (request.supplier_contact?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-    (request.supplier_address?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-    (String(request.supplier_id) || '').includes(searchTerm)
+  const filteredSupplyRequests = supplyRequests.filter(
+    (request) =>
+      (request.supplier_brandname?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (request.supplier_contact?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (request.supplier_address?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (String(request.supplier_id) || '').includes(searchTerm)
   );
 
   // ------------------- ENUMS -------------------
@@ -414,214 +427,253 @@ function SupplyRequest() {
 
   // ------------------- RENDER -------------------
   return (
-    <div className="supply-request-section">
-      <Nav />
-      <div className="title-container">
-        <h2 className="Title">Supply Request Management System</h2>
-        <p className="subtitle">{companyInfo.name} - {companyInfo.tagline}</p>
-      </div>
-      <button className="add-user-toggle" onClick={() => setShowAddSupplyRequestForm(!showAddSupplyRequestForm)}>
-        {showAddSupplyRequestForm ? '✕ Hide Add Supply Request Form' : '➕ Show Add Supply Request Form'}
-      </button>
-      {showAddSupplyRequestForm && (
-        <div className="add-user-container">
-          <h3>📝 Add New Supply Request</h3>
-          <form className="add-user-form" onSubmit={handleAddSupplyRequest}>
-            <div className="form-group">
-              <input
-                type="text"
-                placeholder="Supplier Brandname"
-                value={inputs.supplier_brandname}
-                onChange={handleSupplierBrandname}
-                onKeyPress={(e) => handleKeyPress(e, 'supplier_brandname')}
-                required
-              />
-              {errors.supplier_brandname && <p className="error">{errors.supplier_brandname}</p>}
-            </div>
-            <div className="form-group">
-              <input
-                type="text"
-                placeholder="Supplier Contact"
-                value={inputs.supplier_contact}
-                onChange={handleSupplierContact}
-                onKeyPress={(e) => handleKeyPress(e, 'supplier_contact')}
-                maxLength={10}
-                required
-              />
-              {errors.supplier_contact && <p className="error">{errors.supplier_contact}</p>}
-            </div>
-            <div className="form-group">
-              <input
-                type="text"
-                placeholder="Supplier Address"
-                value={inputs.supplier_address}
-                onChange={handleSupplierAddress}
-                onKeyPress={(e) => handleKeyPress(e, 'supplier_address')}
-                required
-              />
-              {errors.supplier_address && <p className="error">{errors.supplier_address}</p>}
-            </div>
-            <div className="form-group">
-              <select value={inputs.status} onChange={handleStatus} required>
-                {statusOptions.map(stat => <option key={stat} value={stat}>{stat}</option>)}
-              </select>
-              {errors.status && <p className="error">{errors.status}</p>}
-            </div>
-            <button type="submit" className="submit-btn">
-              Add Supply Request
-            </button>
-            {errors.submit && <p className="error">{errors.submit}</p>}
-          </form>
+    <div className="supply-request-container">
+      <Nav firstName={firstName} handleLogout={handleLogout} />
+      <div className="supply-request-section">
+        <div className="title-container">
+          <h2 className="Title">Supply Request Management System</h2>
+          <p className="subtitle">{companyInfo.name} - {companyInfo.tagline}</p>
         </div>
-      )}
-      <div className="search-bar">
-        <input
-          type="text"
-          placeholder="🔍 Search by Supplier Brandname, Contact, Address or ID..."
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-        />
-      </div>
-      <div className="download-options professional-section">
-        <h3>📄 Official Report Generation</h3>
-        <p>Select the fields to include in your official report:</p>
-        <div className="field-checkboxes">
-          {Object.keys(selectedFields).map(field => (
-            <label key={field} className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={selectedFields[field]}
-                onChange={() => setSelectedFields(prev => ({ ...prev, [field]: !prev[field] }))}
-              />
-              <span>{field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().replace(/\b\w/g, l => l.toUpperCase())}</span>
-            </label>
-          ))}
-        </div>
-        <div className="download-buttons">
-          <button className="download-all-btn" onClick={handleDownloadAll}>
-            📊 Download Directory ({supplyRequests.length} requests)
-          </button>
-          <p className="download-note">
-            Reports include official letterhead with {companyInfo.name} branding and contact details.
-          </p>
-        </div>
-      </div>
-      <div className="users-table-container">
-        <div className="table-header">
-          <span className="table-user-count">📦 Total Requests: {supplyRequests.length}</span>
-          <span className="filtered-count">
-            {searchTerm && `(Showing ${filteredSupplyRequests.length} filtered results)`}
-          </span>
-        </div>
-        <table className="users-table">
-          <thead>
-            <tr>
-              <th>Supplier ID</th>
-              {Object.keys(defaultInputs).map(field => (
-                <th key={field}>{field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().replace(/\b\w/g, l => l.toUpperCase())}</th>
-              ))}
-              <th>Created At</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredSupplyRequests.map(request => (
-              <tr key={request._id}>
-                {editingSupplyRequestId === request._id ? (
-                  <td colSpan={Object.keys(defaultInputs).length + 2}>
-                    <div className="update-user-container">
-                      <h1>✏️ Update Supply Request Information</h1>
-                      <form onSubmit={handleUpdateSupplyRequest}>
-                        <div className="form-group">
-                          <input
-                            type="text"
-                            placeholder="Supplier Brandname"
-                            value={editInputs.supplier_brandname}
-                            onChange={handleEditSupplierBrandname}
-                            onKeyPress={(e) => handleKeyPress(e, 'supplier_brandname')}
-                            required
-                          />
-                          {errors.supplier_brandname && <p className="error">{errors.supplier_brandname}</p>}
-                        </div>
-                        <div className="form-group">
-                          <input
-                            type="text"
-                            placeholder="Supplier Contact"
-                            value={editInputs.supplier_contact}
-                            onChange={handleEditSupplierContact}
-                            onKeyPress={(e) => handleKeyPress(e, 'supplier_contact')}
-                            maxLength={10}
-                            required
-                          />
-                          {errors.supplier_contact && <p className="error">{errors.supplier_contact}</p>}
-                        </div>
-                        <div className="form-group">
-                          <input
-                            type="text"
-                            placeholder="Supplier Address"
-                            value={editInputs.supplier_address}
-                            onChange={handleEditSupplierAddress}
-                            onKeyPress={(e) => handleKeyPress(e, 'supplier_address')}
-                            required
-                          />
-                          {errors.supplier_address && <p className="error">{errors.supplier_address}</p>}
-                        </div>
-                        <div className="form-group">
-                          <select value={editInputs.status} onChange={handleEditStatus} required>
-                            {statusOptions.map(stat => <option key={stat} value={stat}>{stat}</option>)}
-                          </select>
-                          {errors.status && <p className="error">{errors.status}</p>}
-                        </div>
-                        <button type="submit" className="submit-btn">
-                          ✅ Update Supply Request
-                        </button>
-                        <button type="button" className="cancel-button" onClick={() => setEditingSupplyRequestId(null)}>❌ Cancel</button>
-                        {errors.submit && <p className="error">{errors.submit}</p>}
-                      </form>
-                    </div>
-                  </td>
-                ) : (
-                  <>
-                    <td>{request.supplier_id || 'N/A'}</td>
-                    {Object.keys(defaultInputs).map(field => (
-                      <td key={field}>
-                        {field === 'status' ? (
-                          <span className={`status-badge ${request[field]?.toLowerCase()}`}>
-                            {request[field] || 'N/A'}
-                          </span>
-                        ) : (
-                          request[field] || 'N/A'
-                        )}
-                      </td>
-                    ))}
-                    <td>{new Date(request.created_at).toLocaleDateString('en-GB')}</td>
-                    <td className="actions-cell">
-                      <button className="action-btn edit-btn" onClick={() => startEdit(request)} title="Edit Supply Request">
-                        ✏️
-                      </button>
-                      <button className="action-btn delete-btn" onClick={() => handleDeleteSupplyRequest(request._id)} title="Delete Supply Request">
-                        🗑️
-                      </button>
-                      <button className="action-btn download-btn" onClick={() => handleDownloadSingle(request)} title="Download Supply Request Report">
-                        📄
-                      </button>
-                    </td>
-                  </>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {filteredSupplyRequests.length === 0 && (
-          <div className="no-users-message">
-            <p>📭 No supply requests found matching your search criteria.</p>
-            {searchTerm && (
-              <button className="clear-search-btn" onClick={() => setSearchTerm('')}>
-                Clear Search
+        <button
+          className="add-user-toggle"
+          onClick={() => setShowAddSupplyRequestForm(!showAddSupplyRequestForm)}
+        >
+          {showAddSupplyRequestForm ? '✕ Hide Add Supply Request Form' : '➕ Show Add Supply Request Form'}
+        </button>
+        {showAddSupplyRequestForm && (
+          <div className="add-user-container">
+            <h3>📝 Add New Supply Request</h3>
+            <form className="add-user-form" onSubmit={handleAddSupplyRequest}>
+              <div className="form-group">
+                <input
+                  type="text"
+                  placeholder="Supplier Brandname"
+                  value={inputs.supplier_brandname}
+                  onChange={handleSupplierBrandname}
+                  onKeyPress={(e) => handleKeyPress(e, 'supplier_brandname')}
+                  required
+                />
+                {errors.supplier_brandname && <p className="error">{errors.supplier_brandname}</p>}
+              </div>
+              <div className="form-group">
+                <input
+                  type="text"
+                  placeholder="Supplier Contact"
+                  value={inputs.supplier_contact}
+                  onChange={handleSupplierContact}
+                  onKeyPress={(e) => handleKeyPress(e, 'supplier_contact')}
+                  maxLength={10}
+                  required
+                />
+                {errors.supplier_contact && <p className="error">{errors.supplier_contact}</p>}
+              </div>
+              <div className="form-group">
+                <input
+                  type="text"
+                  placeholder="Supplier Address"
+                  value={inputs.supplier_address}
+                  onChange={handleSupplierAddress}
+                  onKeyPress={(e) => handleKeyPress(e, 'supplier_address')}
+                  required
+                />
+                {errors.supplier_address && <p className="error">{errors.supplier_address}</p>}
+              </div>
+              <div className="form-group">
+                <select value={inputs.status} onChange={handleStatus} required>
+                  {statusOptions.map((stat) => (
+                    <option key={stat} value={stat}>
+                      {stat}
+                    </option>
+                  ))}
+                </select>
+                {errors.status && <p className="error">{errors.status}</p>}
+              </div>
+              <button type="submit" className="submit-btn">
+                Add Supply Request
               </button>
-            )}
+              {errors.submit && <p className="error">{errors.submit}</p>}
+            </form>
           </div>
         )}
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="🔍 Search by Supplier Brandname, Contact, Address or ID..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="download-options professional-section">
+          <h3>📄 Official Report Generation</h3>
+          <p>Select the fields to include in your official report:</p>
+          <div className="field-checkboxes">
+            {Object.keys(selectedFields).map((field) => (
+              <label key={field} className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={selectedFields[field]}
+                  onChange={() =>
+                    setSelectedFields((prev) => ({ ...prev, [field]: !prev[field] }))
+                  }
+                />
+                <span>
+                  {field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().replace(/\b\w/g, (l) => l.toUpperCase())}
+                </span>
+              </label>
+            ))}
+          </div>
+          <div className="download-buttons">
+            <button className="download-all-btn" onClick={handleDownloadAll}>
+              📊 Download Directory ({supplyRequests.length} requests)
+            </button>
+            <p className="download-note">
+              Reports include official letterhead with {companyInfo.name} branding and contact details.
+            </p>
+          </div>
+        </div>
+        <div className="users-table-container">
+          <div className="table-header">
+            <span className="table-user-count">📦 Total Requests: {supplyRequests.length}</span>
+            <span className="filtered-count">
+              {searchTerm && `(Showing ${filteredSupplyRequests.length} filtered results)`}
+            </span>
+          </div>
+          <table className="users-table">
+            <thead>
+              <tr>
+                <th>Supplier ID</th>
+                {Object.keys(defaultInputs).map((field) => (
+                  <th key={field}>
+                    {field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().replace(/\b\w/g, (l) => l.toUpperCase())}
+                  </th>
+                ))}
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredSupplyRequests.map((request) => (
+                <tr key={request._id}>
+                  {editingSupplyRequestId === request._id ? (
+                    <td colSpan={Object.keys(defaultInputs).length + 2}>
+                      <div className="update-user-container">
+                        <h1>✏️ Update Supply Request Information</h1>
+                        <form onSubmit={handleUpdateSupplyRequest}>
+                          <div className="form-group">
+                            <input
+                              type="text"
+                              placeholder="Supplier Brandname"
+                              value={editInputs.supplier_brandname}
+                              onChange={handleEditSupplierBrandname}
+                              onKeyPress={(e) => handleKeyPress(e, 'supplier_brandname')}
+                              required
+                            />
+                            {errors.supplier_brandname && (
+                              <p className="error">{errors.supplier_brandname}</p>
+                            )}
+                          </div>
+                          <div className="form-group">
+                            <input
+                              type="text"
+                              placeholder="Supplier Contact"
+                              value={editInputs.supplier_contact}
+                              onChange={handleEditSupplierContact}
+                              onKeyPress={(e) => handleKeyPress(e, 'supplier_contact')}
+                              maxLength={10}
+                              required
+                            />
+                            {errors.supplier_contact && <p className="error">{errors.supplier_contact}</p>}
+                          </div>
+                          <div className="form-group">
+                            <input
+                              type="text"
+                              placeholder="Supplier Address"
+                              value={editInputs.supplier_address}
+                              onChange={handleEditSupplierAddress}
+                              onKeyPress={(e) => handleKeyPress(e, 'supplier_address')}
+                              required
+                            />
+                            {errors.supplier_address && <p className="error">{errors.supplier_address}</p>}
+                          </div>
+                          <div className="form-group">
+                            <select value={editInputs.status} onChange={handleEditStatus} required>
+                              {statusOptions.map((stat) => (
+                                <option key={stat} value={stat}>
+                                  {stat}
+                                </option>
+                              ))}
+                            </select>
+                            {errors.status && <p className="error">{errors.status}</p>}
+                          </div>
+                          <button type="submit" className="submit-btn">
+                            ✅ Update Supply Request
+                          </button>
+                          <button
+                            type="button"
+                            className="cancel-button"
+                            onClick={() => setEditingSupplyRequestId(null)}
+                          >
+                            ❌ Cancel
+                          </button>
+                          {errors.submit && <p className="error">{errors.submit}</p>}
+                        </form>
+                      </div>
+                    </td>
+                  ) : (
+                    <>
+                      <td>{request.supplier_id || 'N/A'}</td>
+                      {Object.keys(defaultInputs).map((field) => (
+                        <td key={field}>
+                          {field === 'status' ? (
+                            <span className={`status-badge ${request[field]?.toLowerCase()}`}>
+                              {request[field] || 'N/A'}
+                            </span>
+                          ) : (
+                            request[field] || 'N/A'
+                          )}
+                        </td>
+                      ))}
+                      <td>{new Date(request.created_at).toLocaleDateString('en-GB')}</td>
+                      <td className="actions-cell">
+                        <button
+                          className="action-btn edit-btn"
+                          onClick={() => startEdit(request)}
+                          title="Edit Supply Request"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          className="action-btn delete-btn"
+                          onClick={() => handleDeleteSupplyRequest(request._id)}
+                          title="Delete Supply Request"
+                        >
+                          🗑️
+                        </button>
+                        <button
+                          className="action-btn download-btn"
+                          onClick={() => handleDownloadSingle(request)}
+                          title="Download Supply Request Report"
+                        >
+                          📄
+                        </button>
+                      </td>
+                    </>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {filteredSupplyRequests.length === 0 && (
+            <div className="no-users-message">
+              <p>📭 No supply requests found matching your search criteria.</p>
+              {searchTerm && (
+                <button className="clear-search-btn" onClick={() => setSearchTerm('')}>
+                  Clear Search
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

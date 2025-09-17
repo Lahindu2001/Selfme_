@@ -1,13 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import Nav from '../../Nav/Nav';
+import { useNavigate } from 'react-router-dom';
+import { removeAuthToken } from '../../../utils/auth';
 import axios from 'axios';
 import jsPDF from 'jspdf';
+import Nav from '../../Nav/Nav'; // Adjust path based on your folder structure
 import './supplyProducts.css';
 
 const SUPPLY_PRODUCTS_URL = 'http://localhost:5000/supply-products';
 const SUPPLIERS_URL = 'http://localhost:5000/supply-requests';
 
 function SupplyProducts() {
+  const navigate = useNavigate();
+  const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+  const firstName = authUser.firstName || 'Admin';
+
+  const handleLogout = () => {
+    removeAuthToken();
+    localStorage.removeItem('authUser');
+    navigate('/login');
+  };
+
   // ------------------- STATES -------------------
   const [supplyProducts, setSupplyProducts] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
@@ -20,7 +32,7 @@ function SupplyProducts() {
     product_item: true,
     quantity: true,
     product_image: true,
-    unit_price: true
+    unit_price: true,
   });
   const defaultInputs = {
     serial_number: '',
@@ -28,7 +40,7 @@ function SupplyProducts() {
     product_item: '',
     quantity: '',
     product_image: null,
-    unit_price: ''
+    unit_price: '',
   };
   const [inputs, setInputs] = useState(defaultInputs);
   const [editInputs, setEditInputs] = useState(defaultInputs);
@@ -41,7 +53,7 @@ function SupplyProducts() {
     address: ['No/346, Madalanda, Dompe,', 'Colombo, Sri Lanka'],
     phone: '+94 717 882 883',
     email: 'Selfmepvtltd@gmail.com',
-    website: 'www.selfme.com'
+    website: 'www.selfme.com',
   };
 
   // ------------------- VALIDATION FUNCTIONS -------------------
@@ -62,7 +74,7 @@ function SupplyProducts() {
       setInputs((prev) => ({ ...prev, serial_number: value }));
       setErrors((prev) => ({
         ...prev,
-        serial_number: value && !/^[a-zA-Z0-9]+$/.test(value) ? 'Serial number can only contain letters and numbers' : ''
+        serial_number: value && !/^[a-zA-Z0-9]+$/.test(value) ? 'Serial number can only contain letters and numbers' : '',
       }));
     }
   };
@@ -73,7 +85,7 @@ function SupplyProducts() {
       setEditInputs((prev) => ({ ...prev, serial_number: value }));
       setErrors((prev) => ({
         ...prev,
-        serial_number: value && !/^[a-zA-Z0-9]+$/.test(value) ? 'Serial number can only contain letters and numbers' : ''
+        serial_number: value && !/^[a-zA-Z0-9]+$/.test(value) ? 'Serial number can only contain letters and numbers' : '',
       }));
     }
   };
@@ -83,7 +95,7 @@ function SupplyProducts() {
     setInputs((prev) => ({ ...prev, supplier_name: value }));
     setErrors((prev) => ({
       ...prev,
-      supplier_name: value && !validateSupplierName(value) ? 'Supplier name is required' : ''
+      supplier_name: value && !validateSupplierName(value) ? 'Supplier name is required' : '',
     }));
   };
 
@@ -92,7 +104,7 @@ function SupplyProducts() {
     setEditInputs((prev) => ({ ...prev, supplier_name: value }));
     setErrors((prev) => ({
       ...prev,
-      supplier_name: value && !validateSupplierName(value) ? 'Supplier name is required' : ''
+      supplier_name: value && !validateSupplierName(value) ? 'Supplier name is required' : '',
     }));
   };
 
@@ -102,7 +114,7 @@ function SupplyProducts() {
       setInputs((prev) => ({ ...prev, product_item: value }));
       setErrors((prev) => ({
         ...prev,
-        product_item: value && !/^[A-Za-z]+$/.test(value) ? 'Product item can only contain letters' : ''
+        product_item: value && !/^[A-Za-z]+$/.test(value) ? 'Product item can only contain letters' : '',
       }));
     }
   };
@@ -113,7 +125,7 @@ function SupplyProducts() {
       setEditInputs((prev) => ({ ...prev, product_item: value }));
       setErrors((prev) => ({
         ...prev,
-        product_item: value && !/^[A-Za-z]+$/.test(value) ? 'Product item can only contain letters' : ''
+        product_item: value && !/^[A-Za-z]+$/.test(value) ? 'Product item can only contain letters' : '',
       }));
     }
   };
@@ -124,7 +136,7 @@ function SupplyProducts() {
       setInputs((prev) => ({ ...prev, quantity: value }));
       setErrors((prev) => ({
         ...prev,
-        quantity: value && !/^[1-9][0-9]*$/.test(value) ? 'Quantity must be a positive integer' : ''
+        quantity: value && !/^[1-9][0-9]*$/.test(value) ? 'Quantity must be a positive integer' : '',
       }));
     }
   };
@@ -135,7 +147,7 @@ function SupplyProducts() {
       setEditInputs((prev) => ({ ...prev, quantity: value }));
       setErrors((prev) => ({
         ...prev,
-        quantity: value && !/^[1-9][0-9]*$/.test(value) ? 'Quantity must be a positive integer' : ''
+        quantity: value && !/^[1-9][0-9]*$/.test(value) ? 'Quantity must be a positive integer' : '',
       }));
     }
   };
@@ -146,8 +158,12 @@ function SupplyProducts() {
       setInputs((prev) => ({ ...prev, unit_price: value }));
       setErrors((prev) => ({
         ...prev,
-        unit_price: value && (value === '0' || value === '0.0' || value === '0.00') ? 'Unit price cannot be zero' :
-                    value && !/^[1-9][0-9]*(\.[0-9]{1,2})?$/.test(value) ? 'Unit price must be a non-negative number with up to 2 decimal places, not starting with zero' : ''
+        unit_price:
+          value && (value === '0' || value === '0.0' || value === '0.00')
+            ? 'Unit price cannot be zero'
+            : value && !/^[1-9][0-9]*(\.[0-9]{1,2})?$/.test(value)
+            ? 'Unit price must be a non-negative number with up to 2 decimal places, not starting with zero'
+            : '',
       }));
     }
   };
@@ -158,8 +174,12 @@ function SupplyProducts() {
       setEditInputs((prev) => ({ ...prev, unit_price: value }));
       setErrors((prev) => ({
         ...prev,
-        unit_price: value && (value === '0' || value === '0.0' || value === '0.00') ? 'Unit price cannot be zero' :
-                    value && !/^[1-9][0-9]*(\.[0-9]{1,2})?$/.test(value) ? 'Unit price must be a non-negative number with up to 2 decimal places, not starting with zero' : ''
+        unit_price:
+          value && (value === '0' || value === '0.0' || value === '0.00')
+            ? 'Unit price cannot be zero'
+            : value && !/^[1-9][0-9]*(\.[0-9]{1,2})?$/.test(value)
+            ? 'Unit price must be a non-negative number with up to 2 decimal places, not starting with zero'
+            : '',
       }));
     }
   };
@@ -208,7 +228,13 @@ function SupplyProducts() {
     if (!inputs.quantity || !/^[1-9][0-9]*$/.test(inputs.quantity)) {
       newErrors.quantity = 'Quantity must be a positive integer';
     }
-    if (!inputs.unit_price || inputs.unit_price === '0' || inputs.unit_price === '0.0' || inputs.unit_price === '0.00' || !/^[1-9][0-9]*(\.[0-9]{1,2})?$/.test(inputs.unit_price)) {
+    if (
+      !inputs.unit_price ||
+      inputs.unit_price === '0' ||
+      inputs.unit_price === '0.0' ||
+      inputs.unit_price === '0.00' ||
+      !/^[1-9][0-9]*(\.[0-9]{1,2})?$/.test(inputs.unit_price)
+    ) {
       newErrors.unit_price = 'Unit price must be a non-negative number with up to 2 decimal places, not zero or starting with zero';
     }
     setErrors(newErrors);
@@ -217,11 +243,11 @@ function SupplyProducts() {
     }
     try {
       const formData = new FormData();
-      Object.keys(inputs).forEach(key => {
+      Object.keys(inputs).forEach((key) => {
         if (inputs[key] !== null && inputs[key] !== '') formData.append(key, inputs[key]);
       });
       const res = await axios.post(SUPPLY_PRODUCTS_URL, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
       setSupplyProducts([...supplyProducts, res.data.supplyProduct]);
       setInputs(defaultInputs);
@@ -244,7 +270,7 @@ function SupplyProducts() {
       product_item: product.product_item,
       quantity: product.quantity,
       product_image: null,
-      unit_price: product.unit_price
+      unit_price: product.unit_price,
     });
     setErrors({});
   };
@@ -264,7 +290,13 @@ function SupplyProducts() {
     if (!editInputs.quantity || !/^[1-9][0-9]*$/.test(editInputs.quantity)) {
       newErrors.quantity = 'Quantity must be a positive integer';
     }
-    if (!editInputs.unit_price || editInputs.unit_price === '0' || editInputs.unit_price === '0.0' || editInputs.unit_price === '0.00' || !/^[1-9][0-9]*(\.[0-9]{1,2})?$/.test(editInputs.unit_price)) {
+    if (
+      !editInputs.unit_price ||
+      editInputs.unit_price === '0' ||
+      editInputs.unit_price === '0.0' ||
+      editInputs.unit_price === '0.00' ||
+      !/^[1-9][0-9]*(\.[0-9]{1,2})?$/.test(editInputs.unit_price)
+    ) {
       newErrors.unit_price = 'Unit price must be a non-negative number with up to 2 decimal places, not zero or starting with zero';
     }
     setErrors(newErrors);
@@ -273,13 +305,13 @@ function SupplyProducts() {
     }
     try {
       const formData = new FormData();
-      Object.keys(editInputs).forEach(key => {
+      Object.keys(editInputs).forEach((key) => {
         if (editInputs[key] !== null && editInputs[key] !== '') formData.append(key, editInputs[key]);
       });
       const res = await axios.put(`${SUPPLY_PRODUCTS_URL}/${editingProductId}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-      setSupplyProducts(supplyProducts.map(p => (p._id === editingProductId ? res.data.supplyProduct : p)));
+      setSupplyProducts(supplyProducts.map((p) => (p._id === editingProductId ? res.data.supplyProduct : p)));
       setEditingProductId(null);
       setEditInputs(defaultInputs);
       setErrors({});
@@ -296,7 +328,7 @@ function SupplyProducts() {
     if (!window.confirm('Are you sure you want to delete this supply product?')) return;
     try {
       await axios.delete(`${SUPPLY_PRODUCTS_URL}/${id}`);
-      setSupplyProducts(supplyProducts.filter(p => p._id !== id));
+      setSupplyProducts(supplyProducts.filter((p) => p._id !== id));
       alert('Supply product deleted successfully!');
     } catch (err) {
       console.error('Error deleting supply product:', err);
@@ -359,6 +391,7 @@ function SupplyProducts() {
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
+
       const addLetterhead = () => {
         if (logoBase64) {
           doc.addImage(logoBase64, 'PNG', 15, 10, 20, 20);
@@ -375,6 +408,7 @@ function SupplyProducts() {
         doc.setDrawColor(0, 0, 0);
         doc.line(15, 40, pageWidth - 15, 40);
       };
+
       const addFooter = (pageNum, totalPages, lastRecordIdx) => {
         doc.setFont('times', 'normal');
         doc.setFontSize(8);
@@ -390,18 +424,21 @@ function SupplyProducts() {
         const genTime = new Date().toLocaleTimeString('en-GB', { hour12: false });
         doc.text(`Generated on ${genDate} at ${genTime}`, 15, pageHeight - 10);
       };
+
       const addSignatureField = () => {
         doc.setFont('times', 'normal');
         doc.setFontSize(10);
         doc.setTextColor(0, 0, 0);
         doc.text('Authorized Signature: __________________', pageWidth - 85, pageHeight - 30);
       };
+
       let totalPages = 1;
       let tempY = 50;
       let lastRecordIdxPerPage = [];
       let currentPageRecords = [];
+
       data.forEach((_, idx) => {
-        let fieldsCount = Object.keys(selectedFields).filter(field => selectedFields[field]).length;
+        let fieldsCount = Object.keys(selectedFields).filter((field) => selectedFields[field]).length;
         let productHeight = fieldsCount * 10 + 20;
         if (tempY + productHeight > pageHeight - 40) {
           totalPages++;
@@ -413,6 +450,7 @@ function SupplyProducts() {
         tempY += productHeight;
       });
       lastRecordIdxPerPage.push(currentPageRecords[currentPageRecords.length - 1] || -1);
+
       let currentPage = 1;
       let y = 50;
       addLetterhead();
@@ -420,8 +458,9 @@ function SupplyProducts() {
       doc.setFontSize(14);
       doc.setTextColor(0, 0, 0);
       doc.text(title, pageWidth / 2, 45, { align: 'center' });
+
       data.forEach((product, idx) => {
-        let fieldsCount = Object.keys(selectedFields).filter(field => selectedFields[field]).length;
+        let fieldsCount = Object.keys(selectedFields).filter((field) => selectedFields[field]).length;
         let productHeight = fieldsCount * 10 + 20;
         if (y + productHeight > pageHeight - 40) {
           addSignatureField();
@@ -443,12 +482,17 @@ function SupplyProducts() {
         doc.setDrawColor(150, 150, 150);
         doc.rect(15, y, pageWidth - 30, fieldsCount * 10 + 5, 'S');
         y += 5;
-        Object.keys(selectedFields).forEach(field => {
+        Object.keys(selectedFields).forEach((field) => {
           if (selectedFields[field]) {
-            let label = field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-            let value = field === 'product_image' ? (product[field] ? 'Uploaded' : 'N/A') : 
-                        field === 'supplier_name' ? (product[field]?.supplier_brandname || 'N/A') : 
-                        (product[field] || 'N/A');
+            let label = field.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+            let value =
+              field === 'product_image'
+                ? product[field]
+                  ? 'Uploaded'
+                  : 'N/A'
+                : field === 'supplier_name'
+                ? product[field]?.supplier_brandname || 'N/A'
+                : product[field] || 'N/A';
             if (typeof value === 'string' && value.length > 50) {
               value = value.substring(0, 47) + '...';
             }
@@ -467,6 +511,7 @@ function SupplyProducts() {
           y += 5;
         }
       });
+
       addSignatureField();
       addFooter(currentPage, totalPages, lastRecordIdxPerPage[currentPage - 1]);
       const timestamp = new Date().toISOString().split('T')[0];
@@ -484,260 +529,272 @@ function SupplyProducts() {
   const handleDownloadSingle = (product) => generatePDF([product], `Supply Product Report - ${product.product_item}`);
 
   // ------------------- FILTERED SUPPLY PRODUCTS -------------------
-  const filteredSupplyProducts = supplyProducts.filter(product =>
+  const filteredSupplyProducts = supplyProducts.filter((product) =>
     (product.product_item?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   );
 
   // ------------------- RENDER -------------------
   return (
-    <div className="supply-products-section">
-      <Nav />
-      <div className="title-container">
-        <h2 className="Title">Supply Product Management System</h2>
-        <p className="subtitle">{companyInfo.name} - {companyInfo.tagline}</p>
-      </div>
-      <button className="add-user-toggle" onClick={() => setShowAddForm(!showAddForm)}>
-        {showAddForm ? '✕ Hide Add Supply Product Form' : '➕ Show Add Supply Product Form'}
-      </button>
-      {showAddForm && (
-        <div className="add-user-container">
-          <h3>📝 Add New Supply Product</h3>
-          <form className="add-user-form" onSubmit={handleAddSupplyProduct}>
-            <div className="form-group">
-              <input
-                type="text"
-                placeholder="Serial Number"
-                value={inputs.serial_number}
-                onChange={handleSerialNumber}
-                onKeyPress={(e) => handleKeyPress(e, 'serial_number')}
-                required
-              />
-              {errors.serial_number && <p className="error">{errors.serial_number}</p>}
-            </div>
-            <div className="form-group">
-              <select value={inputs.supplier_name} onChange={handleSupplierName} required>
-                <option value="" disabled>Select Supplier</option>
-                {suppliers.map(supplier => (
-                  <option key={supplier._id} value={supplier._id}>
-                    {supplier.supplier_brandname}
-                  </option>
-                ))}
-              </select>
-              {errors.supplier_name && <p className="error">{errors.supplier_name}</p>}
-            </div>
-            <div className="form-group">
-              <input
-                type="text"
-                placeholder="Product Item"
-                value={inputs.product_item}
-                onChange={handleProductItem}
-                onKeyPress={(e) => handleKeyPress(e, 'product_item')}
-                required
-              />
-              {errors.product_item && <p className="error">{errors.product_item}</p>}
-            </div>
-            <div className="form-group">
-              <input
-                type="text"
-                placeholder="Quantity"
-                value={inputs.quantity}
-                onChange={handleQuantity}
-                onKeyPress={(e) => handleKeyPress(e, 'quantity')}
-                required
-              />
-              {errors.quantity && <p className="error">{errors.quantity}</p>}
-            </div>
-            <div className="form-group">
-              <input
-                type="file"
-                onChange={handleProductImage}
-              />
-              {errors.product_image && <p className="error">{errors.product_image}</p>}
-            </div>
-            <div className="form-group">
-              <input
-                type="text"
-                placeholder="Unit Price"
-                value={inputs.unit_price}
-                onChange={handleUnitPrice}
-                onKeyPress={(e) => handleKeyPress(e, 'unit_price')}
-                required
-              />
-              {errors.unit_price && <p className="error">{errors.unit_price}</p>}
-            </div>
-            <button type="submit" className="submit-btn">
-              Add Supply Product
-            </button>
-            {errors.submit && <p className="error">{errors.submit}</p>}
-          </form>
+    <div className="supply-products-container">
+      <Nav firstName={firstName} handleLogout={handleLogout} />
+      <div className="supply-products-section">
+        <div className="title-container">
+          <h2 className="Title">Supply Product Management System</h2>
+          <p className="subtitle">{companyInfo.name} - {companyInfo.tagline}</p>
         </div>
-      )}
-      <div className="search-bar">
-        <input
-          type="text"
-          placeholder="🔍 Search by Product Item..."
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-        />
-      </div>
-      <div className="download-options professional-section">
-        <h3>📄 Official Report Generation</h3>
-        <p>Select the fields to include in your official report:</p>
-        <div className="field-checkboxes">
-          {Object.keys(selectedFields).map(field => (
-            <label key={field} className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={selectedFields[field]}
-                onChange={() => setSelectedFields(prev => ({ ...prev, [field]: !prev[field] }))}
-              />
-              <span>{field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
-            </label>
-          ))}
-        </div>
-        <div className="download-buttons">
-          <button className="download-all-btn" onClick={handleDownloadAll}>
-            📊 Download Directory ({supplyProducts.length} products)
-          </button>
-          <p className="download-note">
-            Reports include official letterhead with {companyInfo.name} branding and contact details.
-          </p>
-        </div>
-      </div>
-      <div className="users-table-container">
-        <div className="table-header">
-          <span className="table-user-count">👥 Total Supply Products: {supplyProducts.length}</span>
-          <span className="filtered-count">
-            {searchTerm && `(Showing ${filteredSupplyProducts.length} filtered results)`}
-          </span>
-        </div>
-        <table className="users-table">
-          <thead>
-            <tr>
-              {Object.keys(defaultInputs).map(field => (
-                <th key={field}>{field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</th>
-              ))}
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredSupplyProducts.map(product => (
-              <tr key={product._id}>
-                {editingProductId === product._id ? (
-                  <td colSpan={Object.keys(defaultInputs).length + 1}>
-                    <div className="update-user-container">
-                      <h1>✏️ Update Supply Product Information</h1>
-                      <form onSubmit={handleUpdateSupplyProduct}>
-                        <div className="form-group">
-                          <input
-                            type="text"
-                            placeholder="Serial Number"
-                            value={editInputs.serial_number}
-                            onChange={handleEditSerialNumber}
-                            onKeyPress={(e) => handleKeyPress(e, 'serial_number')}
-                            required
-                          />
-                          {errors.serial_number && <p className="error">{errors.serial_number}</p>}
-                        </div>
-                        <div className="form-group">
-                          <select value={editInputs.supplier_name} onChange={handleEditSupplierName} required>
-                            <option value="" disabled>Select Supplier</option>
-                            {suppliers.map(supplier => (
-                              <option key={supplier._id} value={supplier._id}>
-                                {supplier.supplier_brandname}
-                              </option>
-                            ))}
-                          </select>
-                          {errors.supplier_name && <p className="error">{errors.supplier_name}</p>}
-                        </div>
-                        <div className="form-group">
-                          <input
-                            type="text"
-                            placeholder="Product Item"
-                            value={editInputs.product_item}
-                            onChange={handleEditProductItem}
-                            onKeyPress={(e) => handleKeyPress(e, 'product_item')}
-                            required
-                          />
-                          {errors.product_item && <p className="error">{errors.product_item}</p>}
-                        </div>
-                        <div className="form-group">
-                          <input
-                            type="text"
-                            placeholder="Quantity"
-                            value={editInputs.quantity}
-                            onChange={handleEditQuantity}
-                            onKeyPress={(e) => handleKeyPress(e, 'quantity')}
-                            required
-                          />
-                          {errors.quantity && <p className="error">{errors.quantity}</p>}
-                        </div>
-                        <div className="form-group">
-                          <input
-                            type="file"
-                            onChange={handleEditProductImage}
-                          />
-                          {errors.product_image && <p className="error">{errors.product_image}</p>}
-                        </div>
-                        <div className="form-group">
-                          <input
-                            type="text"
-                            placeholder="Unit Price"
-                            value={editInputs.unit_price}
-                            onChange={handleEditUnitPrice}
-                            onKeyPress={(e) => handleKeyPress(e, 'unit_price')}
-                            required
-                          />
-                          {errors.unit_price && <p className="error">{errors.unit_price}</p>}
-                        </div>
-                        <button type="submit" className="submit-btn">
-                          ✅ Update Supply Product
-                        </button>
-                        <button type="button" className="cancel-button" onClick={() => setEditingProductId(null)}>❌ Cancel</button>
-                        {errors.submit && <p className="error">{errors.submit}</p>}
-                      </form>
-                    </div>
-                  </td>
-                ) : (
-                  <>
-                    {Object.keys(defaultInputs).map(field => (
-                      <td key={field}>
-                        {field === 'product_image' && product[field] ? (
-                          <img src={`http://localhost:5000${product[field]}`} alt="product" width="60" />
-                        ) : field === 'supplier_name' ? (
-                          product[field]?.supplier_brandname || 'N/A'
-                        ) : (
-                          product[field] || 'N/A'
-                        )}
-                      </td>
-                    ))}
-                    <td className="actions-cell">
-                      <button className="action-btn edit-btn" onClick={() => startEdit(product)} title="Edit Supply Product">
-                        ✏️
-                      </button>
-                      <button className="action-btn delete-btn" onClick={() => handleDeleteSupplyProduct(product._id)} title="Delete Supply Product">
-                        🗑️
-                      </button>
-                      <button className="action-btn download-btn" onClick={() => handleDownloadSingle(product)} title="Download Supply Product Report">
-                        📄
-                      </button>
-                    </td>
-                  </>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {filteredSupplyProducts.length === 0 && (
-          <div className="no-users-message">
-            <p>📭 No supply products found matching your search criteria.</p>
-            {searchTerm && (
-              <button className="clear-search-btn" onClick={() => setSearchTerm('')}>
-                Clear Search
-              </button>
-            )}
+        <button className="add-user-toggle" onClick={() => setShowAddForm(!showAddForm)}>
+          {showAddForm ? '✕ Hide Add Supply Product Form' : '➕ Show Add Supply Product Form'}
+        </button>
+        {showAddForm && (
+          <div className="add-user-container">
+            <h3>📝 Add New Supply Product</h3>
+            <form className="add-user-form" onSubmit={handleAddSupplyProduct}>
+              <div className="form-group">
+                <input
+                  type="text"
+                  placeholder="Serial Number"
+                  value={inputs.serial_number}
+                  onChange={handleSerialNumber}
+                  onKeyPress={(e) => handleKeyPress(e, 'serial_number')}
+                  required
+                />
+                {errors.serial_number && <p className="error">{errors.serial_number}</p>}
+              </div>
+              <div className="form-group">
+                <select value={inputs.supplier_name} onChange={handleSupplierName} required>
+                  <option value="" disabled>Select Supplier</option>
+                  {suppliers.map((supplier) => (
+                    <option key={supplier._id} value={supplier._id}>
+                      {supplier.supplier_brandname}
+                    </option>
+                  ))}
+                </select>
+                {errors.supplier_name && <p className="error">{errors.supplier_name}</p>}
+              </div>
+              <div className="form-group">
+                <input
+                  type="text"
+                  placeholder="Product Item"
+                  value={inputs.product_item}
+                  onChange={handleProductItem}
+                  onKeyPress={(e) => handleKeyPress(e, 'product_item')}
+                  required
+                />
+                {errors.product_item && <p className="error">{errors.product_item}</p>}
+              </div>
+              <div className="form-group">
+                <input
+                  type="text"
+                  placeholder="Quantity"
+                  value={inputs.quantity}
+                  onChange={handleQuantity}
+                  onKeyPress={(e) => handleKeyPress(e, 'quantity')}
+                  required
+                />
+                {errors.quantity && <p className="error">{errors.quantity}</p>}
+              </div>
+              <div className="form-group">
+                <input type="file" onChange={handleProductImage} />
+                {errors.product_image && <p className="error">{errors.product_image}</p>}
+              </div>
+              <div className="form-group">
+                <input
+                  type="text"
+                  placeholder="Unit Price"
+                  value={inputs.unit_price}
+                  onChange={handleUnitPrice}
+                  onKeyPress={(e) => handleKeyPress(e, 'unit_price')}
+                  required
+                />
+                {errors.unit_price && <p className="error">{errors.unit_price}</p>}
+              </div>
+              <button type="submit" className="submit-btn">Add Supply Product</button>
+              {errors.submit && <p className="error">{errors.submit}</p>}
+            </form>
           </div>
         )}
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="🔍 Search by Product Item..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="download-options professional-section">
+          <h3>📄 Official Report Generation</h3>
+          <p>Select the fields to include in your official report:</p>
+          <div className="field-checkboxes">
+            {Object.keys(selectedFields).map((field) => (
+              <label key={field} className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={selectedFields[field]}
+                  onChange={() => setSelectedFields((prev) => ({ ...prev, [field]: !prev[field] }))}
+                />
+                <span>{field.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}</span>
+              </label>
+            ))}
+          </div>
+          <div className="download-buttons">
+            <button className="download-all-btn" onClick={handleDownloadAll}>
+              📊 Download Directory ({supplyProducts.length} products)
+            </button>
+            <p className="download-note">
+              Reports include official letterhead with {companyInfo.name} branding and contact details.
+            </p>
+          </div>
+        </div>
+        <div className="users-table-container">
+          <div className="table-header">
+            <span className="table-user-count">📦 Total Supply Products: {supplyProducts.length}</span>
+            <span className="filtered-count">
+              {searchTerm && `(Showing ${filteredSupplyProducts.length} filtered results)`}
+            </span>
+          </div>
+          <table className="users-table">
+            <thead>
+              <tr>
+                <th>Product ID</th>
+                {Object.keys(defaultInputs).map((field) => (
+                  <th key={field}>{field.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}</th>
+                ))}
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredSupplyProducts.map((product) => (
+                <tr key={product._id}>
+                  {editingProductId === product._id ? (
+                    <td colSpan={Object.keys(defaultInputs).length + 2}>
+                      <div className="update-user-container">
+                        <h1>✏️ Update Supply Product Information</h1>
+                        <form onSubmit={handleUpdateSupplyProduct}>
+                          <div className="form-group">
+                            <input
+                              type="text"
+                              placeholder="Serial Number"
+                              value={editInputs.serial_number}
+                              onChange={handleEditSerialNumber}
+                              onKeyPress={(e) => handleKeyPress(e, 'serial_number')}
+                              required
+                            />
+                            {errors.serial_number && <p className="error">{errors.serial_number}</p>}
+                          </div>
+                          <div className="form-group">
+                            <select value={editInputs.supplier_name} onChange={handleEditSupplierName} required>
+                              <option value="" disabled>Select Supplier</option>
+                              {suppliers.map((supplier) => (
+                                <option key={supplier._id} value={supplier._id}>
+                                  {supplier.supplier_brandname}
+                                </option>
+                              ))}
+                            </select>
+                            {errors.supplier_name && <p className="error">{errors.supplier_name}</p>}
+                          </div>
+                          <div className="form-group">
+                            <input
+                              type="text"
+                              placeholder="Product Item"
+                              value={editInputs.product_item}
+                              onChange={handleEditProductItem}
+                              onKeyPress={(e) => handleKeyPress(e, 'product_item')}
+                              required
+                            />
+                            {errors.product_item && <p className="error">{errors.product_item}</p>}
+                          </div>
+                          <div className="form-group">
+                            <input
+                              type="text"
+                              placeholder="Quantity"
+                              value={editInputs.quantity}
+                              onChange={handleEditQuantity}
+                              onKeyPress={(e) => handleKeyPress(e, 'quantity')}
+                              required
+                            />
+                            {errors.quantity && <p className="error">{errors.quantity}</p>}
+                          </div>
+                          <div className="form-group">
+                            <input type="file" onChange={handleEditProductImage} />
+                            {errors.product_image && <p className="error">{errors.product_image}</p>}
+                          </div>
+                          <div className="form-group">
+                            <input
+                              type="text"
+                              placeholder="Unit Price"
+                              value={editInputs.unit_price}
+                              onChange={handleEditUnitPrice}
+                              onKeyPress={(e) => handleKeyPress(e, 'unit_price')}
+                              required
+                            />
+                            {errors.unit_price && <p className="error">{errors.unit_price}</p>}
+                          </div>
+                          <button type="submit" className="submit-btn">✅ Update Supply Product</button>
+                          <button
+                            type="button"
+                            className="cancel-button"
+                            onClick={() => setEditingProductId(null)}
+                          >
+                            ❌ Cancel
+                          </button>
+                          {errors.submit && <p className="error">{errors.submit}</p>}
+                        </form>
+                      </div>
+                    </td>
+                  ) : (
+                    <>
+                      <td>{product.pid || 'N/A'}</td>
+                      {Object.keys(defaultInputs).map((field) => (
+                        <td key={field}>
+                          {field === 'product_image' && product[field] ? (
+                            <img src={`http://localhost:5000${product[field]}`} alt="product" width="60" />
+                          ) : field === 'supplier_name' ? (
+                            product[field]?.supplier_brandname || 'N/A'
+                          ) : (
+                            product[field] || 'N/A'
+                          )}
+                        </td>
+                      ))}
+                      <td className="actions-cell">
+                        <button
+                          className="action-btn edit-btn"
+                          onClick={() => startEdit(product)}
+                          title="Edit Supply Product"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          className="action-btn delete-btn"
+                          onClick={() => handleDeleteSupplyProduct(product._id)}
+                          title="Delete Supply Product"
+                        >
+                          🗑️
+                        </button>
+                        <button
+                          className="action-btn download-btn"
+                          onClick={() => handleDownloadSingle(product)}
+                          title="Download Supply Product Report"
+                        >
+                          📄
+                        </button>
+                      </td>
+                    </>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {filteredSupplyProducts.length === 0 && (
+            <div className="no-users-message">
+              <p>📭 No supply products found matching your search criteria.</p>
+              {searchTerm && (
+                <button className="clear-search-btn" onClick={() => setSearchTerm('')}>
+                  Clear Search
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

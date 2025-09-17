@@ -1,33 +1,307 @@
-/* src/Components/Nav/Nav.css */
+/* Nav.css - Professional Sidebar Design for SelfMe */
 
-.home-ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 10px;
-  background-color: #333;
+/* Sidebar Container */
+.sidebar {
+  width: 195px;
+  background: linear-gradient(180deg, #4b0082 0%, #6a5acd 50%, #00b4d8 100%);
+  color: white;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
   display: flex;
-  justify-content: space-around;
-  width: 100%;
-  box-sizing: border-box;
+  flex-direction: column;
+  padding: 20px;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.home-li {
-  display: inline-block;
+/* Sidebar Header */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px 0;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
 }
 
-.home-a {
+.sidebar-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  object-fit: contain;
+  background: white;
+  padding: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+  letter-spacing: 1px;
+}
+
+.sidebar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 20px;
+  transition: all 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+  transform: rotate(90deg);
+}
+
+/* Sidebar Menu */
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  flex-grow: 1;
+}
+
+.sidebar-menu li {
+  margin-bottom: 10px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 20px;
   color: white;
   text-decoration: none;
-  font-size: 20px;
-  padding: 10px 20px;
-  display: block;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-radius: 10px;
+  transition: all 0.3s ease;
 }
 
-.home-a:hover {
-  color: #ffcc00;
+.sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.active {
-  background-color: #555;
-  border-radius: 5px;
+.sidebar-link.active {
+  background: linear-gradient(135deg, #00b4d8, #0096c7);
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4);
+}
+
+.sidebar-link .icon {
+  font-size: 1.3rem;
+}
+
+.sidebar-link .text {
+  flex-grow: 1;
+}
+
+/* User Info Section */
+.sidebar-user-info {
+  padding: 15px 0;
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.user-name {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: white;
+  text-align: center;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.logout-btn:hover {
+  background: linear-gradient(135deg, #c82333, #b21f2d);
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+}
+
+.logout-btn .icon {
+  font-size: 1.3rem;
+}
+
+.logout-btn .text {
+  flex-grow: 1;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+  padding: 15px 0;
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.sidebar-footer p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  font-weight: 300;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 70px;
+    padding: 10px;
+  }
+
+  .sidebar.open {
+    width: 250px;
+  }
+
+  .sidebar-title,
+  .sidebar-link .text,
+  .sidebar-user-info .user-name,
+  .logout-btn .text,
+  .sidebar-footer {
+    display: none;
+  }
+
+  .sidebar.open .sidebar-title,
+  .sidebar.open .sidebar-link .text,
+  .sidebar.open .sidebar-user-info .user-name,
+  .sidebar.open .logout-btn .text,
+  .sidebar.open .sidebar-footer {
+    display: block;
+  }
+
+  .sidebar-logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .sidebar-toggle {
+    display: block;
+  }
+
+  .sidebar-link,
+  .logout-btn {
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .sidebar.open .sidebar-link,
+  .sidebar.open .logout-btn {
+    justify-content: flex-start;
+    padding: 15px 20px;
+  }
+
+  .sidebar-link .icon,
+  .logout-btn .icon {
+    font-size: 1.5rem;
+  }
+
+  .sidebar-user-info {
+    align-items: center;
+  }
+
+  .logout-btn {
+    width: auto;
+    padding: 10px;
+  }
+
+  .sidebar.open .logout-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .sidebar {
+    width: 60px;
+  }
+
+  .sidebar.open {
+    width: 220px;
+  }
+
+  .sidebar-logo {
+    width: 35px;
+    height: 35px;
+  }
+
+  .sidebar-link,
+  .logout-btn {
+    padding: 8px;
+  }
+
+  .sidebar.open .sidebar-link,
+  .sidebar.open .logout-btn {
+    padding: 12px 15px;
+  }
+}
+
+/* Adjust Main Content to Account for Sidebar */
+@media (min-width: 769px) {
+  .users-section,
+  .supply-products-section {
+    margin-left: 300px; /* Adjust for sidebar width + padding */
+  }
+}
+
+@media (max-width: 768px) {
+  .users-section,
+  .supply-products-section {
+    margin-left: 90px; /* Adjust for collapsed sidebar */
+  }
+
+  .sidebar.open + .users-section,
+  .sidebar.open + .supply-products-section {
+    margin-left: 270px;
+  }
+}
+
+@media (max-width: 576px) {
+  .users-section,
+  .supply-products-section {
+    margin-left: 80px;
+  }
+
+  .sidebar.open + .users-section,
+  .sidebar.open + .supply-products-section {
+    margin-left: 240px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .sidebar {
+    display: none !important;
+  }
+
+  .users-section,
+  .supply-products-section {
+    margin-left: 0 !important;
+  }
 }
