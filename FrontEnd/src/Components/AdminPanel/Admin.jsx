@@ -1,12 +1,22 @@
-import React from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../utils/auth';
-import "./Admin.css";
+import '../Nav/Nav';
 
 function Admin() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
   const firstName = authUser.firstName || 'Admin';
+
+  const companyInfo = {
+    name: 'SelfMe',
+    logo: '/newLogo.png', // Logo from Nav.js
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   const handleLogout = () => {
     removeAuthToken();
@@ -17,38 +27,76 @@ function Admin() {
   return (
     <div className="home-container admin">
       {/* Left Sidebar */}
-      <div className="sidebar">
+      <nav className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
-          <h2 className="sidebar-title">Solar ERP</h2>
-          <p className="sidebar-subtitle">Admin Panel</p>
+          <img 
+            src={companyInfo.logo} 
+            alt={`${companyInfo.name} Logo`} 
+            className="sidebar-logo" 
+          />
+          <div>
+            <h2 className="sidebar-title">{companyInfo.name}</h2>
+            <p className="sidebar-subtitle">Admin Panel</p>
+          </div>
+          <button className="sidebar-toggle" onClick={toggleSidebar}>
+            {isSidebarOpen ? '✕' : '☰'}
+          </button>
         </div>
 
-        <nav>
-          <ul className="sidebar-nav">
-            <li>
-              <Link to="/SupplyRequest">
-                <span className="nav-icon">📋</span>
-                <span className="nav-text">Supply Request</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/SupplyProducts">
-                <span className="nav-icon">📦</span>
-                <span className="nav-text">Supply Products</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/AllUsers">
-                <span className="nav-icon">👥</span>
-                <span className="nav-text">Users</span>
-              </Link>
-            </li>
-          </ul>
-        </nav>
+        <ul className="sidebar-menu">
+          <li>
+            <NavLink
+              to="/mainAdminhome"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="Admin Home"
+            >
+              <span className="icon">🏠</span>
+              <span className="text">Admin Home</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/SupplyRequest"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="Supply Request Management"
+            >
+              <span className="icon">📋</span>
+              <span className="text">Supply Request</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/SupplyProducts"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="Supply Product Management"
+            >
+              <span className="icon">📦</span>
+              <span className="text">Supply Products</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/AllUsers"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="User Management"
+            >
+              <span className="icon">👥</span>
+              <span className="text">User Management</span>
+            </NavLink>
+          </li>
+        </ul>
 
+        <div className="sidebar-user-info">
+         
+          <button className="logout-btn" onClick={handleLogout}>
+            <span className="icon">🚪</span>
+            <span className="text">Logout</span>
+          </button>
+        </div>
         <div className="sidebar-footer">
+          <p>© {new Date().getFullYear()} {companyInfo.name}</p>
         </div>
-      </div>
+      </nav>
 
       {/* Main Content Area */}
       <div className="main-content">
@@ -56,34 +104,31 @@ function Admin() {
           <div className="dashboard-header">
             <div>
               <h1 className="dashboard-title">Administrator Dashboard</h1>
-              <p className="dashboard-subtitle">Welcome to Solar ERP Admin Panel</p>
+              <p className="dashboard-subtitle">Welcome to {companyInfo.name} Admin Panel</p>
             </div>
             <div className="user-info">
               <span className="user-name">Welcome, {firstName}</span>
-              <button className="logout-btn" onClick={handleLogout}>
-                Logout
-              </button>
             </div>
           </div>
           
           <div className="card-grid">
             <div className="card">
-              <Link to="/SupplyRequest" className="activehome">
+              <NavLink to="/SupplyRequest" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
                 <h2>Supply Request</h2>
                 <p>Streamline supply orders, track requests, and manage inventory efficiently.</p>
-              </Link>
+              </NavLink>
             </div>
             <div className="card">
-              <Link to="/SupplyProducts" className="activehome">
+              <NavLink to="/SupplyProducts" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
                 <h2>Supply Products</h2>
                 <p>Manage supply product inventory and details.</p>
-              </Link>
+              </NavLink>
             </div>
             <div className="card">
-              <Link to="/AllUsers" className="activehome">
+              <NavLink to="/AllUsers" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
                 <h2>Users</h2>
                 <p>Manage all users and their details.</p>
-              </Link>
+              </NavLink>
             </div>
             <div className="card">
               <h2>Test1</h2>
