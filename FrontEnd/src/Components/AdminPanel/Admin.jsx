@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../utils/auth';
 import '../Nav/Nav';
+import './Admin.css';
 
 function Admin() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
