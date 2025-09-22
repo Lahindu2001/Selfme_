@@ -1,29 +1,25 @@
+// 8) update nav.jsx
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../utils/auth';
 import './Nav.css';
-
 function Nav() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
   const firstName = authUser.firstName || 'Admin';
-
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
   const handleLogout = () => {
     removeAuthToken();
     localStorage.removeItem('authUser');
     navigate('/login');
   };
-
   const companyInfo = {
     name: 'SelfMe',
     logo: '/newLogo.png', // Ensure this logo exists in the public directory
   };
-
   return (
     <nav className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
       <div className="sidebar-header">
@@ -74,6 +70,16 @@ function Nav() {
             <span className="text">User Management</span>
           </NavLink>
         </li>
+        <li>
+          <NavLink
+            to="/AllFeedback"
+            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+            title="Feedback Management"
+          >
+            <span className="icon">💬</span>
+            <span className="text">All Feedback</span>
+          </NavLink>
+        </li>
       </ul>
       <div className="sidebar-user-info">
         <span className="user-name">Welcome, {firstName}</span>
@@ -88,5 +94,4 @@ function Nav() {
     </nav>
   );
 }
-
 export default Nav;

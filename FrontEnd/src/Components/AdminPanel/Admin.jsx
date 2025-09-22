@@ -1,39 +1,35 @@
+// 7) update admin.jsx
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../utils/auth';
 import '../Nav/Nav';
 import './Admin.css';
-
 function Admin() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
   const firstName = authUser.firstName || 'Admin';
-
   const companyInfo = {
     name: 'SelfMe',
     logo: '/newLogo.png', // Logo from Nav.js
   };
-
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
   const handleLogout = () => {
     removeAuthToken();
     localStorage.removeItem('authUser');
     navigate('/login');
   };
-
   return (
     <div className="home-container admin">
       {/* Left Sidebar */}
       <nav className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
-          <img 
-            src={companyInfo.logo} 
-            alt={`${companyInfo.name} Logo`} 
-            className="sidebar-logo" 
+          <img
+            src={companyInfo.logo}
+            alt={`${companyInfo.name} Logo`}
+            className="sidebar-logo"
           />
           <div>
             <h2 className="sidebar-title">{companyInfo.name}</h2>
@@ -43,7 +39,6 @@ function Admin() {
             {isSidebarOpen ? '✕' : '☰'}
           </button>
         </div>
-
         <ul className="sidebar-menu">
           <li>
             <NavLink
@@ -85,10 +80,19 @@ function Admin() {
               <span className="text">User Management</span>
             </NavLink>
           </li>
+          <li>
+            <NavLink
+              to="/AllFeedback"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="Feedback Management"
+            >
+              <span className="icon">💬</span>
+              <span className="text">All Feedback</span>
+            </NavLink>
+          </li>
         </ul>
-
         <div className="sidebar-user-info">
-         
+        
           <button className="logout-btn" onClick={handleLogout}>
             <span className="icon">🚪</span>
             <span className="text">Logout</span>
@@ -98,7 +102,6 @@ function Admin() {
           <p>© {new Date().getFullYear()} {companyInfo.name}</p>
         </div>
       </nav>
-
       {/* Main Content Area */}
       <div className="main-content">
         <div className="dashboard">
@@ -111,7 +114,7 @@ function Admin() {
               <span className="user-name">Welcome, {firstName}</span>
             </div>
           </div>
-          
+         
           <div className="card-grid">
             <div className="card">
               <NavLink to="/SupplyRequest" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
@@ -132,6 +135,12 @@ function Admin() {
               </NavLink>
             </div>
             <div className="card">
+              <NavLink to="/AllFeedback" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
+                <h2>All Feedback</h2>
+                <p>Manage all feedbacks and replies.</p>
+              </NavLink>
+            </div>
+            <div className="card">
               <h2>Test1</h2>
               <p>Test1</p>
             </div>
@@ -141,5 +150,4 @@ function Admin() {
     </div>
   );
 }
-
 export default Admin;
