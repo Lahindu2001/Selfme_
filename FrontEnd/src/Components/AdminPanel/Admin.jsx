@@ -90,9 +90,19 @@ function Admin() {
               <span className="text">All Feedback</span>
             </NavLink>
           </li>
+          <li>
+            <NavLink
+              to="/AllEmployees"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="Employee Management"
+            >
+              <span className="icon">👥</span>
+              <span className="text">All Employees</span>
+            </NavLink>
+          </li>
         </ul>
         <div className="sidebar-user-info">
-        
+       
           <button className="logout-btn" onClick={handleLogout}>
             <span className="icon">🚪</span>
             <span className="text">Logout</span>
@@ -114,7 +124,7 @@ function Admin() {
               <span className="user-name">Welcome, {firstName}</span>
             </div>
           </div>
-         
+        
           <div className="card-grid">
             <div className="card">
               <NavLink to="/SupplyRequest" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
@@ -138,6 +148,12 @@ function Admin() {
               <NavLink to="/AllFeedback" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
                 <h2>All Feedback</h2>
                 <p>Manage all feedbacks and replies.</p>
+              </NavLink>
+            </div>
+            <div className="card">
+              <NavLink to="/AllEmployees" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
+                <h2>All Employees</h2>
+                <p>View all employee details.</p>
               </NavLink>
             </div>
             <div className="card">

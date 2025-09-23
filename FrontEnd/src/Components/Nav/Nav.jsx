@@ -80,6 +80,16 @@ function Nav() {
             <span className="text">All Feedback</span>
           </NavLink>
         </li>
+        <li>
+          <NavLink
+            to="/AllEmployees"
+            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+            title="Employee Management"
+          >
+            <span className="icon">👥</span>
+            <span className="text">All Employees</span>
+          </NavLink>
+        </li>
       </ul>
       <div className="sidebar-user-info">
         <span className="user-name">Welcome, {firstName}</span>

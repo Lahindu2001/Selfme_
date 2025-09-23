@@ -6,6 +6,7 @@ const supplyProductsRouter = require("./Routes/AdminandSupplyRoutes/supplyProduc
 const userRouter = require("./Routes/AdminandSupplyRoutes/userRoutes");
 const authRouter = require("./Routes/AuthRoutes");
 const allFeedbackRouter = require("./Routes/AdminandSupplyRoutes/AllFeedbackRoutes"); // Added
+const allEmployeeRouter = require("./Routes/AdminandSupplyRoutes/AllEmployeeRoutes"); // Added
 const path = require("path");
 const fs = require("fs");
 const cors = require("cors");
@@ -26,6 +27,7 @@ app.use("/supply-products", supplyProductsRouter);
 app.use("/all-users", userRouter);
 app.use("/auth", authRouter);
 app.use("/all-feedback", allFeedbackRouter); // Added
+app.use("/all-employees", allEmployeeRouter); // Added
 // ------------------- DATABASE -------------------
 mongoose
   .connect("mongodb+srv://admin:M8jreHLM0FG5ZEGi@cluster1.lmzaxue.mongodb.net/")

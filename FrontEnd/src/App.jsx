@@ -8,6 +8,7 @@ import SupplyRequest from "./Components/AdminPanel/SupplyRequest/SupplyRequest";
 import SupplyProducts from "./Components/AdminPanel/SupplyProducts/supplyProducts";
 import AllUser from "./Components/AdminPanel/AllUser/AllUser";
 import AllFeedback from "./Components/AdminPanel/AllFeedback/AllFeedback"; // Added
+import AllEmployee from "./Components/AdminPanel/AllEmployee/AllEmployee"; // Added
 import Login from "./Components/Auth/Login";
 import Signup from "./Components/Auth/Signup";
 import FinanceManager from "./Components/FinanceManager/FinanceManager";
@@ -43,6 +44,10 @@ function App() {
         <Route
           path="/AllFeedback"
           element={isAuthenticated() ? <AllFeedback /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/AllEmployees"
+          element={isAuthenticated() ? <AllEmployee /> : <Navigate to="/login" />}
         />
         <Route
           path="/FinanceManager"
