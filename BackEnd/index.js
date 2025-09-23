@@ -28,7 +28,7 @@ app.use("/auth", authRouter);
 app.use("/all-feedback", allFeedbackRouter); // Added
 // ------------------- DATABASE -------------------
 mongoose
-  .connect("mongodb+srv://admin:5ujIqBeOwJYjq1hM@cluster1.lmzaxue.mongodb.net/")
+  .connect("mongodb+srv://admin:M8jreHLM0FG5ZEGi@cluster1.lmzaxue.mongodb.net/")
   .then(() => console.log("✅ Connected to MongoDB"))
   .then(() => {
     app.listen(5000, () => console.log("🚀 Server running on port 5000"));
