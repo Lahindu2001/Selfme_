@@ -1,36 +1,39 @@
+/* admin.css - Admin Dashboard Styling with Consistent Color Palette and Updated Card Grid Padding */
+
 /* Main Container */
 .admin .home-container {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Updated to match Nav.css */
-  background-color: #f4f6f9; /* Light background for contrast */
+  font-family: 'poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
 }
 
-/* Left Sidebar Navigation */
+/* Sidebar Container */
 .admin .sidebar {
   width: 195px;
-  background: linear-gradient(180deg, #4b0082 0%, #6a5acd 50%, #00b4d8 100%); /* Matches Nav.css gradient */
-  color: #ffffff;
-  padding: 20px;
-  position: fixed;
+  background: linear-gradient(180deg, #2e7d32 0%, #81c784 50%, #66bb6a 100%);
+  color: white;
   height: 100vh;
-  left: 0;
+  position: fixed;
   top: 0;
-  overflow-y: auto;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
   z-index: 1000;
-  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2); /* Matches Nav.css */
-  transition: all 0.3s ease; /* Matches Nav.css */
 }
 
 /* Sidebar Header */
 .admin .sidebar-header {
   display: flex;
   align-items: center;
-  gap: 15px; /* Matches Nav.css */
+  gap: 15px;
   padding: 20px 0;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2); /* Matches Nav.css */
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
   position: relative;
 }
 
@@ -41,21 +44,20 @@
   object-fit: contain;
   background: white;
   padding: 5px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Matches Nav.css */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .admin .sidebar-title {
-  font-size: 1.8rem; /* Matches Nav.css */
+  font-size: 1.8rem;
   font-weight: 700;
-  color: #ffffff;
   margin: 0;
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4); /* Matches Nav.css */
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
   letter-spacing: 1px;
 }
 
 .admin .sidebar-subtitle {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.8); /* Matches Nav.css */
+  font-size: 0.75rem;
+  color: #a8e6cf;
   margin: 0;
 }
 
@@ -69,64 +71,64 @@
   position: absolute;
   right: 15px;
   top: 20px;
-  transition: all 0.3s ease; /* Matches Nav.css */
+  transition: all 0.3s ease;
 }
 
 .admin .sidebar-toggle:hover {
-  transform: rotate(90deg); /* Matches Nav.css */
+  transform: rotate(90deg);
 }
 
 /* Sidebar Menu */
 .admin .sidebar-menu {
   list-style: none;
   padding: 0;
-  margin: 20px 0; /* Matches Nav.css */
+  margin: 20px 0;
   flex-grow: 1;
 }
 
 .admin .sidebar-menu li {
-  margin-bottom: 10px; /* Matches Nav.css */
+  margin-bottom: 10px;
 }
 
 .admin .sidebar-link {
   display: flex;
   align-items: center;
-  gap: 15px; /* Matches Nav.css */
+  gap: 15px;
   padding: 15px 20px;
-  color: rgba(255, 255, 255, 0.8);
+  color: #a8e6cf;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 100;
-  border-radius: 10px; /* Matches Nav.css */
-  transition: all 0.3s ease; /* Matches Nav.css */
+  border-radius: 10px;
+  transition: all 0.3s ease;
 }
 
 .admin .sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.1); /* Matches Nav.css */
-  color: #ffffff;
-  transform: translateX(5px); /* Matches Nav.css */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Matches Nav.css */
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .admin .sidebar-link.active {
-  background: linear-gradient(135deg, #00b4d8, #0096c7); /* Matches Nav.css */
-  color: #ffffff;
+  background: linear-gradient(135deg, #66bb6a, #81c784);
+  color: #1b5e20;
   font-weight: 700;
-  box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4); /* Matches Nav.css */
+  box-shadow: 0 4px 15px rgba(102, 187, 106, 0.4);
 }
 
 .admin .sidebar-link .icon {
-  font-size: 1.3rem; /* Matches Nav.css */
+  font-size: 1.3rem;
 }
 
 .admin .sidebar-link .text {
-  flex-grow: 1; /* Matches Nav.css */
+  flex-grow: 1;
 }
 
 /* Sidebar User Info */
 .admin .sidebar-user-info {
   padding: 15px 0;
-  border-top: 2px solid rgba(255, 255, 255, 0.2); /* Matches Nav.css */
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -135,62 +137,63 @@
 .admin .sidebar-user-info .user-name {
   font-size: 1.1rem;
   font-weight: 500;
-  color: #ffffff;
+  color: white;
   text-align: center;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); /* Matches Nav.css */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
+/* Logout Button */
 .admin .logout-btn {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #dc3545, #c82333); /* Matches Nav.css */
-  color: #ffffff;
+  background: linear-gradient(135deg, #d90000, #ff0000);
+  color: white;
   border: none;
   border-radius: 10px;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
-  transition: all 0.3s ease; /* Matches Nav.css */
+  transition: all 0.3s ease;
   width: 100%;
   text-align: left;
 }
 
 .admin .logout-btn:hover {
-  background: linear-gradient(135deg, #c82333, #b21f2d); /* Matches Nav.css */
-  transform: translateX(5px); /* Matches Nav.css */
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4); /* Matches Nav.css */
+  background: linear-gradient(135deg, #a81919, #d20a0a);
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
 }
 
 .admin .logout-btn .icon {
-  font-size: 1.3rem; /* Matches Nav.css */
+  font-size: 1.3rem;
 }
 
 .admin .logout-btn .text {
-  flex-grow: 1; /* Matches Nav.css */
+  flex-grow: 1;
 }
 
 /* Sidebar Footer */
 .admin .sidebar-footer {
   padding: 15px 0;
-  border-top: 2px solid rgba(255, 255, 255, 0.2); /* Matches Nav.css */
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
   text-align: center;
 }
 
 .admin .sidebar-footer p {
   margin: 0;
   font-size: 0.9rem;
-  opacity: 0.8;
-  font-weight: 300; /* Matches Nav.css */
+  color: #a8e6cf;
+  font-weight: 300;
 }
 
 /* Main Content Area */
 .admin .main-content {
-  margin-left: 260px;
-  flex: 1;
-  padding: 100px;
+  margin-left: 20px;
+  padding: 30px;
   min-height: 100vh;
+  transition: margin-left 0.3s ease;
 }
 
 /* Dashboard Styling */
@@ -206,20 +209,20 @@
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 20px;
-  border-bottom: 2px solid rgba(0, 180, 216, 0.2); /* Matches Nav.css accent */
+  border-bottom: 2px solid rgba(102, 187, 106, 0.2);
 }
 
 .admin .dashboard-title {
-  font-size: 28px;
-  font-weight: bold;
-  color: #4b0082; /* Matches Nav.css gradient start */
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #080808;
   margin-bottom: 5px;
   text-align: left;
 }
 
 .admin .dashboard-subtitle {
-  font-size: 16px;
-  color: #6a5acd; /* Matches Nav.css gradient middle */
+  font-size: 1rem;
+  color: #4a5568;
   margin-bottom: 0;
   text-align: left;
 }
@@ -231,9 +234,9 @@
   gap: 15px;
 }
 
-.admin .user-name {
-  font-size: 14px;
-  color: #4b0082; /* Matches Nav.css gradient start */
+.admin .user-info .user-name {
+  font-size: 0.875rem;
+  color: #2e7d32;
   font-weight: 500;
 }
 
@@ -242,19 +245,20 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
+  padding: 20px;
 }
 
 /* Individual Card Styling */
 .admin .card {
-  background-color: #ffffff;
+  background-color: white;
   padding: 24px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Matches Nav.css shadow */
-  transition: all 0.3s ease; /* Matches Nav.css transition */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  border: 2px solid transparent; /* Added for gradient border effect */
+  border: 2px solid transparent;
 }
 
 .admin .card::before {
@@ -263,8 +267,8 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 4px; /* Slightly thicker to match Nav.css emphasis */
-  background: linear-gradient(90deg, #4b0082, #6a5acd, #00b4d8); /* Matches Nav.css gradient */
+  height: 4px;
+  background: linear-gradient(90deg, #2e7d32, #81c784);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.3s ease;
@@ -276,21 +280,20 @@
 
 .admin .card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 8px 24px rgba(0, 180, 216, 0.4); /* Matches Nav.css active shadow */
-  border: 2px solid #00b4d8; /* Accent border for hover */
+  box-shadow: 0 8px 24px rgba(102, 187, 106, 0.4);
+  border: 2px solid #81c784;
 }
 
 .admin .card h2 {
-  font-size: 22px;
+  font-size: 1.375rem;
   margin-bottom: 12px;
-  color: #4b0082; /* Matches Nav.css gradient start */
-  font-weight: 700; /* Matches Nav.css bold style */
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); /* Matches Nav.css text-shadow */
+  color: #000000;
+  font-weight: 700;
 }
 
 .admin .card p {
-  font-size: 14px;
-  color: #6a5acd; /* Matches Nav.css gradient middle */
+  font-size: 0.875rem;
+  color: #4a5568;
   line-height: 1.5;
   margin: 0;
 }
@@ -310,22 +313,22 @@
 }
 
 .admin .card a.active {
-  background: linear-gradient(135deg, #00b4d8, #0096c7); /* Matches Nav.css active link */
-  color: #ffffff;
+  background: linear-gradient(135deg, #66bb6a, #81c784);
+  color: #1b5e20;
   font-weight: 700;
-  padding: 10px; /* Added for active state */
-  border-radius: 8px; /* Matches Nav.css link border-radius */
+  padding: 10px;
+  border-radius: 8px;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .admin .sidebar {
-    width: 70px; /* Matches Nav.css collapsed width */
+    width: 70px;
     padding: 10px;
   }
 
   .admin .sidebar.open {
-    width: 250px; /* Matches Nav.css open width */
+    width: 250px;
   }
 
   .admin .sidebar-title,
@@ -352,7 +355,7 @@
   }
 
   .admin .sidebar-toggle {
-    display: block; /* Matches Nav.css */
+    display: block;
   }
 
   .admin .sidebar-link,
@@ -369,7 +372,7 @@
 
   .admin .sidebar-link .icon,
   .admin .logout-btn .icon {
-    font-size: 1.5rem; /* Matches Nav.css */
+    font-size: 1.5rem;
   }
 
   .admin .sidebar-user-info {
@@ -386,12 +389,12 @@
   }
 
   .admin .main-content {
-    margin-left: 90px; /* Matches Nav.css collapsed margin */
+    margin-left: 90px;
     padding: 15px;
   }
 
   .admin .sidebar.open + .main-content {
-    margin-left: 270px; /* Matches Nav.css open margin */
+    margin-left: 270px;
   }
 
   .admin .dashboard-header {
@@ -406,29 +409,30 @@
   }
 
   .admin .dashboard-title {
-    font-size: 28px;
+    font-size: 1.5rem;
   }
 
   .admin .dashboard-subtitle {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
 
   .admin .card-grid {
     grid-template-columns: 1fr;
     gap: 16px;
+    padding: 15px;
   }
 
   .admin .card {
     padding: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Lighter shadow for mobile */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   }
 
   .admin .card h2 {
-    font-size: 20px;
+    font-size: 1.25rem;
   }
 
   .admin .card p {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
 }
 
@@ -444,15 +448,16 @@
   }
 
   .admin .dashboard-title {
-    font-size: 24px;
+    font-size: 1.5rem;
   }
 
   .admin .dashboard-subtitle {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
 
   .admin .card-grid {
     grid-template-columns: 1fr;
+    padding: 10px;
   }
 
   .admin .card {
@@ -460,21 +465,21 @@
   }
 
   .admin .card h2 {
-    font-size: 18px;
+    font-size: 1.125rem;
   }
 
   .admin .card p {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
 }
 
 @media (max-width: 576px) {
   .admin .sidebar {
-    width: 60px; /* Matches Nav.css */
+    width: 60px;
   }
 
   .admin .sidebar.open {
-    width: 220px; /* Matches Nav.css */
+    width: 220px;
   }
 
   .admin .sidebar-logo {
@@ -493,11 +498,11 @@
   }
 
   .admin .main-content {
-    margin-left: 80px; /* Matches Nav.css */
+    margin-left: 80px;
   }
 
   .admin .sidebar.open + .main-content {
-    margin-left: 240px; /* Matches Nav.css */
+    margin-left: 240px;
   }
 }
 
@@ -511,7 +516,11 @@
   }
 
   .admin .dashboard-title {
-    font-size: 24px;
+    font-size: 1.5rem;
+  }
+
+  .admin .card-grid {
+    padding: 8px;
   }
 
   .admin .card {
@@ -519,7 +528,7 @@
   }
 
   .admin .card h2 {
-    font-size: 18px;
+    font-size: 1.125rem;
   }
 }
 
@@ -531,5 +540,6 @@
 
   .admin .main-content {
     margin-left: 0 !important;
+    padding: 0 !important;
   }
 }

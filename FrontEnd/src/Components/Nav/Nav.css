@@ -3,7 +3,7 @@
 /* Sidebar Container */
 .sidebar {
   width: 195px;
-  background: linear-gradient(180deg, #4b0082 0%, #6a5acd 50%, #00b4d8 100%);
+  background: linear-gradient(180deg, #2e7d32 0%, #81c784 50%, #66bb6a 100%);
   color: white;
   height: 100vh;
   position: fixed;
@@ -15,7 +15,7 @@
   box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
   z-index: 1000;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Sidebar Header */
@@ -80,7 +80,7 @@
   align-items: center;
   gap: 15px;
   padding: 15px 20px;
-  color: white;
+  color: #a8e6cf;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 100;
@@ -90,14 +90,16 @@
 
 .sidebar-link:hover {
   background: rgba(255, 255, 255, 0.1);
+  color: white;
   transform: translateX(5px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-link.active {
-  background: linear-gradient(135deg, #00b4d8, #0096c7);
+  background: linear-gradient(135deg, #66bb6a, #81c784);
+  color: #1b5e20;
   font-weight: 700;
-  box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4);
+  box-shadow: 0 4px 15px rgba(102, 187, 106, 0.4);
 }
 
 .sidebar-link .icon {
@@ -130,7 +132,7 @@
   align-items: center;
   gap: 10px;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #dc3545, #c82333);
+  background: linear-gradient(135deg, #d90000, #ff0000);
   color: white;
   border: none;
   border-radius: 10px;
@@ -143,9 +145,9 @@
 }
 
 .logout-btn:hover {
-  background: linear-gradient(135deg, #c82333, #b21f2d);
+   background: linear-gradient(135deg, #a81919, #d20a0a);
   transform: translateX(5px);
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
 }
 
 .logout-btn .icon {
@@ -168,6 +170,7 @@
   font-size: 0.9rem;
   opacity: 0.8;
   font-weight: 300;
+  color: #a8e6cf;
 }
 
 /* Responsive Design */

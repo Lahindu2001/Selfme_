@@ -1,12 +1,11 @@
-
 /* AllUser.css - Professional Design for AllUser Component Main Content */
 
 /* Main Content Container */
 .all-users-section {
   padding: 30px;
-  background: linear-gradient(135deg, #f5f6fa 0%, #e9ecef 100%);
+  background: linear-gradient(135deg, #f5f5f5 0%, #f8f8f8 100%);
   min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin-left: 210px; /* Matches sidebar width from Nav.css */
   transition: margin-left 0.3s ease;
 }
@@ -16,10 +15,10 @@
   text-align: center;
   margin: 20px 0 30px;
   padding: 30px 20px;
-  background: linear-gradient(135deg, #4b0082 0%, #6a5acd 50%, #00b4d8 100%);
+  background: linear-gradient(135deg, #2e7d32 0%, #81c784 50%, #66bb6a 100%);
   border-radius: 20px;
   color: white;
-  box-shadow: 0 10px 30px rgba(75, 0, 130, 0.4);
+  box-shadow: 0 10px 30px rgba(46, 125, 50, 0.4);
   position: relative;
   overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.2);
@@ -59,7 +58,7 @@
 
 /* Add User Toggle Button */
 .all-users-section .add-user-toggle {
-  background: linear-gradient(135deg, #4b0082, #6a5acd);
+  background: linear-gradient(135deg, #2e7d32, #81c784);
   color: white;
   border: none;
   padding: 12px 25px;
@@ -69,15 +68,15 @@
   cursor: pointer;
   margin-bottom: 20px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(75, 0, 130, 0.3);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
   text-transform: uppercase;
   letter-spacing: 0.8px;
 }
 
 .all-users-section .add-user-toggle:hover {
-  background: linear-gradient(135deg, #5a0a92, #7b6bd3);
+  background: linear-gradient(135deg, #1b5e20, #66bb6a);
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(75, 0, 130, 0.4);
+  box-shadow: 0 6px 15px rgba(46, 125, 50, 0.4);
 }
 
 .all-users-section .add-user-toggle:active {
@@ -86,8 +85,8 @@
 
 /* Form Container */
 .all-users-section .add-user-container {
-  background: linear-gradient(135deg, white, #f8f9fa);
-  border: 2px solid #e9ecef;
+  background: linear-gradient(135deg, white, #f8f8f8);
+  border: 2px solid #f8f8f8;
   border-radius: 12px;
   padding: 25px;
   margin: 20px 0;
@@ -103,11 +102,11 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #4b0082, #00b4d8);
+  background: linear-gradient(90deg, #2e7d32, #66bb6a);
 }
 
 .all-users-section .add-user-container h3 {
-  color: #4b0082;
+  color: #2e7d32;
   margin-bottom: 20px;
   font-size: 1.4rem;
   font-weight: 700;
@@ -130,7 +129,7 @@
 .all-users-section .form-group input,
 .all-users-section .form-group select {
   padding: 10px 14px;
-  border: 2px solid #ced4da;
+  border: 2px solid #f8f8f8;
   border-radius: 6px;
   font-size: 0.95rem;
   transition: all 0.3s ease;
@@ -140,8 +139,8 @@
 .all-users-section .form-group input:focus,
 .all-users-section .form-group select:focus {
   outline: none;
-  border-color: #00b4d8;
-  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.15);
+  border-color: #66bb6a;
+  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.15);
   transform: translateY(-1px);
 }
 
@@ -162,8 +161,8 @@
 
 .all-users-section .submit-btn {
   grid-column: 1 / -1;
-  background: linear-gradient(135deg, #198754, #20c997);
-  color: white;
+  background: linear-gradient(135deg, #66bb6a, #81c784);
+  color: #1b5e20;
   border: none;
   padding: 12px 25px;
   border-radius: 8px;
@@ -178,23 +177,23 @@
 }
 
 .all-users-section .submit-btn:hover {
-  background: linear-gradient(135deg, #157347, #1aa679);
+  background: linear-gradient(135deg, #81c784, #a8e6cf);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);
+  box-shadow: 0 4px 15px rgba(102, 187, 106, 0.3);
 }
 
 /* Update Form */
 .all-users-section .update-user-container {
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  background: linear-gradient(135deg, #f8f8f8, #f5f5f5);
   padding: 25px;
   border-radius: 10px;
   margin: 10px;
-  border: 2px solid #dee2e6;
+  border: 2px solid #f8f8f8;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .all-users-section .update-user-container h1 {
-  color: #4b0082;
+  color: #2e7d32;
   font-size: 1.4rem;
   margin-bottom: 20px;
   font-weight: 700;
@@ -212,7 +211,7 @@
 .all-users-section .update-user-container input,
 .all-users-section .update-user-container select {
   padding: 10px 14px;
-  border: 2px solid #ced4da;
+  border: 2px solid #f8f8f8;
   border-radius: 6px;
   font-size: 0.95rem;
   transition: all 0.2s ease;
@@ -221,8 +220,8 @@
 
 .all-users-section .update-user-container input:focus,
 .all-users-section .update-user-container select:focus {
-  border-color: #00b4d8;
-  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.15);
+  border-color: #66bb6a;
+  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.15);
 }
 
 .all-users-section .update-user-container input[name="firstName"],
@@ -253,12 +252,12 @@
 }
 
 .all-users-section .update-user-container button[type="submit"] {
-  background: linear-gradient(135deg, #198754, #20c997);
-  color: white;
+  background: linear-gradient(135deg, #66bb6a, #81c784);
+  color: #1b5e20;
 }
 
 .all-users-section .cancel-button {
-  background: linear-gradient(135deg, #6c757d, #495057);
+  background: linear-gradient(135deg, #4a5568, #2e7d32);
   color: white;
 }
 
@@ -279,7 +278,7 @@
   width: 60%;
   max-width: 500px;
   padding: 12px 20px;
-  border: 2px solid #e9ecef;
+  border: 2px solid #f8f8f8;
   border-radius: 12px;
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -290,20 +289,20 @@
 
 .all-users-section .search-bar input:focus {
   outline: none;
-  border-color: #00b4d8;
-  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.15);
+  border-color: #66bb6a;
+  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.15);
   transform: translateY(-1px);
 }
 
 .all-users-section .search-bar input::placeholder {
-  color: #adb5bd;
+  color: #a8e6cf;
   font-weight: 500;
 }
 
 /* Download Section */
 .all-users-section .download-options {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border: 2px solid #e9ecef;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+  border: 2px solid #f8f8f8;
   border-radius: 12px;
   padding: 25px;
   margin: 20px 0;
@@ -319,11 +318,11 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #4b0082, #00b4d8);
+  background: linear-gradient(90deg, #2e7d32, #66bb6a);
 }
 
 .all-users-section .download-options h3 {
-  color: #4b0082;
+  color: #2e7d32;
   font-size: 1.4rem;
   margin-bottom: 12px;
   display: flex;
@@ -333,7 +332,7 @@
 }
 
 .all-users-section .download-options p {
-  color: #6c757d;
+  color: #4a5568;
   margin-bottom: 20px;
   font-size: 0.95rem;
   line-height: 1.5;
@@ -352,7 +351,7 @@
   gap: 8px;
   padding: 10px 14px;
   background: white;
-  border: 2px solid #e9ecef;
+  border: 2px solid #f8f8f8;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -360,26 +359,26 @@
 }
 
 .all-users-section .checkbox-label:hover {
-  background: #e3f2fd;
-  border-color: #00b4d8;
+  background: #e8f5e8;
+  border-color: #66bb6a;
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(0, 180, 216, 0.15);
+  box-shadow: 0 3px 10px rgba(102, 187, 106, 0.15);
 }
 
 .all-users-section .checkbox-label input[type="checkbox"] {
   margin: 0;
   transform: scale(1.1);
-  accent-color: #4b0082;
+  accent-color: #2e7d32;
 }
 
 .all-users-section .checkbox-label input[type="checkbox"]:checked + span {
-  color: #4b0082;
+  color: #2e7d32;
   font-weight: 600;
 }
 
 .all-users-section .checkbox-label span {
   font-size: 0.9rem;
-  color: #495057;
+  color: #4a5568;
   transition: color 0.2s ease;
 }
 
@@ -388,8 +387,8 @@
 }
 
 .all-users-section .download-all-btn {
-  background: linear-gradient(135deg, #00b4d8, #0096c7);
-  color: white;
+  background: linear-gradient(135deg, #66bb6a, #81c784);
+  color: #1b5e20;
   border: none;
   padding: 12px 30px;
   border-radius: 8px;
@@ -397,20 +396,20 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
+  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
   text-transform: uppercase;
   letter-spacing: 0.8px;
 }
 
 .all-users-section .download-all-btn:hover {
-  background: linear-gradient(135deg, #0096c7, #007acc);
+  background: linear-gradient(135deg, #81c784, #a8e6cf);
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0, 180, 216, 0.4);
+  box-shadow: 0 6px 15px rgba(102, 187, 106, 0.4);
 }
 
 .all-users-section .download-note {
   font-size: 0.85rem;
-  color: #6c757d;
+  color: #4a5568;
   font-style: italic;
   margin-top: 12px;
   line-height: 1.4;
@@ -423,7 +422,7 @@
   overflow: hidden;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
-  border: 1px solid #e9ecef;
+  border: 1px solid #f8f8f8;
 }
 
 .all-users-section .table-header {
@@ -431,19 +430,19 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 25px;
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  border-bottom: 2px solid #dee2e6;
+  background: linear-gradient(135deg, #f8f8f8, #f5f5f5);
+  border-bottom: 2px solid #f8f8f8;
 }
 
 .all-users-section .table-user-count {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #4b0082;
+  color: #2e7d32;
 }
 
 .all-users-section .filtered-count {
   font-size: 0.95rem;
-  color: #6c757d;
+  color: #4a5568;
   font-style: italic;
   font-weight: 500;
 }
@@ -455,7 +454,7 @@
 }
 
 .all-users-section .users-table th {
-  background: linear-gradient(135deg, #4b0082, #6a5acd);
+  background: linear-gradient(135deg, #2e7d32, #81c784);
   color: white;
   padding: 15px 12px;
   text-align: left;
@@ -463,22 +462,22 @@
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  border-bottom: 2px solid #00b4d8;
+  border-bottom: 2px solid #66bb6a;
 }
 
 .all-users-section .users-table td {
   padding: 5px;
-  border-bottom: 1px solid #f1f3f4;
+  border-bottom: 1px solid #f8f8f8;
   vertical-align: middle;
   transition: background-color 0.2s ease;
 }
 
 .all-users-section .users-table tbody tr:hover {
-  background-color: #f8f9ff;
+  background-color: #e8f5e8;
 }
 
 .all-users-section .users-table tbody tr:nth-child(even) {
-  background-color: #fbfbfb;
+  background-color: #f8f8f8;
 }
 
 /* Action Buttons */
@@ -490,7 +489,7 @@
 
 .all-users-section .action-btn {
   background: white;
-  border: 2px solid #e9ecef;
+  border: 2px solid #f8f8f8;
   padding: 8px;
   margin: 0 2px;
   border-radius: 6px;
@@ -508,8 +507,8 @@
 }
 
 .all-users-section .edit-btn:hover {
-  background: #e3f2fd;
-  border-color: #00b4d8;
+  background: #e8f5e8;
+  border-color: #66bb6a;
 }
 
 .all-users-section .delete-btn:hover {
@@ -518,19 +517,19 @@
 }
 
 .all-users-section .download-btn:hover {
-  background: #f3e5f5;
-  border-color: #9c27b0;
+  background: #e8f5e8;
+  border-color: #2e7d32;
 }
 
 /* No Users Message */
 .all-users-section .no-users-message {
   text-align: center;
   padding: 40px;
-  color: #6c757d;
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  color: #4a5568;
+  background: linear-gradient(135deg, #f8f8f8, #f5f5f5);
   margin: 20px;
   border-radius: 12px;
-  border: 2px dashed #dee2e6;
+  border: 2px dashed #f8f8f8;
 }
 
 .all-users-section .no-users-message p {
@@ -540,7 +539,7 @@
 }
 
 .all-users-section .clear-search-btn {
-  background: linear-gradient(135deg, #6c757d, #495057);
+  background: linear-gradient(135deg, #4a5568, #2e7d32);
   color: white;
   border: none;
   padding: 8px 18px;
@@ -551,7 +550,7 @@
 }
 
 .all-users-section .clear-search-btn:hover {
-  background: linear-gradient(135deg, #495057, #343a40);
+  background: linear-gradient(135deg, #2e7d32, #1b5e20);
   transform: translateY(-2px);
 }
 
@@ -672,7 +671,7 @@
   }
 
   .all-users-section .users-table th {
-    background: #f8f9fa !important;
+    background: #f8f8f8 !important;
     color: black !important;
   }
 
