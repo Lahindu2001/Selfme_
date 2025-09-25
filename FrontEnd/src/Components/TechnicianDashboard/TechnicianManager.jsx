@@ -88,7 +88,13 @@ function TechnicianManager() {
           </div>
           <div className="card-grid">
             <div className="card">
+               {/*
               <NavLink to="/RegisterEmployee" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
+                <h2>Register Employee</h2>
+                <p>Register a new employee in the system.</p>
+              </NavLink>*/}
+
+              <NavLink to="/register-employee" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
                 <h2>Register Employee</h2>
                 <p>Register a new employee in the system.</p>
               </NavLink>

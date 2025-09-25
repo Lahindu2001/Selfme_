@@ -58,10 +58,11 @@ function App() {
           path="/TechnicianManager"
           element={isAuthenticated() ? <TechnicianManager /> : <Navigate to="/login" />}
         />
+
         <Route
-          path="/RegisterEmployee"
+          path="/register-employee"
           element={isAuthenticated() ? <RegisterEmployee /> : <Navigate to="/login" />}
-        />
+        /> 
         <Route
           path="/"
           element={isAuthenticated() ? <Home /> : <Navigate to="/login" />}

@@ -1,6 +1,5 @@
-// EmployeeModel.js
-const mongoose = require('mongoose');
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+const mongoose = require("mongoose");
+const Counter = require('../../Model/AdminandSupplyModel/counterModel');
 
 const employeeSchema = new mongoose.Schema(
   {
@@ -19,10 +18,24 @@ const employeeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Apply the auto-increment plugin only if not already applied
-if (!mongoose.models.Employee) {
-  employeeSchema.plugin(AutoIncrement, { inc_field: 'employee_id' });
-}
+// Pre-save hook to auto-increment employee_id using Counter model
+employeeSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    try {
+      const counter = await Counter.findOneAndUpdate(
+        { _id: 'employee_id' },
+        { $inc: { sequence_value: 1 } },
+        { new: true, upsert: true }
+      );
+      this.employee_id = counter.sequence_value;
+      next();
+    } catch (err) {
+      next(err);
+    }
+  } else {
+    next();
+  }
+});
 
-// Export the model, using existing model if it exists
-module.exports = mongoose.models.Employee || mongoose.model('Employee', employeeSchema);
+// Check if model already exists before compiling
+module.exports = mongoose.models.Employee || mongoose.model("Employee", employeeSchema);
