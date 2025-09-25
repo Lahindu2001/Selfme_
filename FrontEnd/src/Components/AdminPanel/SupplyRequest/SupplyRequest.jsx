@@ -442,7 +442,7 @@ function SupplyRequest() {
         </button>
         {showAddSupplyRequestForm && (
           <div className="add-user-container">
-            <h3>📝 Add New Supply Request</h3>
+            <h3>Add New Supply Request</h3>
             <form className="add-user-form" onSubmit={handleAddSupplyRequest}>
               <div className="form-group">
                 <input
@@ -498,13 +498,13 @@ function SupplyRequest() {
         <div className="search-bar">
           <input
             type="text"
-            placeholder="🔍 Search by Supplier Brandname, Contact, Address or ID..."
+            placeholder="Search by Supplier Brandname, Contact, Address or ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="download-options professional-section">
-          <h3>📄 Official Report Generation</h3>
+          <h3>Official Report Generation</h3>
           <p>Select the fields to include in your official report:</p>
           <div className="field-checkboxes">
             {Object.keys(selectedFields).map((field) => (
@@ -524,7 +524,7 @@ function SupplyRequest() {
           </div>
           <div className="download-buttons">
             <button className="download-all-btn" onClick={handleDownloadAll}>
-              📊 Download Directory ({supplyRequests.length} requests)
+              Download Directory ({supplyRequests.length} requests)
             </button>
             <p className="download-note">
               Reports include official letterhead with {companyInfo.name} branding and contact details.
@@ -533,7 +533,7 @@ function SupplyRequest() {
         </div>
         <div className="users-table-container">
           <div className="table-header">
-            <span className="table-user-count">📦 Total Requests: {supplyRequests.length}</span>
+            <span className="table-user-count">Total Requests: {supplyRequests.length}</span>
             <span className="filtered-count">
               {searchTerm && `(Showing ${filteredSupplyRequests.length} filtered results)`}
             </span>
@@ -557,7 +557,7 @@ function SupplyRequest() {
                   {editingSupplyRequestId === request._id ? (
                     <td colSpan={Object.keys(defaultInputs).length + 2}>
                       <div className="update-user-container">
-                        <h1>✏️ Update Supply Request Information</h1>
+                        <h1>Update Supply Request Information</h1>
                         <form onSubmit={handleUpdateSupplyRequest}>
                           <div className="form-group">
                             <input
@@ -606,14 +606,14 @@ function SupplyRequest() {
                             {errors.status && <p className="error">{errors.status}</p>}
                           </div>
                           <button type="submit" className="submit-btn">
-                            ✅ Update Supply Request
+                            Update Supply Request
                           </button>
                           <button
                             type="button"
                             className="cancel-button"
                             onClick={() => setEditingSupplyRequestId(null)}
                           >
-                            ❌ Cancel
+                            Cancel
                           </button>
                           {errors.submit && <p className="error">{errors.submit}</p>}
                         </form>
@@ -640,21 +640,21 @@ function SupplyRequest() {
                           onClick={() => startEdit(request)}
                           title="Edit Supply Request"
                         >
-                          ✏️
+                          Update
                         </button>
                         <button
                           className="action-btn delete-btn"
                           onClick={() => handleDeleteSupplyRequest(request._id)}
                           title="Delete Supply Request"
                         >
-                          🗑️
+                          Delete
                         </button>
                         <button
                           className="action-btn download-btn"
                           onClick={() => handleDownloadSingle(request)}
                           title="Download Supply Request Report"
                         >
-                          📄
+                          Download
                         </button>
                       </td>
                     </>
@@ -665,7 +665,7 @@ function SupplyRequest() {
           </table>
           {filteredSupplyRequests.length === 0 && (
             <div className="no-users-message">
-              <p>📭 No supply requests found matching your search criteria.</p>
+              <p>No supply requests found matching your search criteria.</p>
               {searchTerm && (
                 <button className="clear-search-btn" onClick={() => setSearchTerm('')}>
                   Clear Search

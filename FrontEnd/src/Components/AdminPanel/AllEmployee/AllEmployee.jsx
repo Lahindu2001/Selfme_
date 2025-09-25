@@ -1,4 +1,3 @@
-// 5) frontend = FrontEnd > src > Components > AdminPanel > AllEmployee > AllEmployee.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../../utils/auth';
@@ -224,13 +223,13 @@ function AllEmployee() {
         <div className="search-bar">
           <input
             type="text"
-            placeholder="🔍 Search by Employee Name, Address, Contact or ID..."
+            placeholder="Search by Employee Name, Address, Contact or ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="download-options professional-section">
-          <h3>📄 Official Report Generation</h3>
+          <h3>Official Report Generation</h3>
           <p>Select the fields to include in your official report:</p>
           <div className="field-checkboxes">
             {Object.keys(selectedFields).map((field) => (
@@ -250,16 +249,17 @@ function AllEmployee() {
           </div>
           <div className="download-buttons">
             <button className="download-all-btn" onClick={handleDownloadAll}>
-              📊 Download Directory ({employees.length} employees)
+              Download Directory ({employees.length} employees)
             </button>
             <p className="download-note">
               Reports include official letterhead with {companyInfo.name} branding and contact details.
             </p>
           </div>
+       
         </div>
         <div className="users-table-container">
           <div className="table-header">
-            <span className="table-user-count">👥 Total Employees: {employees.length}</span>
+            <span className="table-user-count"> Total Employees: {employees.length}</span>
             <span className="filtered-count">
               {searchTerm && `(Showing ${filteredEmployees.length} filtered results)`}
             </span>
@@ -295,7 +295,7 @@ function AllEmployee() {
                       onClick={() => handleDownloadSingle(employee)}
                       title="Download Employee Report"
                     >
-                      📄
+                      Download
                     </button>
                   </td>
                 </tr>
@@ -304,7 +304,7 @@ function AllEmployee() {
           </table>
           {filteredEmployees.length === 0 && (
             <div className="no-users-message">
-              <p>📭 No employees found matching your search criteria.</p>
+              <p> No employees found matching your search criteria.</p>
               {searchTerm && (
                 <button className="clear-search-btn" onClick={() => setSearchTerm('')}>
                   Clear Search

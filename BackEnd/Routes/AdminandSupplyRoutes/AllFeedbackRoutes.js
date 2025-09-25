@@ -1,4 +1,4 @@
-// 3) Routes = BackEnd > Routes > AdminandSupplyRoutes > AllFeedbackRoutes.js
+// BackEnd > Routes > AdminandSupplyRoutes > AllFeedbackRoutes.js
 const express = require("express");
 const router = express.Router();
 // Insert Model
@@ -8,6 +8,5 @@ const AllFeedbackController = require("../../Controllers/AdminandSupplyControlle
 router.get("/", AllFeedbackController.getAllFeedbacks);
 router.post("/", AllFeedbackController.addFeedback);
 router.get("/:id", AllFeedbackController.getbyId);
-router.put("/:id", AllFeedbackController.updateFeedback);
 router.delete("/:id", AllFeedbackController.deleteFeedback);
 module.exports = router;

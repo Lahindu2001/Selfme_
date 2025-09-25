@@ -86,6 +86,7 @@ function AllUser() {
     } catch (err) {
       console.error('Error fetching users:', err);
       setUsers([]);
+      alert('Failed to fetch users. Please try again.');
     }
   };
 
@@ -191,10 +192,10 @@ function AllUser() {
       setShowAddForm(false);
       setErrors({});
       alert('User added successfully!');
-      window.location.reload();
+      fetchUsers();
     } catch (err) {
       console.error('Error adding user:', err);
-      setErrors({ submit: err.response?.data?.message || 'Failed to add user' });
+      setErrors({ submit: err.response?.data?.message || 'Failed to add user. Please try again.' });
     }
   };
 
@@ -227,10 +228,10 @@ function AllUser() {
       setEditInputs(defaultInputs);
       setErrors({});
       alert('User updated successfully!');
-      window.location.reload();
+      fetchUsers();
     } catch (err) {
       console.error('Error updating user:', err);
-      setErrors({ submit: err.response?.data?.message || 'Failed to update user' });
+      setErrors({ submit: err.response?.data?.message || 'Failed to update user. Please try again.' });
     }
   };
 
@@ -242,7 +243,7 @@ function AllUser() {
       alert('User deleted successfully!');
     } catch (err) {
       console.error('Error deleting user:', err);
-      alert('Failed to delete user!');
+      alert('Failed to delete user. Please try again.');
     }
   };
 
@@ -396,7 +397,7 @@ function AllUser() {
       alert(`Official report "${fileName}" downloaded successfully!`);
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Error generating PDF. Please try again.');
+      alert('Error generating PDF. Please check your network connection and try again.');
     }
   };
 
@@ -433,11 +434,11 @@ function AllUser() {
           <p className="subtitle">{companyInfo.name} - {companyInfo.tagline}</p>
         </div>
         <button className="add-user-toggle" onClick={() => setShowAddForm(!showAddForm)}>
-          {showAddForm ? '✕ Hide Add User Form' : '➕ Show Add User Form'}
+          {showAddForm ? 'Hide Add User Form' : 'Show Add User Form'}
         </button>
         {showAddForm && (
           <div className="add-user-container">
-            <h3>📝 Add New User</h3>
+            <h3>Add New User</h3>
             <form className="add-user-form" onSubmit={handleAddUser}>
               <div className="form-group">
                 <input
@@ -448,6 +449,7 @@ function AllUser() {
                   onChange={handleInputChange}
                   onKeyPress={(e) => handleKeyPress(e, 'firstName')}
                   required
+                  aria-label="First Name"
                 />
                 {errors.firstName && <p className="error">{errors.firstName}</p>}
               </div>
@@ -460,6 +462,7 @@ function AllUser() {
                   onChange={handleInputChange}
                   onKeyPress={(e) => handleKeyPress(e, 'lastName')}
                   required
+                  aria-label="Last Name"
                 />
                 {errors.lastName && <p className="error">{errors.lastName}</p>}
               </div>
@@ -471,6 +474,7 @@ function AllUser() {
                   value={inputs.email}
                   onChange={handleInputChange}
                   required
+                  aria-label="Email"
                 />
                 {errors.email && <p className="error">{errors.email}</p>}
               </div>
@@ -482,11 +486,12 @@ function AllUser() {
                   value={inputs.password}
                   onChange={handleInputChange}
                   required
+                  aria-label="Password"
                 />
                 {errors.password && <p className="error">{errors.password}</p>}
               </div>
               <div className="form-group">
-                <select name="nicType" value={nicType} onChange={(e) => setNicType(e.target.value)}>
+                <select name="nicType" value={nicType} onChange={(e) => setNicType(e.target.value)} aria-label="NIC Type">
                   <option value="New">New (12 digits)</option>
                   <option value="Old">Old (9 digits + V/X)</option>
                 </select>
@@ -499,6 +504,7 @@ function AllUser() {
                   onKeyPress={(e) => handleKeyPress(e, 'nic')}
                   maxLength={nicType === 'New' ? 12 : 10}
                   required
+                  aria-label="NIC"
                 />
                 {errors.nic && <p className="error">{errors.nic}</p>}
               </div>
@@ -510,6 +516,7 @@ function AllUser() {
                   value={inputs.phone}
                   onChange={handleInputChange}
                   onKeyPress={(e) => handleKeyPress(e, 'phone')}
+                  aria-label="Phone"
                 />
                 {errors.phone && <p className="error">{errors.phone}</p>}
               </div>
@@ -522,6 +529,7 @@ function AllUser() {
                   onChange={handleInputChange}
                   max={new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0]}
                   required
+                  aria-label="Date of Birth"
                 />
                 {errors.dob && <p className="error">{errors.dob}</p>}
               </div>
@@ -532,6 +540,7 @@ function AllUser() {
                   name="address"
                   value={inputs.address}
                   onChange={handleInputChange}
+                  aria-label="Address"
                 />
               </div>
               <div className="form-group">
@@ -542,11 +551,12 @@ function AllUser() {
                   value={inputs.ceboNo}
                   onChange={handleInputChange}
                   onKeyPress={(e) => handleKeyPress(e, 'ceboNo')}
+                  aria-label="CEBO Number"
                 />
                 {errors.ceboNo && <p className="error">{errors.ceboNo}</p>}
               </div>
               <div className="form-group">
-                <select name="role" value={inputs.role} onChange={handleInputChange} required>
+                <select name="role" value={inputs.role} onChange={handleInputChange} required aria-label="Role">
                   <option value="Admin">Admin</option>
                   <option value="Inventory">Inventory</option>
                   <option value="Finance">Finance</option>
@@ -556,27 +566,42 @@ function AllUser() {
                 {errors.role && <p className="error">{errors.role}</p>}
               </div>
               <div className="form-group">
-                <select name="status" value={inputs.status} onChange={handleInputChange} required>
+                <select name="status" value={inputs.status} onChange={handleInputChange} required aria-label="Status">
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>
                 {errors.status && <p className="error">{errors.status}</p>}
               </div>
-              <button type="submit" className="submit-btn">Add User</button>
-              {errors.submit && <p className="error">{errors.submit}</p>}
+              <div className="form-buttons">
+                <button type="submit" className="submit-btn" aria-label="Add User">Add User</button>
+                <button
+                  type="button"
+                  className="cancel-button"
+                  onClick={() => {
+                    setShowAddForm(false);
+                    setInputs(defaultInputs);
+                    setErrors({});
+                  }}
+                  aria-label="Cancel"
+                >
+                  Cancel
+                </button>
+              </div>
+              {errors.submit && <p className="error submit-error">{errors.submit}</p>}
             </form>
           </div>
         )}
         <div className="search-bar">
           <input
             type="text"
-            placeholder="🔍 Search by First Name..."
+            placeholder="Search by First Name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            aria-label="Search by First Name"
           />
         </div>
         <div className="download-options professional-section">
-          <h3>📄 Official Report Generation</h3>
+          <h3>Official Report Generation</h3>
           <p>Select the fields to include in your official report:</p>
           <div className="field-checkboxes">
             {Object.keys(selectedFields).map((field) => (
@@ -585,14 +610,15 @@ function AllUser() {
                   type="checkbox"
                   checked={selectedFields[field]}
                   onChange={() => setSelectedFields((prev) => ({ ...prev, [field]: !prev[field] }))}
+                  aria-label={`Include ${field.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())} in report`}
                 />
                 <span>{field.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}</span>
               </label>
             ))}
           </div>
           <div className="download-buttons">
-            <button className="download-all-btn" onClick={handleDownloadAll}>
-              📊 Download Directory ({users.length} users)
+            <button className="download-all-btn" onClick={handleDownloadAll} aria-label="Download All Users Report">
+              Download Directory ({users.length} users)
             </button>
             <p className="download-note">
               Reports include official letterhead with {companyInfo.name} branding and contact details.
@@ -632,6 +658,7 @@ function AllUser() {
                               onChange={handleEditInputChange}
                               onKeyPress={(e) => handleKeyPress(e, 'firstName')}
                               required
+                              aria-label="First Name"
                             />
                             {errors.firstName && <p className="error">{errors.firstName}</p>}
                           </div>
@@ -644,6 +671,7 @@ function AllUser() {
                               onChange={handleEditInputChange}
                               onKeyPress={(e) => handleKeyPress(e, 'lastName')}
                               required
+                              aria-label="Last Name"
                             />
                             {errors.lastName && <p className="error">{errors.lastName}</p>}
                           </div>
@@ -655,6 +683,7 @@ function AllUser() {
                               value={editInputs.email}
                               onChange={handleEditInputChange}
                               required
+                              aria-label="Email"
                             />
                             {errors.email && <p className="error">{errors.email}</p>}
                           </div>
@@ -665,10 +694,11 @@ function AllUser() {
                               name="password"
                               value={editInputs.password}
                               onChange={handleEditInputChange}
+                              aria-label="Password (optional)"
                             />
                           </div>
                           <div className="form-group">
-                            <select name="nicType" value={nicType} onChange={(e) => setNicType(e.target.value)}>
+                            <select name="nicType" value={nicType} onChange={(e) => setNicType(e.target.value)} aria-label="NIC Type">
                               <option value="New">New (12 digits)</option>
                               <option value="Old">Old (9 digits + V/X)</option>
                             </select>
@@ -681,6 +711,7 @@ function AllUser() {
                               onKeyPress={(e) => handleKeyPress(e, 'nic')}
                               maxLength={nicType === 'New' ? 12 : 10}
                               required
+                              aria-label="NIC"
                             />
                             {errors.nic && <p className="error">{errors.nic}</p>}
                           </div>
@@ -692,6 +723,7 @@ function AllUser() {
                               value={editInputs.phone}
                               onChange={handleEditInputChange}
                               onKeyPress={(e) => handleKeyPress(e, 'phone')}
+                              aria-label="Phone"
                             />
                             {errors.phone && <p className="error">{errors.phone}</p>}
                           </div>
@@ -704,6 +736,7 @@ function AllUser() {
                               onChange={handleEditInputChange}
                               max={new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0]}
                               required
+                              aria-label="Date of Birth"
                             />
                             {errors.dob && <p className="error">{errors.dob}</p>}
                           </div>
@@ -714,6 +747,7 @@ function AllUser() {
                               name="address"
                               value={editInputs.address}
                               onChange={handleEditInputChange}
+                              aria-label="Address"
                             />
                           </div>
                           <div className="form-group">
@@ -724,11 +758,12 @@ function AllUser() {
                               value={editInputs.ceboNo}
                               onChange={handleEditInputChange}
                               onKeyPress={(e) => handleKeyPress(e, 'ceboNo')}
+                              aria-label="CEBO Number"
                             />
                             {errors.ceboNo && <p className="error">{errors.ceboNo}</p>}
                           </div>
                           <div className="form-group">
-                            <select name="role" value={editInputs.role} onChange={handleEditInputChange} required>
+                            <select name="role" value={editInputs.role} onChange={handleEditInputChange} required aria-label="Role">
                               <option value="Admin">Admin</option>
                               <option value="Inventory">Inventory</option>
                               <option value="Finance">Finance</option>
@@ -738,50 +773,59 @@ function AllUser() {
                             {errors.role && <p className="error">{errors.role}</p>}
                           </div>
                           <div className="form-group">
-                            <select name="status" value={editInputs.status} onChange={handleEditInputChange} required>
+                            <select name="status" value={editInputs.status} onChange={handleEditInputChange} required aria-label="Status">
                               <option value="Active">Active</option>
                               <option value="Inactive">Inactive</option>
                             </select>
                             {errors.status && <p className="error">{errors.status}</p>}
                           </div>
-                          <button type="submit" className="submit-btn">✅ Update User</button>
-                          <button
-                            type="button"
-                            className="cancel-button"
-                            onClick={() => setEditingUserId(null)}
-                          >
-                            ❌ Cancel
-                          </button>
-                          {errors.submit && <p className="error">{errors.submit}</p>}
+                          <div className="form-buttons">
+                            <button type="submit" className="submit-btn" aria-label="Update User">Update User</button>
+                            <button
+                              type="button"
+                              className="cancel-button"
+                              onClick={() => setEditingUserId(null)}
+                              aria-label="Cancel"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                          {errors.submit && <p className="error submit-error">{errors.submit}</p>}
                         </form>
                       </div>
                     </td>
                   ) : (
                     <>
                       {visibleFields.map((field) => (
-                        <td key={field}>{field === 'dob' && user[field] ? new Date(user[field]).toISOString().split('T')[0] : user[field] || 'N/A'}</td>
+                        <td key={field} className="table-cell" title={field === 'address' && user[field] ? user[field] : ''}>
+                          {field === 'dob' && user[field]
+                            ? new Date(user[field]).toISOString().split('T')[0]
+                            : field === 'address' && user[field] && user[field].length > 20
+                            ? `${user[field].substring(0, 17)}...`
+                            : user[field] || 'N/A'}
+                        </td>
                       ))}
                       <td className="actions-cell">
                         <button
                           className="action-btn edit-btn"
                           onClick={() => startEdit(user)}
-                          title="Edit User"
+                          aria-label={`Edit user ${user.firstName}`}
                         >
-                          ✏️
+                          Update
                         </button>
                         <button
                           className="action-btn delete-btn"
                           onClick={() => handleDeleteUser(user._id)}
-                          title="Delete User"
+                          aria-label={`Delete user ${user.firstName}`}
                         >
-                          🗑️
+                          Delete
                         </button>
                         <button
                           className="action-btn download-btn"
                           onClick={() => handleDownloadSingle(user)}
-                          title="Download User Report"
+                          aria-label={`Download report for ${user.firstName}`}
                         >
-                          📄
+                          Download
                         </button>
                       </td>
                     </>
@@ -792,9 +836,9 @@ function AllUser() {
           </table>
           {filteredUsers.length === 0 && (
             <div className="no-users-message">
-              <p>📭 No users found matching your search criteria.</p>
+              <p>No users found matching your search criteria.</p>
               {searchTerm && (
-                <button className="clear-search-btn" onClick={() => setSearchTerm('')}>
+                <button className="clear-search-btn" onClick={() => setSearchTerm('')} aria-label="Clear Search">
                   Clear Search
                 </button>
               )}

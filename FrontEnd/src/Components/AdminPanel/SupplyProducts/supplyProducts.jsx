@@ -543,11 +543,11 @@ function SupplyProducts() {
           <p className="subtitle">{companyInfo.name} - {companyInfo.tagline}</p>
         </div>
         <button className="add-user-toggle" onClick={() => setShowAddForm(!showAddForm)}>
-          {showAddForm ? '✕ Hide Add Supply Product Form' : '➕ Show Add Supply Product Form'}
+          {showAddForm ? ' Hide Add Supply Product Form' : ' Show Add Supply Product Form'}
         </button>
         {showAddForm && (
           <div className="add-user-container">
-            <h3>📝 Add New Supply Product</h3>
+            <h3>Add New Supply Product</h3>
             <form className="add-user-form" onSubmit={handleAddSupplyProduct}>
               <div className="form-group">
                 <input
@@ -616,13 +616,13 @@ function SupplyProducts() {
         <div className="search-bar">
           <input
             type="text"
-            placeholder="🔍 Search by Product Item..."
+            placeholder="Search by Product Item..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="download-options professional-section">
-          <h3>📄 Official Report Generation</h3>
+          <h3>Official Report Generation</h3>
           <p>Select the fields to include in your official report:</p>
           <div className="field-checkboxes">
             {Object.keys(selectedFields).map((field) => (
@@ -638,7 +638,7 @@ function SupplyProducts() {
           </div>
           <div className="download-buttons">
             <button className="download-all-btn" onClick={handleDownloadAll}>
-              📊 Download Directory ({supplyProducts.length} products)
+              Download Directory ({supplyProducts.length} products)
             </button>
             <p className="download-note">
               Reports include official letterhead with {companyInfo.name} branding and contact details.
@@ -647,7 +647,7 @@ function SupplyProducts() {
         </div>
         <div className="users-table-container">
           <div className="table-header">
-            <span className="table-user-count">📦 Total Supply Products: {supplyProducts.length}</span>
+            <span className="table-user-count">Total Supply Products: {supplyProducts.length}</span>
             <span className="filtered-count">
               {searchTerm && `(Showing ${filteredSupplyProducts.length} filtered results)`}
             </span>
@@ -729,13 +729,13 @@ function SupplyProducts() {
                             />
                             {errors.unit_price && <p className="error">{errors.unit_price}</p>}
                           </div>
-                          <button type="submit" className="submit-btn">✅ Update Supply Product</button>
+                          <button type="submit" className="submit-btn">Update Supply Product</button>
                           <button
                             type="button"
                             className="cancel-button"
                             onClick={() => setEditingProductId(null)}
                           >
-                            ❌ Cancel
+                            Cancel
                           </button>
                           {errors.submit && <p className="error">{errors.submit}</p>}
                         </form>
@@ -761,21 +761,21 @@ function SupplyProducts() {
                           onClick={() => startEdit(product)}
                           title="Edit Supply Product"
                         >
-                          ✏️
+                          Update
                         </button>
                         <button
                           className="action-btn delete-btn"
                           onClick={() => handleDeleteSupplyProduct(product._id)}
                           title="Delete Supply Product"
                         >
-                          🗑️
+                          Delete
                         </button>
                         <button
                           className="action-btn download-btn"
                           onClick={() => handleDownloadSingle(product)}
                           title="Download Supply Product Report"
                         >
-                          📄
+                          Download
                         </button>
                       </td>
                     </>
@@ -786,7 +786,7 @@ function SupplyProducts() {
           </table>
           {filteredSupplyProducts.length === 0 && (
             <div className="no-users-message">
-              <p>📭 No supply products found matching your search criteria.</p>
+              <p>No supply products found matching your search criteria.</p>
               {searchTerm && (
                 <button className="clear-search-btn" onClick={() => setSearchTerm('')}>
                   Clear Search

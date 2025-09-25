@@ -1,5 +1,6 @@
-const mongoose = require("mongoose");
-const AutoIncrement = require("mongoose-sequence")(mongoose);
+// EmployeeModel.js
+const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const employeeSchema = new mongoose.Schema(
   {
@@ -20,8 +21,8 @@ const employeeSchema = new mongoose.Schema(
 
 // Apply the auto-increment plugin only if not already applied
 if (!mongoose.models.Employee) {
-  employeeSchema.plugin(AutoIncrement, { inc_field: "employee_id" });
+  employeeSchema.plugin(AutoIncrement, { inc_field: 'employee_id' });
 }
 
 // Export the model, using existing model if it exists
-module.exports = mongoose.models.Employee || mongoose.model("Employee", employeeSchema);
+module.exports = mongoose.models.Employee || mongoose.model('Employee', employeeSchema);

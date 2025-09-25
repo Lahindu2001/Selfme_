@@ -1,45 +1,50 @@
-// 5) frontend = FrontEnd > src > Components > AdminPanel > AllFeedback > AllFeedback.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../../utils/auth';
 import axios from 'axios';
 import jsPDF from 'jspdf';
-import Nav from '../../Nav/Nav'; // Adjust path based on your folder structure
+import Nav from '../../Nav/Nav';
 import './AllFeedback.css';
+
 const URL = 'http://localhost:5000/all-feedback';
+
 function AllFeedback() {
   const navigate = useNavigate();
   const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
   const firstName = authUser.firstName || 'Admin';
+  
   const handleLogout = () => {
     removeAuthToken();
     localStorage.removeItem('authUser');
     navigate('/login');
   };
+
   // ------------------- STATES -------------------
   const [feedbacks, setFeedbacks] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddFeedbackForm, setShowAddFeedbackForm] = useState(false);
-  const [editingFeedbackId, setEditingFeedbackId] = useState(null);
   const [selectedFields, setSelectedFields] = useState({
     customer_id: true,
     order_id: true,
     job_id: true,
     rating: true,
     comments: true,
-    reply: true,
     created_at: true,
+    feedback_id: true,
   });
+
   const defaultInputs = {
+    feedback_id: '',
     customer_id: '',
     order_id: '',
     job_id: '',
     rating: '',
     comments: '',
   };
+
   const [inputs, setInputs] = useState(defaultInputs);
-  const [editInputs, setEditInputs] = useState({ reply: '' });
   const [errors, setErrors] = useState({});
+
   // ------------------- COMPANY INFORMATION -------------------
   const companyInfo = {
     name: 'SelfMe',
@@ -49,14 +54,24 @@ function AllFeedback() {
     email: 'Selfmepvtltd@gmail.com',
     website: 'www.selfme.com',
   };
+
   // ------------------- VALIDATION FUNCTIONS -------------------
+  const validateFeedbackId = (value) => value !== '';
   const validateCustomerId = (value) => value === '' || /^\d+$/.test(value);
   const validateOrderId = (value) => value === '' || /^\d+$/.test(value);
   const validateJobId = (value) => value === '' || /^\d+$/.test(value);
   const validateRating = (value) => value === '' || (Number(value) >= 1 && Number(value) <= 5);
   const validateComments = (value) => value === '' || /^[a-zA-Z0-9\s,.]*$/.test(value);
-  const validateReply = (value) => value !== '';
+
   // ------------------- INPUT HANDLERS -------------------
+  const handleFeedbackId = (e) => {
+    const value = e.target.value;
+    if (validateFeedbackId(value)) {
+      setInputs((prev) => ({ ...prev, feedback_id: value }));
+      setErrors((prev) => ({ ...prev, feedback_id: '' }));
+    }
+  };
+
   const handleCustomerId = (e) => {
     const value = e.target.value;
     if (validateCustomerId(value)) {
@@ -64,6 +79,7 @@ function AllFeedback() {
       setErrors((prev) => ({ ...prev, customer_id: '' }));
     }
   };
+
   const handleOrderId = (e) => {
     const value = e.target.value;
     if (validateOrderId(value)) {
@@ -71,6 +87,7 @@ function AllFeedback() {
       setErrors((prev) => ({ ...prev, order_id: '' }));
     }
   };
+
   const handleJobId = (e) => {
     const value = e.target.value;
     if (validateJobId(value)) {
@@ -78,6 +95,7 @@ function AllFeedback() {
       setErrors((prev) => ({ ...prev, job_id: '' }));
     }
   };
+
   const handleRating = (e) => {
     const value = e.target.value;
     if (validateRating(value)) {
@@ -85,6 +103,7 @@ function AllFeedback() {
       setErrors((prev) => ({ ...prev, rating: '' }));
     }
   };
+
   const handleComments = (e) => {
     const value = e.target.value;
     if (validateComments(value)) {
@@ -92,11 +111,7 @@ function AllFeedback() {
       setErrors((prev) => ({ ...prev, comments: '' }));
     }
   };
-  const handleEditReply = (e) => {
-    const value = e.target.value;
-    setEditInputs((prev) => ({ ...prev, reply: value }));
-    setErrors((prev) => ({ ...prev, reply: '' }));
-  };
+
   // ------------------- HANDLE KEY PRESS -------------------
   const handleKeyPress = (e, field) => {
     if (['customer_id', 'order_id', 'job_id', 'rating'].includes(field) && !/[0-9]/.test(e.key)) {
@@ -106,17 +121,21 @@ function AllFeedback() {
       e.preventDefault();
     }
   };
+
   // ------------------- ADD FEEDBACK -------------------
   const handleAddFeedback = async (e) => {
     e.preventDefault();
     const newErrors = {};
+    if (!validateFeedbackId(inputs.feedback_id)) newErrors.feedback_id = 'Valid Feedback ID required';
     if (!validateCustomerId(inputs.customer_id) || inputs.customer_id === '') newErrors.customer_id = 'Valid Customer ID required';
     if (!validateOrderId(inputs.order_id) || inputs.order_id === '') newErrors.order_id = 'Valid Order ID required';
     if (!validateJobId(inputs.job_id) || inputs.job_id === '') newErrors.job_id = 'Valid Job ID required';
     if (!validateRating(inputs.rating) || inputs.rating === '') newErrors.rating = 'Rating must be between 1 and 5';
     if (!validateComments(inputs.comments) || inputs.comments === '') newErrors.comments = 'Valid comments required';
+    
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
+
     try {
       const res = await axios.post(URL, { ...inputs });
       setFeedbacks([...feedbacks, res.data]);
@@ -130,31 +149,7 @@ function AllFeedback() {
       setErrors({ submit: err.response?.data?.message || 'Failed to add feedback' });
     }
   };
-  // ------------------- EDIT FEEDBACK -------------------
-  const startEdit = (feedback) => {
-    setEditingFeedbackId(feedback._id);
-    setEditInputs({ reply: feedback.reply });
-    setErrors({});
-  };
-  const handleUpdateFeedback = async (e) => {
-    e.preventDefault();
-    const newErrors = {};
-    if (!validateReply(editInputs.reply)) newErrors.reply = 'Reply cannot be empty';
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
-    try {
-      const res = await axios.put(`${URL}/${editingFeedbackId}`, { reply: editInputs.reply });
-      setFeedbacks(feedbacks.map((r) => (r._id === editingFeedbackId ? res.data : r)));
-      setEditingFeedbackId(null);
-      setEditInputs({ reply: '' });
-      setErrors({});
-      alert('Feedback updated successfully!');
-      window.location.reload();
-    } catch (err) {
-      console.error('Error updating feedback:', err);
-      setErrors({ submit: err.response?.data?.message || 'Failed to update feedback' });
-    }
-  };
+
   // ------------------- DELETE FEEDBACK -------------------
   const handleDeleteFeedback = async (id) => {
     if (!window.confirm('Are you sure you want to delete this feedback?')) return;
@@ -167,6 +162,7 @@ function AllFeedback() {
       alert('Failed to delete feedback!');
     }
   };
+
   // ------------------- FETCH FEEDBACKS -------------------
   const fetchFeedbacks = async () => {
     try {
@@ -177,9 +173,11 @@ function AllFeedback() {
       setFeedbacks([]);
     }
   };
+
   useEffect(() => {
     fetchFeedbacks();
   }, []);
+
   // ------------------- LOGO CONVERSION -------------------
   const getLogoAsBase64 = () => {
     return new Promise((resolve, reject) => {
@@ -200,6 +198,7 @@ function AllFeedback() {
       img.src = '/newLogo.png';
     });
   };
+
   // ------------------- OFFICIAL PDF GENERATION -------------------
   const generatePDF = async (data, title) => {
     if (!data.length) return alert('No feedbacks to download!');
@@ -208,6 +207,7 @@ function AllFeedback() {
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
+
       const addLetterhead = () => {
         if (logoBase64) {
           doc.addImage(logoBase64, 'PNG', 15, 10, 20, 20);
@@ -224,6 +224,7 @@ function AllFeedback() {
         doc.setDrawColor(0, 0, 0);
         doc.line(15, 40, pageWidth - 15, 40);
       };
+
       const addFooter = (pageNum, totalPages, lastRecordIdx) => {
         doc.setFont('times', 'normal');
         doc.setFontSize(8);
@@ -239,16 +240,19 @@ function AllFeedback() {
         const genTime = new Date().toLocaleTimeString('en-GB', { hour12: false });
         doc.text(`Generated on ${genDate} at ${genTime}`, 15, pageHeight - 10);
       };
+
       const addSignatureField = () => {
         doc.setFont('times', 'normal');
         doc.setFontSize(10);
         doc.setTextColor(0, 0, 0);
         doc.text('Authorized Signature: __________________', pageWidth - 85, pageHeight - 30);
       };
+
       let totalPages = 1;
       let tempY = 50;
       let lastRecordIdxPerPage = [];
       let currentPageRecords = [];
+      
       data.forEach((_, idx) => {
         let fieldsCount = Object.keys(selectedFields).filter((field) => selectedFields[field]).length;
         let itemHeight = fieldsCount * 10 + 20;
@@ -262,6 +266,7 @@ function AllFeedback() {
         tempY += itemHeight;
       });
       lastRecordIdxPerPage.push(currentPageRecords[currentPageRecords.length - 1] || -1);
+
       let currentPage = 1;
       let y = 50;
       addLetterhead();
@@ -269,6 +274,7 @@ function AllFeedback() {
       doc.setFontSize(14);
       doc.setTextColor(0, 0, 0);
       doc.text(title, pageWidth / 2, 45, { align: 'center' });
+
       data.forEach((feedback, idx) => {
         let fieldsCount = Object.keys(selectedFields).filter((field) => selectedFields[field]).length;
         let itemHeight = fieldsCount * 10 + 20;
@@ -292,6 +298,7 @@ function AllFeedback() {
         doc.setDrawColor(150, 150, 150);
         doc.rect(15, y, pageWidth - 30, fieldsCount * 10 + 5, 'S');
         y += 5;
+
         Object.keys(selectedFields).forEach((field) => {
           if (selectedFields[field]) {
             let label = field.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
@@ -317,8 +324,10 @@ function AllFeedback() {
           y += 5;
         }
       });
+
       addSignatureField();
       addFooter(currentPage, totalPages, lastRecordIdxPerPage[currentPage - 1]);
+      
       const timestamp = new Date().toISOString().split('T')[0];
       const fileName = `${companyInfo.name}_${title.replace(/\s+/g, '_')}_${timestamp}.pdf`;
       doc.save(fileName);
@@ -328,9 +337,11 @@ function AllFeedback() {
       alert('Error generating PDF. Please try again.');
     }
   };
+
   // ------------------- DOWNLOAD FUNCTIONS -------------------
   const handleDownloadAll = () => generatePDF(feedbacks, 'Feedback Directory Report');
   const handleDownloadSingle = (feedback) => generatePDF([feedback], `Feedback Report - ${feedback.feedback_id || 'Unnamed'}`);
+
   // ------------------- FILTERED FEEDBACKS -------------------
   const filteredFeedbacks = feedbacks.filter(
     (feedback) =>
@@ -339,9 +350,9 @@ function AllFeedback() {
       (String(feedback.job_id) || '').includes(searchTerm) ||
       (String(feedback.rating) || '').includes(searchTerm) ||
       (feedback.comments?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-      (feedback.reply?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
       (String(feedback.feedback_id) || '').includes(searchTerm)
   );
+
   // ------------------- RENDER -------------------
   return (
     <div className="all-feedback-container">
@@ -351,16 +362,29 @@ function AllFeedback() {
           <h2 className="Title">Feedback Management System</h2>
           <p className="subtitle">{companyInfo.name} - {companyInfo.tagline}</p>
         </div>
+
+          {/*form*/}
         <button
           className="add-user-toggle"
           onClick={() => setShowAddFeedbackForm(!showAddFeedbackForm)}
         >
           {showAddFeedbackForm ? '✕ Hide Add Feedback Form' : '➕ Show Add Feedback Form'}
         </button>
+
         {showAddFeedbackForm && (
           <div className="add-user-container">
-            <h3>📝 Add New Feedback</h3>
+            <h3>Add New Feedback</h3>
             <form className="add-user-form" onSubmit={handleAddFeedback}>
+              <div className="form-group">
+                <input
+                  type="text"
+                  placeholder="Feedback ID"
+                  value={inputs.feedback_id}
+                  onChange={handleFeedbackId}
+                  required
+                />
+                {errors.feedback_id && <p className="error">{errors.feedback_id}</p>}
+              </div>
               <div className="form-group">
                 <input
                   type="text"
@@ -423,16 +447,18 @@ function AllFeedback() {
             </form>
           </div>
         )}
+{/*form off*/}
         <div className="search-bar">
           <input
             type="text"
-            placeholder="🔍 Search by Customer ID, Order ID, Job ID, Rating, Comments, Reply or ID..."
+            placeholder="🔍 Search by Feedback ID, Customer ID, Order ID, Job ID, Rating, Comments..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
+
         <div className="download-options professional-section">
-          <h3>📄 Official Report Generation</h3>
+          <h3>Official Report Generation</h3>
           <p>Select the fields to include in your official report:</p>
           <div className="field-checkboxes">
             {Object.keys(selectedFields).map((field) => (
@@ -452,16 +478,17 @@ function AllFeedback() {
           </div>
           <div className="download-buttons">
             <button className="download-all-btn" onClick={handleDownloadAll}>
-              📊 Download Directory ({feedbacks.length} feedbacks)
+              Download Directory ({feedbacks.length} feedbacks)
             </button>
             <p className="download-note">
               Reports include official letterhead with {companyInfo.name} branding and contact details.
             </p>
           </div>
         </div>
+
         <div className="users-table-container">
           <div className="table-header">
-            <span className="table-user-count">📦 Total Feedbacks: {feedbacks.length}</span>
+            <span className="table-user-count">Total Feedbacks: {feedbacks.length}</span>
             <span className="filtered-count">
               {searchTerm && `(Showing ${filteredFeedbacks.length} filtered results)`}
             </span>
@@ -475,7 +502,6 @@ function AllFeedback() {
                     {field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().replace(/\b\w/g, (l) => l.toUpperCase())}
                   </th>
                 ))}
-                <th>Reply</th>
                 <th>Created At</th>
                 <th>Actions</th>
               </tr>
@@ -483,77 +509,36 @@ function AllFeedback() {
             <tbody>
               {filteredFeedbacks.map((feedback) => (
                 <tr key={feedback._id}>
-                  {editingFeedbackId === feedback._id ? (
-                    <td colSpan={Object.keys(defaultInputs).length + 3}>
-                      <div className="update-user-container">
-                        <h1>✏️ Update Feedback Reply</h1>
-                        <form onSubmit={handleUpdateFeedback}>
-                          <div className="form-group">
-                            <input
-                              type="text"
-                              placeholder="Reply"
-                              value={editInputs.reply}
-                              onChange={handleEditReply}
-                              required
-                            />
-                            {errors.reply && <p className="error">{errors.reply}</p>}
-                          </div>
-                          <button type="submit" className="submit-btn">
-                            ✅ Update Feedback
-                          </button>
-                          <button
-                            type="button"
-                            className="cancel-button"
-                            onClick={() => setEditingFeedbackId(null)}
-                          >
-                            ❌ Cancel
-                          </button>
-                          {errors.submit && <p className="error">{errors.submit}</p>}
-                        </form>
-                      </div>
+                  <td>{feedback.feedback_id || 'N/A'}</td>
+                  {Object.keys(defaultInputs).map((field) => (
+                    <td key={field}>
+                      {feedback[field] || 'N/A'}
                     </td>
-                  ) : (
-                    <>
-                      <td>{feedback.feedback_id || 'N/A'}</td>
-                      {Object.keys(defaultInputs).map((field) => (
-                        <td key={field}>
-                          {feedback[field] || 'N/A'}
-                        </td>
-                      ))}
-                      <td>{feedback.reply || 'N/A'}</td>
-                      <td>{new Date(feedback.created_at).toLocaleDateString('en-GB')}</td>
-                      <td className="actions-cell">
-                        <button
-                          className="action-btn edit-btn"
-                          onClick={() => startEdit(feedback)}
-                          title="Edit Feedback Reply"
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          className="action-btn delete-btn"
-                          onClick={() => handleDeleteFeedback(feedback._id)}
-                          title="Delete Feedback"
-                        >
-                          🗑️
-                        </button>
-                        <button
-                          className="action-btn download-btn"
-                          onClick={() => handleDownloadSingle(feedback)}
-                          title="Download Feedback Report"
-                        >
-                          📄
-                        </button>
-                      </td>
-                    </>
-                  )}
+                  ))}
+                  <td>{new Date(feedback.created_at).toLocaleDateString('en-GB')}</td>
+                  <td className="actions-cell">
+                    <button
+                      className="action-btn delete-btn"
+                      onClick={() => handleDeleteFeedback(feedback._id)}
+                      title="Delete Feedback"
+                    >
+                    delete
+                    </button>
+                    <button
+                      className="action-btn download-btn"
+                      onClick={() => handleDownloadSingle(feedback)}
+                      title="Download Feedback Report"
+                    >
+                     download
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
           {filteredFeedbacks.length === 0 && (
             <div className="no-users-message">
-              <p>📭 No feedbacks found matching your search criteria.</p>
+              <p>No feedbacks found matching your search criteria.</p>
               {searchTerm && (
                 <button className="clear-search-btn" onClick={() => setSearchTerm('')}>
                   Clear Search
@@ -566,4 +551,5 @@ function AllFeedback() {
     </div>
   );
 }
+
 export default AllFeedback;

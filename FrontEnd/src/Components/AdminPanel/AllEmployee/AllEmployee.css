@@ -1,13 +1,15 @@
-/* AllEmployee.css - Professional Design for AllEmployee Component Main Content */
+/* AllEmployee.css - Professional Design for AllEmployee Component */
+
 /* Main Content Container */
 .all-employee-section {
-  padding: 1px;
+  padding: 20px;
   background: linear-gradient(135deg, #f5f5f5 0%, #f8f8f8 100%);
   min-height: 100vh;
-  font-family: 'poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin-left: 240px; /* Matches sidebar width from Nav.css */
   transition: margin-left 0.3s ease;
 }
+
 /* Title Section */
 .all-employee-section .title-container {
   text-align: center;
@@ -21,6 +23,7 @@
   overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.2);
 }
+
 .all-employee-section .title-container::before {
   content: '';
   position: absolute;
@@ -31,6 +34,7 @@
   background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
   pointer-events: none;
 }
+
 .all-employee-section .Title {
   font-size: 2.5rem;
   font-weight: 800;
@@ -40,6 +44,7 @@
   position: relative;
   z-index: 1;
 }
+
 .all-employee-section .subtitle {
   font-size: 1rem;
   margin: 10px 0 0;
@@ -50,6 +55,7 @@
   z-index: 1;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
+
 /* Search Bar */
 .all-employee-section .search-bar {
   margin: 20px 0;
@@ -57,11 +63,12 @@
   justify-content: center;
   align-items: center;
 }
+
 .all-employee-section .search-bar input {
   width: 60%;
   max-width: 500px;
   padding: 12px 20px;
-  border: 2px solid #f8f8f8;
+  border: 2px solid #e0e0e0;
   border-radius: 12px;
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -69,20 +76,23 @@
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
   text-align: center;
 }
+
 .all-employee-section .search-bar input:focus {
   outline: none;
-  border-color: #66bb6a;
-  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.15);
+  border-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
   transform: translateY(-1px);
 }
+
 .all-employee-section .search-bar input::placeholder {
-  color: #a8e6cf;
+  color: #81c784;
   font-weight: 500;
 }
+
 /* Download Section */
 .all-employee-section .download-options {
   background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
-  border: 2px solid #f8f8f8;
+  border: 2px solid #e0e0e0;
   border-radius: 12px;
   padding: 25px;
   margin: 20px 0;
@@ -90,6 +100,7 @@
   position: relative;
   overflow: hidden;
 }
+
 .all-employee-section .download-options::before {
   content: '';
   position: absolute;
@@ -97,8 +108,9 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #2e7d32, #66bb6a);
+  background: linear-gradient(90deg, #2e7d32, #4caf50);
 }
+
 .all-employee-section .download-options h3 {
   color: #2e7d32;
   font-size: 1.4rem;
@@ -108,56 +120,65 @@
   gap: 8px;
   font-weight: 700;
 }
+
 .all-employee-section .download-options p {
   color: #4a5568;
   margin-bottom: 20px;
   font-size: 0.95rem;
   line-height: 1.5;
 }
+
 .all-employee-section .field-checkboxes {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 10px;
   margin-bottom: 20px;
 }
+
 .all-employee-section .checkbox-label {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
   background: white;
-  border: 2px solid #f8f8f8;
+  border: 2px solid #e0e0e0;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 500;
 }
+
 .all-employee-section .checkbox-label:hover {
   background: #e8f5e8;
-  border-color: #66bb6a;
+  border-color: #4caf50;
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(102, 187, 106, 0.15);
+  box-shadow: 0 3px 10px rgba(76, 175, 80, 0.15);
 }
+
 .all-employee-section .checkbox-label input[type="checkbox"] {
   margin: 0;
   transform: scale(1.1);
   accent-color: #2e7d32;
 }
+
 .all-employee-section .checkbox-label input[type="checkbox"]:checked + span {
   color: #2e7d32;
   font-weight: 600;
 }
+
 .all-employee-section .checkbox-label span {
   font-size: 0.9rem;
   color: #4a5568;
   transition: color 0.2s ease;
 }
+
 .all-employee-section .download-buttons {
   text-align: center;
 }
+
 .all-employee-section .download-all-btn {
-  background: linear-gradient(135deg, #66bb6a, #81c784);
-  color: #1b5e20;
+  background: linear-gradient(135deg, #4caf50, #81c784);
+  color: white;
   border: none;
   padding: 12px 30px;
   border-radius: 8px;
@@ -165,15 +186,22 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
   text-transform: uppercase;
   letter-spacing: 0.8px;
 }
+
 .all-employee-section .download-all-btn:hover {
-  background: linear-gradient(135deg, #81c784, #a8e6cf);
+  background: linear-gradient(135deg, #388e3c, #66bb6a);
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(102, 187, 106, 0.4);
+  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
 }
+
+.all-employee-section .download-all-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
+}
+
 .all-employee-section .download-note {
   font-size: 0.85rem;
   color: #4a5568;
@@ -181,6 +209,7 @@
   margin-top: 12px;
   line-height: 1.4;
 }
+
 /* Table */
 .all-employee-section .users-table-container {
   background: white;
@@ -188,34 +217,39 @@
   overflow: hidden;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
-  border: 1px solid #f8f8f8;
+  border: 1px solid #e0e0e0;
 }
+
 .all-employee-section .table-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 25px;
   background: linear-gradient(135deg, #f8f8f8, #f5f5f5);
-  border-bottom: 2px solid #f8f8f8;
+  border-bottom: 2px solid #e0e0e0;
 }
+
 .all-employee-section .table-user-count {
   font-size: 1.2rem;
   font-weight: 700;
   color: #2e7d32;
 }
+
 .all-employee-section .filtered-count {
   font-size: 0.95rem;
   color: #4a5568;
   font-style: italic;
   font-weight: 500;
 }
+
 .all-employee-section .users-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
 }
+
 .all-employee-section .users-table th {
-  background: linear-gradient(135deg, #2e7d32, #81c784);
+  background: linear-gradient(135deg, #2e7d32, #4caf50);
   color: white;
   padding: 15px 12px;
   text-align: left;
@@ -223,47 +257,66 @@
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  border-bottom: 2px solid #66bb6a;
+  border-bottom: 2px solid #4caf50;
 }
+
 .all-employee-section .users-table td {
   padding: 12px;
-  border-bottom: 1px solid #f8f8f8;
+  border-bottom: 1px solid #e0e0e0;
   vertical-align: middle;
   transition: background-color 0.2s ease;
 }
+
 .all-employee-section .users-table tbody tr:hover {
   background-color: #e8f5e8;
 }
+
 .all-employee-section .users-table tbody tr:nth-child(even) {
   background-color: #f8f8f8;
 }
+
 /* Action Buttons */
 .all-employee-section .actions-cell {
   text-align: center;
   white-space: nowrap;
   padding: 8px !important;
 }
+
 .all-employee-section .action-btn {
-  background: white;
-  border: 2px solid #f8f8f8;
+  background: linear-gradient(135deg, #4caf50, #81c784);
+  border: none;
   padding: 8px;
   margin: 0 2px;
   border-radius: 6px;
+  color: white;
   cursor: pointer;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   transition: all 0.3s ease;
   display: inline-block;
-  width: 35px;
-  height: 35px;
+  width: 120px;
+  text-align: center;
 }
+
 .all-employee-section .action-btn:hover {
+  background: linear-gradient(135deg, #388e3c, #66bb6a);
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
 }
+
+.all-employee-section .action-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
+}
+
+.all-employee-section .download-btn {
+  background: linear-gradient(135deg, #4caf50, #81c784);
+}
+
 .all-employee-section .download-btn:hover {
-  background: #e8f5e8;
-  border-color: #2e7d32;
+  background: linear-gradient(135deg, #d32f2f, #f44336);
+  border: none;
 }
+
 /* No Employees Message */
 .all-employee-section .no-users-message {
   text-align: center;
@@ -272,13 +325,15 @@
   background: linear-gradient(135deg, #f8f8f8, #f5f5f5);
   margin: 20px;
   border-radius: 12px;
-  border: 2px dashed #f8f8f8;
+  border: 2px dashed #e0e0e0;
 }
+
 .all-employee-section .no-users-message p {
   font-size: 1.2rem;
   margin: 0 0 15px;
   font-weight: 500;
 }
+
 .all-employee-section .clear-search-btn {
   background: linear-gradient(135deg, #4a5568, #2e7d32);
   color: white;
@@ -289,10 +344,17 @@
   font-weight: 600;
   transition: all 0.3s ease;
 }
+
 .all-employee-section .clear-search-btn:hover {
   background: linear-gradient(135deg, #2e7d32, #1b5e20);
   transform: translateY(-2px);
 }
+
+.all-employee-section .clear-search-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(46, 125, 50, 0.2);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .all-employee-section {
@@ -316,6 +378,7 @@
     text-align: center;
   }
 }
+
 @media (max-width: 576px) {
   .all-employee-section {
     padding: 15px;
@@ -341,12 +404,12 @@
     padding: 8px 6px;
   }
   .all-employee-section .action-btn {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     padding: 6px;
-    width: 30px;
-    height: 30px;
+    width: 100px;
   }
 }
+
 @media (max-width: 400px) {
   .all-employee-section .Title {
     font-size: 1.6rem;
@@ -361,7 +424,11 @@
   .all-employee-section .users-table td {
     padding: 6px 4px;
   }
+  .all-employee-section .action-btn {
+    width: 90px;
+  }
 }
+
 /* Print Styles */
 @media print {
   .all-employee-section .download-options,

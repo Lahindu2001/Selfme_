@@ -1,11 +1,11 @@
-/* SupplyRequest.css - Professional Design for SupplyRequest Component Main Content */
+/* SupplyRequest.css - Professional Design for SupplyRequest Component */
 
 /* Main Content Container */
 .supply-request-section {
-  padding: 1px;
+  padding: 20px;
   background: linear-gradient(135deg, #f5f5f5 0%, #f8f8f8 100%);
   min-height: 100vh;
-  font-family: 'poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin-left: 240px; /* Matches sidebar width from Nav.css */
   transition: margin-left 0.3s ease;
 }
@@ -15,10 +15,10 @@
   text-align: center;
   margin: 20px 0 30px;
   padding: 30px 20px;
-  background: linear-gradient(135deg, #2e7d32 0%, #81c784 50%, #66bb6a 100%);
+  background: linear-gradient(135deg, #2e7d32 0%, #81c784 50%, #4caf50 100%);
   border-radius: 20px;
   color: white;
-  box-shadow: 0 10px 30px rgba(46, 125, 50, 0.4);
+  box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
   position: relative;
   overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.2);
@@ -58,39 +58,40 @@
 
 /* Add Supply Request Toggle Button */
 .supply-request-section .add-user-toggle {
-  background: linear-gradient(135deg, #2e7d32, #81c784);
+  background: linear-gradient(135deg, #4caf50, #81c784);
   color: white;
   border: none;
   padding: 12px 25px;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   margin-bottom: 20px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
   text-transform: uppercase;
   letter-spacing: 0.8px;
 }
 
 .supply-request-section .add-user-toggle:hover {
-  background: linear-gradient(135deg, #1b5e20, #66bb6a);
+  background: linear-gradient(135deg, #388e3c, #66bb6a);
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(46, 125, 50, 0.4);
+  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
 }
 
 .supply-request-section .add-user-toggle:active {
   transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
 }
 
 /* Form Container */
 .supply-request-section .add-user-container {
-  background: linear-gradient(135deg, white, #f8f8f8);
-  border: 2px solid #f8f8f8;
+  background: linear-gradient(135deg, #ffffff, #f8f8f8);
+  border: 2px solid #e0e0e0;
   border-radius: 12px;
   padding: 25px;
   margin: 20px 0;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   position: relative;
   overflow: hidden;
 }
@@ -102,7 +103,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #2e7d32, #66bb6a);
+  background: linear-gradient(90deg, #2e7d32, #4caf50);
 }
 
 .supply-request-section .add-user-container h3 {
@@ -129,7 +130,7 @@
 .supply-request-section .form-group input,
 .supply-request-section .form-group select {
   padding: 10px 14px;
-  border: 2px solid #f8f8f8;
+  border: 2px solid #e0e0e0;
   border-radius: 6px;
   font-size: 0.95rem;
   transition: all 0.3s ease;
@@ -139,16 +140,9 @@
 .supply-request-section .form-group input:focus,
 .supply-request-section .form-group select:focus {
   outline: none;
-  border-color: #66bb6a;
-  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.15);
+  border-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
   transform: translateY(-1px);
-}
-
-.supply-request-section .form-group .error {
-  color: #dc3545;
-  font-size: 0.75rem;
-  margin-top: 4px;
-  font-weight: 500;
 }
 
 .supply-request-section .form-group input[name="supplier_contact"] {
@@ -160,37 +154,33 @@
   min-height: 50px;
 }
 
-.supply-request-section .submit-btn {
-  grid-column: 1 / -1;
-  background: linear-gradient(135deg, #66bb6a, #81c784);
-  color: #1b5e20;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  justify-self: center;
-  max-width: 220px;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-}
-
-.supply-request-section .submit-btn:hover {
-  background: linear-gradient(135deg, #81c784, #a8e6cf);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(102, 187, 106, 0.3);
+.supply-request-section .form-group .error {
+  color: #d32f2f;
+  font-size: 0.75rem;
+  margin-top: 4px;
+  font-weight: 500;
 }
 
 /* Update Form */
 .supply-request-section .update-user-container {
-  background: linear-gradient(135deg, #f8f8f8, #f5f5f5);
+  background: linear-gradient(135deg, #ffffff, #f8f8f8);
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
   padding: 25px;
-  border-radius: 10px;
   margin: 10px;
-  border: 2px solid #f8f8f8;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.supply-request-section .update-user-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #2e7d32, #4caf50);
 }
 
 .supply-request-section .update-user-container h1 {
@@ -205,24 +195,26 @@
 
 .supply-request-section .update-user-container form {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
 }
 
 .supply-request-section .update-user-container input,
 .supply-request-section .update-user-container select {
   padding: 10px 14px;
-  border: 2px solid #f8f8f8;
+  border: 2px solid #e0e0e0;
   border-radius: 6px;
   font-size: 0.95rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   background: white;
 }
 
 .supply-request-section .update-user-container input:focus,
 .supply-request-section .update-user-container select:focus {
-  border-color: #66bb6a;
-  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.15);
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+  transform: translateY(-1px);
 }
 
 .supply-request-section .update-user-container input[name="supplier_contact"] {
@@ -235,27 +227,27 @@
 }
 
 .supply-request-section .update-user-container .error {
-  color: #dc3545;
+  color: #d32f2f;
   font-size: 0.75rem;
   margin-top: 4px;
   font-weight: 500;
 }
 
 .supply-request-section .update-user-container button {
-  padding: 10px 20px;
+  padding: 12px 25px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
   transition: all 0.3s ease;
-  font-size: 0.95rem;
+  font-size: 1rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
 }
 
 .supply-request-section .update-user-container button[type="submit"] {
-  background: linear-gradient(135deg, #66bb6a, #81c784);
-  color: #1b5e20;
+  background: linear-gradient(135deg, #4caf50, #81c784);
+  color: white;
 }
 
 .supply-request-section .cancel-button {
@@ -264,8 +256,14 @@
 }
 
 .supply-request-section .update-user-container button:hover {
+  background: linear-gradient(135deg, #388e3c, #66bb6a);
   transform: translateY(-2px);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+}
+
+.supply-request-section .update-user-container button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
 }
 
 /* Search Bar */
@@ -280,7 +278,7 @@
   width: 60%;
   max-width: 500px;
   padding: 12px 20px;
-  border: 2px solid #f8f8f8;
+  border: 2px solid #e0e0e0;
   border-radius: 12px;
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -291,20 +289,20 @@
 
 .supply-request-section .search-bar input:focus {
   outline: none;
-  border-color: #66bb6a;
-  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.15);
+  border-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
   transform: translateY(-1px);
 }
 
 .supply-request-section .search-bar input::placeholder {
-  color: #a8e6cf;
+  color: #81c784;
   font-weight: 500;
 }
 
 /* Download Section */
 .supply-request-section .download-options {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
-  border: 2px solid #f8f8f8;
+  background: linear-gradient(135deg, #ffffff, #f8f8f8);
+  border: 2px solid #e0e0e0;
   border-radius: 12px;
   padding: 25px;
   margin: 20px 0;
@@ -320,7 +318,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #2e7d32, #66bb6a);
+  background: linear-gradient(90deg, #2e7d32, #4caf50);
 }
 
 .supply-request-section .download-options h3 {
@@ -353,7 +351,7 @@
   gap: 8px;
   padding: 10px 14px;
   background: white;
-  border: 2px solid #f8f8f8;
+  border: 2px solid #e0e0e0;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -362,9 +360,9 @@
 
 .supply-request-section .checkbox-label:hover {
   background: #e8f5e8;
-  border-color: #66bb6a;
+  border-color: #4caf50;
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(102, 187, 106, 0.15);
+  box-shadow: 0 3px 10px rgba(76, 175, 80, 0.15);
 }
 
 .supply-request-section .checkbox-label input[type="checkbox"] {
@@ -389,8 +387,8 @@
 }
 
 .supply-request-section .download-all-btn {
-  background: linear-gradient(135deg, #66bb6a, #81c784);
-  color: #1b5e20;
+  background: linear-gradient(135deg, #4caf50, #81c784);
+  color: white;
   border: none;
   padding: 12px 30px;
   border-radius: 8px;
@@ -398,15 +396,20 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
   text-transform: uppercase;
   letter-spacing: 0.8px;
 }
 
 .supply-request-section .download-all-btn:hover {
-  background: linear-gradient(135deg, #81c784, #a8e6cf);
+  background: linear-gradient(135deg, #388e3c, #66bb6a);
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(102, 187, 106, 0.4);
+  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+}
+
+.supply-request-section .download-all-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
 }
 
 .supply-request-section .download-note {
@@ -424,7 +427,8 @@
   overflow: hidden;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
-  border: 1px solid #f8f8f8;
+  border: 1px solid #e0e0e0;
+  overflow-x: auto;
 }
 
 .supply-request-section .table-header {
@@ -433,7 +437,7 @@
   align-items: center;
   padding: 20px 25px;
   background: linear-gradient(135deg, #f8f8f8, #f5f5f5);
-  border-bottom: 2px solid #f8f8f8;
+  border-bottom: 2px solid #e0e0e0;
 }
 
 .supply-request-section .table-user-count {
@@ -456,7 +460,7 @@
 }
 
 .supply-request-section .users-table th {
-  background: linear-gradient(135deg, #2e7d32, #81c784);
+  background: linear-gradient(135deg, #2e7d32, #4caf50);
   color: white;
   padding: 15px 12px;
   text-align: left;
@@ -464,12 +468,12 @@
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  border-bottom: 2px solid #66bb6a;
+  border-bottom: 2px solid #4caf50;
 }
 
 .supply-request-section .users-table td {
   padding: 12px;
-  border-bottom: 1px solid #f8f8f8;
+  border-bottom: 1px solid #e0e0e0;
   vertical-align: middle;
   transition: background-color 0.2s ease;
 }
@@ -524,37 +528,53 @@
 }
 
 .supply-request-section .action-btn {
-  background: white;
-  border: 2px solid #f8f8f8;
+  background: linear-gradient(135deg, #4caf50, #81c784);
+  border: none;
   padding: 8px;
   margin: 0 2px;
   border-radius: 6px;
+  color: white;
   cursor: pointer;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   transition: all 0.3s ease;
   display: inline-block;
-  width: 35px;
-  height: 35px;
+  width: 100px;
+  text-align: center;
 }
 
 .supply-request-section .action-btn:hover {
+  background: linear-gradient(135deg, #388e3c, #66bb6a);
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+}
+
+.supply-request-section .action-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
+}
+
+.supply-request-section .edit-btn {
+  background: linear-gradient(135deg, #4caf50, #81c784);
 }
 
 .supply-request-section .edit-btn:hover {
-  background: #e8f5e8;
-  border-color: #66bb6a;
+  background: linear-gradient(135deg, #388e3c, #66bb6a);
+}
+
+.supply-request-section .delete-btn {
+  background: linear-gradient(135deg, #d32f2f, #f44336);
 }
 
 .supply-request-section .delete-btn:hover {
-  background: #ffebee;
-  border-color: #dc3545;
+  background: linear-gradient(135deg, #b71c1c, #d32f2f);
+}
+
+.supply-request-section .download-btn {
+  background: linear-gradient(135deg, #4caf50, #81c784);
 }
 
 .supply-request-section .download-btn:hover {
-  background: #e8f5e8;
-  border-color: #2e7d32;
+  background: linear-gradient(135deg, #0288d1, #29b6f6);
 }
 
 /* No Supply Requests Message */
@@ -565,7 +585,7 @@
   background: linear-gradient(135deg, #f8f8f8, #f5f5f5);
   margin: 20px;
   border-radius: 12px;
-  border: 2px dashed #f8f8f8;
+  border: 2px dashed #e0e0e0;
 }
 
 .supply-request-section .no-users-message p {
@@ -588,6 +608,11 @@
 .supply-request-section .clear-search-btn:hover {
   background: linear-gradient(135deg, #2e7d32, #1b5e20);
   transform: translateY(-2px);
+}
+
+.supply-request-section .clear-search-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(46, 125, 50, 0.2);
 }
 
 /* Responsive Design */
@@ -659,10 +684,9 @@
   }
 
   .supply-request-section .action-btn {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     padding: 6px;
-    width: 30px;
-    height: 30px;
+    width: 100px;
   }
 
   .supply-request-section .status-badge {
@@ -690,6 +714,10 @@
   .supply-request-section .users-table td {
     padding: 6px 4px;
   }
+
+  .supply-request-section .action-btn {
+    width: 90px;
+  }
 }
 
 /* Print Styles */
@@ -697,7 +725,9 @@
   .supply-request-section .add-user-toggle,
   .supply-request-section .download-options,
   .supply-request-section .search-bar,
-  .supply-request-section .action-btn {
+  .supply-request-section .action-btn,
+  .supply-request-section .add-user-container,
+  .supply-request-section .update-user-container {
     display: none !important;
   }
 
@@ -715,10 +745,5 @@
   .supply-request-section .users-table th {
     background: #f8f8f8 !important;
     color: black !important;
-  }
-
-  .supply-request-section .add-user-container,
-  .supply-request-section .update-user-container {
-    display: none !important;
   }
 }

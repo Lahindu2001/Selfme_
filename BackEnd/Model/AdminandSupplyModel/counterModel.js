@@ -1,9 +1,9 @@
+// counterModel.js
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// Counter schema for auto-incrementing IDs
 const counterSchema = new Schema({
-  _id: { type: String, required: true },
+  _id: { type: String, required: true }, // e.g., 'feedback_id', 'supplier_id'
   sequence_value: { type: Number, default: 0 }
 });
 

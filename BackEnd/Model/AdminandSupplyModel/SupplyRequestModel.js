@@ -1,24 +1,25 @@
+// SupplierModel.js
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Counter = require('./counterModel');
 
 const supplyRequestSchema = new Schema({
   supplier_id: { type: Number, unique: true },
-  supplier_brandname: { 
-    type: String, 
-    required: true, 
+  supplier_brandname: {
+    type: String,
+    required: true,
     maxlength: 100,
     match: /^[a-zA-Z\s]*$/ // Only letters and spaces
   },
-  supplier_contact: { 
-    type: String, 
-    required: true, 
+  supplier_contact: {
+    type: String,
+    required: true,
     match: /^\d{10}$/ // Exactly 10 digits
   },
-  supplier_address: { 
-    type: String, 
-    required: true, 
-    maxlength: 200 
+  supplier_address: {
+    type: String,
+    required: true,
+    maxlength: 200
   },
   status: {
     type: String,
@@ -32,8 +33,8 @@ const supplyRequestSchema = new Schema({
 supplyRequestSchema.pre('save', async function (next) {
   if (this.isNew) {
     try {
-      const counter = await Counter.findByIdAndUpdate(
-        'supplier_id',
+      const counter = await Counter.findOneAndUpdate(
+        { _id: 'supplier_id' }, // Specific counter for supplier_id
         { $inc: { sequence_value: 1 } },
         { new: true, upsert: true }
       );
@@ -47,4 +48,4 @@ supplyRequestSchema.pre('save', async function (next) {
   }
 });
 
-module.exports = mongoose.model("Supplier", supplyRequestSchema);
+module.exports = mongoose.model('Supplier', supplyRequestSchema);

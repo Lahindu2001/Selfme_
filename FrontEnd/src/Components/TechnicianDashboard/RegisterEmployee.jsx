@@ -308,11 +308,11 @@ function RegisterEmployee() {
         className="add-user-toggle"
         onClick={() => setShowAddEmployeeForm(!showAddEmployeeForm)}
       >
-        {showAddEmployeeForm ? '✕ Hide Add Employee Form' : '➕ Show Add Employee Form'}
+        {showAddEmployeeForm ? 'Hide Add Employee Form' : ' Show Add Employee Form'}
       </button>
       {showAddEmployeeForm && (
         <div className="add-user-container">
-          <h3>📝 Add New Employee</h3>
+          <h3>Add New Employee</h3>
           <form id="register-employee-form" onSubmit={handleAddEmployee}>
             <div className="form-group">
               <input
@@ -379,7 +379,7 @@ function RegisterEmployee() {
         />
       </div>
       <div className="download-options professional-section">
-        <h3>📄 Official Report Generation</h3>
+        <h3>Official Report Generation</h3>
         <p>Select the fields to include in your official report:</p>
         <div className="field-checkboxes">
           {Object.keys(selectedFields).map((field) => (
@@ -399,7 +399,7 @@ function RegisterEmployee() {
         </div>
         <div className="download-buttons">
           <button className="download-all-btn" onClick={handleDownloadAll}>
-            📊 Download Directory ({employees.length} employees)
+            Download Directory ({employees.length} employees)
           </button>
           <p className="download-note">
             Reports include official letterhead with {companyInfo.name} branding and contact details.
@@ -408,7 +408,7 @@ function RegisterEmployee() {
       </div>
       <div className="users-table-container">
         <div className="table-header">
-          <span className="table-user-count">📦 Total Employees: {employees.length}</span>
+          <span className="table-user-count">Total Employees: {employees.length}</span>
           <span className="filtered-count">
             {searchTerm && `(Showing ${filteredEmployees.length} filtered results)`}
           </span>
@@ -485,14 +485,14 @@ function RegisterEmployee() {
                           />
                         </div>
                         <button type="submit" className="submit-btn">
-                          ✅ Update Employee
+                          Update Employee
                         </button>
                         <button
                           type="button"
                           className="cancel-button"
                           onClick={() => setEditingEmployeeId(null)}
                         >
-                          ❌ Cancel
+                          Cancel
                         </button>
                       </form>
                     </div>
@@ -520,21 +520,21 @@ function RegisterEmployee() {
                         onClick={() => startEdit(employee)}
                         title="Edit Employee"
                       >
-                        ✏️
+                        Update
                       </button>
                       <button
                         className="action-btn delete-btn"
                         onClick={() => handleDeleteEmployee(employee._id)}
                         title="Delete Employee"
                       >
-                        🗑️
+                        delete
                       </button>
                       <button
                         className="action-btn download-btn"
                         onClick={() => handleDownloadSingle(employee)}
                         title="Download Employee Report"
                       >
-                        📄
+                        downlord
                       </button>
                     </td>
                   </>
@@ -545,7 +545,7 @@ function RegisterEmployee() {
         </table>
         {filteredEmployees.length === 0 && (
           <div className="no-users-message">
-            <p>📭 No employees found matching your search criteria.</p>
+            <p>No employees found matching your search criteria.</p>
             {searchTerm && (
               <button className="clear-search-btn" onClick={() => setSearchTerm('')}>
                 Clear Search

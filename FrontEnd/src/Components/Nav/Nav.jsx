@@ -40,7 +40,7 @@ function Nav() {
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
             title="Admin Home"
           >
-            <span className="icon">🏠</span>
+            
             <span className="text">Admin Home</span>
           </NavLink>
         </li>
@@ -50,7 +50,7 @@ function Nav() {
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
             title="Supply Request Management"
           >
-            <span className="icon">📋</span>
+            
             <span className="text">Supply Request</span>
           </NavLink>
         </li>
@@ -60,7 +60,7 @@ function Nav() {
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
             title="Supply Product Management"
           >
-            <span className="icon">📦</span>
+          
             <span className="text">Supply Products</span>
           </NavLink>
         </li>
@@ -70,7 +70,7 @@ function Nav() {
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
             title="User Management"
           >
-            <span className="icon">👥</span>
+            
             <span className="text">User Management</span>
           </NavLink>
         </li>
@@ -80,7 +80,7 @@ function Nav() {
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
             title="Feedback Management"
           >
-            <span className="icon">💬</span>
+            
             <span className="text">All Feedback</span>
           </NavLink>
         </li>
@@ -90,7 +90,7 @@ function Nav() {
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
             title="Employee Management"
           >
-            <span className="icon">👥</span>
+       
             <span className="text">All Employees</span>
           </NavLink>
         </li>
@@ -98,7 +98,7 @@ function Nav() {
       <div className="sidebar-user-info">
         <span className="user-name">Welcome, {firstName}</span>
         <button className="logout-btn" onClick={handleLogout}>
-          <span className="icon">🚪</span>
+         
           <span className="text">Logout</span>
         </button>
       </div>
