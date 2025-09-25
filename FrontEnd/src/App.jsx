@@ -13,6 +13,7 @@ import Signup from "./Components/Auth/Signup";
 import FinanceManager from "./Components/FinanceManager/FinanceManager";
 import TechnicianManager from "./Components/TechnicianDashboard/TechnicianManager";
 import RegisterEmployee from "./Components/TechnicianDashboard/RegisterEmployee";
+import RegisteredEmployees from "./Components/TechnicianDashboard/RegisteredEmployees";
 import Home from "./Components/UserManager/Home";
 import { isAuthenticated } from "./utils/auth";
 
@@ -63,6 +64,12 @@ function App() {
           path="/register-employee"
           element={isAuthenticated() ? <RegisterEmployee /> : <Navigate to="/login" />}
         /> 
+        
+        <Route
+          path="/employees"
+          element={isAuthenticated() ? <RegisteredEmployees /> : <Navigate to="/login" />}
+        /> 
+
         <Route
           path="/"
           element={isAuthenticated() ? <Home /> : <Navigate to="/login" />}
