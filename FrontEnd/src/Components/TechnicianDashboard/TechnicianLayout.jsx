@@ -27,26 +27,26 @@ function TechnicianLayout({ children }) {
           </button>
           <button
             className={`cta-button primary${
-              isActive("/technicianDashboard/register-employee")
+              isActive("/register-employee")
                 ? " active-btn"
                 : ""
             }`}
-            onClick={() => navigate("/technicianDashboard/register-employee")}
+            onClick={() => navigate("/register-employee")}
           >
             Register Employee
           </button>
 
 
-           {/* 
+           
           <button
             className={`cta-button primary${
-              isActive("/technicianDashboard/employees") ? " active-btn" : ""
+              isActive("/employees") ? " active-btn" : ""
             }`}
-            onClick={() => navigate("/technicianDashboard/employees")}
+            onClick={() => navigate("/employees")}
           >
             Registered Employees
           </button>
-
+{/* 
          
           <button
             className={`cta-button primary${

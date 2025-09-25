@@ -99,6 +99,19 @@ function TechnicianManager() {
                 <p>Register a new employee in the system.</p>
               </NavLink>
             </div>
+
+            <div className="card">
+               {/*
+              <NavLink to="/RegisterEmployee" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
+                <h2>Register Employee</h2>
+                <p>Register a new employee in the system.</p>
+              </NavLink>*/}
+
+              <NavLink to="/employees" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
+                <h2>Registerd Employee</h2>
+                <p>Register a new employee in the system.</p>
+              </NavLink>
+            </div>
           </div>
           
         </div>
