@@ -1,7 +1,7 @@
-/* TechnicianManager.css - Technician Dashboard Styling with Consistent Color Palette */
+/* technician-manager.css - Technician Manager Dashboard Styling with ID Method and Admin.css Color Palette */
 
 /* Main Container */
-.technician .home-container {
+#technician-manager-container {
   font-family: 'poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f5f5f5;
   min-height: 100vh;
@@ -11,7 +11,7 @@
 }
 
 /* Sidebar Container */
-.technician .sidebar {
+#technician-manager-container .sidebar {
   width: 195px;
   background: linear-gradient(180deg, #2e7d32 0%, #81c784 50%, #66bb6a 100%);
   color: white;
@@ -28,7 +28,7 @@
 }
 
 /* Sidebar Header */
-.technician .sidebar-header {
+#technician-manager-container .sidebar-header {
   display: flex;
   align-items: center;
   gap: 15px;
@@ -37,7 +37,7 @@
   position: relative;
 }
 
-.technician .sidebar-logo {
+#technician-manager-container .sidebar-logo {
   width: 50px;
   height: 50px;
   border-radius: 10px;
@@ -47,7 +47,7 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-.technician .sidebar-title {
+#technician-manager-container .sidebar-title {
   font-size: 1.8rem;
   font-weight: 700;
   margin: 0;
@@ -55,13 +55,13 @@
   letter-spacing: 1px;
 }
 
-.technician .sidebar-subtitle {
+#technician-manager-container .sidebar-subtitle {
   font-size: 0.75rem;
   color: #a8e6cf;
   margin: 0;
 }
 
-.technician .sidebar-toggle {
+#technician-manager-container .sidebar-toggle {
   display: none;
   background: none;
   border: none;
@@ -74,23 +74,23 @@
   transition: all 0.3s ease;
 }
 
-.technician .sidebar-toggle:hover {
+#technician-manager-container .sidebar-toggle:hover {
   transform: rotate(90deg);
 }
 
 /* Sidebar Menu */
-.technician .sidebar-menu {
+#technician-manager-container .sidebar-menu {
   list-style: none;
   padding: 0;
   margin: 20px 0;
   flex-grow: 1;
 }
 
-.technician .sidebar-menu li {
+#technician-manager-container .sidebar-menu li {
   margin-bottom: 10px;
 }
 
-.technician .sidebar-link {
+#technician-manager-container .sidebar-link {
   display: flex;
   align-items: center;
   gap: 15px;
@@ -103,77 +103,36 @@
   transition: all 0.3s ease;
 }
 
-.technician .sidebar-link:hover {
+#technician-manager-container .sidebar-link:hover {
   background: rgba(255, 255, 255, 0.1);
   color: white;
   transform: translateX(5px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.technician .sidebar-link.active {
+#technician-manager-container .sidebar-link.active {
   background: linear-gradient(135deg, #66bb6a, #81c784);
   color: #1b5e20;
   font-weight: 700;
   box-shadow: 0 4px 15px rgba(102, 187, 106, 0.4);
 }
 
-.technician .sidebar-link .icon {
+#technician-manager-container .sidebar-link .icon {
   font-size: 1.3rem;
 }
 
-.technician .sidebar-link .text {
-  flex-grow: 1;
-}
-
-/* Sidebar User Info */
-.technician .sidebar-user-info {
-  padding: 15px 0;
-  border-top: 2px solid rgba(255, 255, 255, 0.2);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* Logout Button */
-.technician .logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 20px;
-  background: linear-gradient(135deg, #d90000, #ff0000);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  width: 100%;
-  text-align: left;
-}
-
-.technician .logout-btn:hover {
-  background: linear-gradient(135deg, #a81919, #d20a0a);
-  transform: translateX(5px);
-  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
-}
-
-.technician .logout-btn .icon {
-  font-size: 1.3rem;
-}
-
-.technician .logout-btn .text {
+#technician-manager-container .sidebar-link .text {
   flex-grow: 1;
 }
 
 /* Sidebar Footer */
-.technician .sidebar-footer {
+#technician-manager-container .sidebar-footer {
   padding: 15px 0;
   border-top: 2px solid rgba(255, 255, 255, 0.2);
   text-align: center;
 }
 
-.technician .sidebar-footer p {
+#technician-manager-container .sidebar-footer p {
   margin: 0;
   font-size: 0.9rem;
   color: #a8e6cf;
@@ -181,7 +140,7 @@
 }
 
 /* Main Content Area */
-.technician .main-content {
+#technician-manager-container .main-content {
   margin-left: 20px;
   padding: 30px;
   min-height: 100vh;
@@ -189,13 +148,13 @@
 }
 
 /* Dashboard Styling */
-.technician .dashboard {
+#technician-manager-container .dashboard {
   padding: 20px;
   max-width: 100%;
   width: 100%;
 }
 
-.technician .dashboard-header {
+#technician-manager-container .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -204,7 +163,7 @@
   border-bottom: 2px solid rgba(102, 187, 106, 0.2);
 }
 
-.technician .dashboard-title {
+#technician-manager-container .dashboard-title {
   font-size: 1.75rem;
   font-weight: 700;
   color: #080808;
@@ -212,7 +171,7 @@
   text-align: left;
 }
 
-.technician .dashboard-subtitle {
+#technician-manager-container .dashboard-subtitle {
   font-size: 1rem;
   color: #4a5568;
   margin-bottom: 0;
@@ -220,20 +179,20 @@
 }
 
 /* User Info */
-.technician .user-info {
+#technician-manager-container .user-info {
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
-.technician .user-info .user-name {
+#technician-manager-container .user-info .user-name {
   font-size: 0.875rem;
   color: #2e7d32;
   font-weight: 500;
 }
 
 /* Card Grid Layout */
-.technician .card-grid {
+#technician-manager-container .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
@@ -241,7 +200,7 @@
 }
 
 /* Individual Card Styling */
-.technician .card {
+#technician-manager-container .card {
   background-color: white;
   padding: 24px;
   border-radius: 12px;
@@ -253,7 +212,7 @@
   border: 2px solid transparent;
 }
 
-.technician .card::before {
+#technician-manager-container .card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -266,24 +225,24 @@
   transition: transform 0.3s ease;
 }
 
-.technician .card:hover::before {
+#technician-manager-container .card:hover::before {
   transform: scaleX(1);
 }
 
-.technician .card:hover {
+#technician-manager-container .card:hover {
   transform: translateY(-8px);
   box-shadow: 0 8px 24px rgba(102, 187, 106, 0.4);
   border: 2px solid #81c784;
 }
 
-.technician .card h2 {
+#technician-manager-container .card h2 {
   font-size: 1.375rem;
   margin-bottom: 12px;
   color: #000000;
   font-weight: 700;
 }
 
-.technician .card p {
+#technician-manager-container .card p {
   font-size: 0.875rem;
   color: #4a5568;
   line-height: 1.5;
@@ -291,20 +250,20 @@
 }
 
 /* Link Styling for Cards */
-.technician .activehome {
+#technician-manager-container .card a {
   text-decoration: none;
   color: inherit;
   display: block;
 }
 
-.technician .activehome:hover,
-.technician .activehome:active,
-.technician .activehome:visited {
+#technician-manager-container .card a:hover,
+#technician-manager-container .card a:active,
+#technician-manager-container .card a:visited {
   text-decoration: none;
   color: inherit;
 }
 
-.technician .activehome.active {
+#technician-manager-container .card a.active {
   background: linear-gradient(135deg, #66bb6a, #81c784);
   color: #1b5e20;
   font-weight: 700;
@@ -314,216 +273,196 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .technician .sidebar {
+  #technician-manager-container .sidebar {
     width: 70px;
     padding: 10px;
   }
 
-  .technician .sidebar.open {
+  #technician-manager-container .sidebar.open {
     width: 250px;
   }
 
-  .technician .sidebar-title,
-  .technician .sidebar-subtitle,
-  .technician .sidebar-link .text,
-  .technician .logout-btn .text,
-  .technician .sidebar-footer {
+  #technician-manager-container .sidebar-title,
+  #technician-manager-container .sidebar-subtitle,
+  #technician-manager-container .sidebar-link .text,
+  #technician-manager-container .sidebar-footer {
     display: none;
   }
 
-  .technician .sidebar.open .sidebar-title,
-  .technician .sidebar.open .sidebar-subtitle,
-  .technician .sidebar.open .sidebar-link .text,
-  .technician .sidebar.open .logout-btn .text,
-  .technician .sidebar.open .sidebar-footer {
+  #technician-manager-container .sidebar.open .sidebar-title,
+  #technician-manager-container .sidebar.open .sidebar-subtitle,
+  #technician-manager-container .sidebar.open .sidebar-link .text,
+  #technician-manager-container .sidebar.open .sidebar-footer {
     display: block;
   }
 
-  .technician .sidebar-logo {
+  #technician-manager-container .sidebar-logo {
     width: 40px;
     height: 40px;
   }
 
-  .technician .sidebar-toggle {
+  #technician-manager-container .sidebar-toggle {
     display: block;
   }
 
-  .technician .sidebar-link,
-  .technician .logout-btn {
+  #technician-manager-container .sidebar-link {
     justify-content: center;
     padding: 10px;
   }
 
-  .technician .sidebar.open .sidebar-link,
-  .technician .sidebar.open .logout-btn {
+  #technician-manager-container .sidebar.open .sidebar-link {
     justify-content: flex-start;
     padding: 15px 20px;
   }
 
-  .technician .sidebar-link .icon,
-  .technician .logout-btn .icon {
+  #technician-manager-container .sidebar-link .icon {
     font-size: 1.5rem;
   }
 
-  .technician .sidebar-user-info {
-    align-items: center;
-  }
-
-  .technician .logout-btn {
-    width: auto;
-    padding: 10px;
-  }
-
-  .technician .sidebar.open .logout-btn {
-    width: 100%;
-  }
-
-  .technician .main-content {
+  #technician-manager-container .main-content {
     margin-left: 90px;
     padding: 15px;
   }
 
-  .technician .sidebar.open + .main-content {
+  #technician-manager-container .sidebar.open ~ .main-content {
     margin-left: 270px;
   }
 
-  .technician .dashboard-header {
+  #technician-manager-container .dashboard-header {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .technician .user-info {
+  #technician-manager-container .user-info {
     flex-direction: row;
     width: 100%;
     justify-content: flex-end;
   }
 
-  .technician .dashboard-title {
+  #technician-manager-container .dashboard-title {
     font-size: 1.5rem;
   }
 
-  .technician .dashboard-subtitle {
+  #technician-manager-container .dashboard-subtitle {
     font-size: 0.875rem;
   }
 
-  .technician .card-grid {
+  #technician-manager-container .card-grid {
     grid-template-columns: 1fr;
     gap: 16px;
     padding: 15px;
   }
 
-  .technician .card {
+  #technician-manager-container .card {
     padding: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   }
 
-  .technician .card h2 {
+  #technician-manager-container .card h2 {
     font-size: 1.25rem;
   }
 
-  .technician .card p {
+  #technician-manager-container .card p {
     font-size: 0.8125rem;
   }
 }
 
 @media (max-width: 600px) {
-  .technician .dashboard-header {
+  #technician-manager-container .dashboard-header {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .technician .dashboard-title {
+  #technician-manager-container .dashboard-title {
     font-size: 1.5rem;
   }
 
-  .technician .dashboard-subtitle {
+  #technician-manager-container .dashboard-subtitle {
     font-size: 0.875rem;
   }
 
-  .technician .card-grid {
+  #technician-manager-container .card-grid {
     grid-template-columns: 1fr;
     padding: 10px;
   }
 
-  .technician .card {
+  #technician-manager-container .card {
     padding: 15px;
   }
 
-  .technician .card h2 {
+  #technician-manager-container .card h2 {
     font-size: 1.125rem;
   }
 
-  .technician .card p {
+  #technician-manager-container .card p {
     font-size: 0.8125rem;
   }
 }
 
 @media (max-width: 576px) {
-  .technician .sidebar {
+  #technician-manager-container .sidebar {
     width: 60px;
   }
 
-  .technician .sidebar.open {
+  #technician-manager-container .sidebar.open {
     width: 220px;
   }
 
-  .technician .sidebar-logo {
+  #technician-manager-container .sidebar-logo {
     width: 35px;
     height: 35px;
   }
 
-  .technician .sidebar-link,
-  .technician .logout-btn {
+  #technician-manager-container .sidebar-link {
     padding: 8px;
   }
 
-  .technician .sidebar.open .sidebar-link,
-  .technician .sidebar.open .logout-btn {
+  #technician-manager-container .sidebar.open .sidebar-link {
     padding: 12px 15px;
   }
 
-  .technician .main-content {
+  #technician-manager-container .main-content {
     margin-left: 80px;
   }
 
-  .technician .sidebar.open + .main-content {
+  #technician-manager-container .sidebar.open ~ .main-content {
     margin-left: 240px;
   }
 }
 
 @media (max-width: 480px) {
-  .technician .main-content {
+  #technician-manager-container .main-content {
     padding: 10px;
   }
 
-  .technician .dashboard-header {
+  #technician-manager-container .dashboard-header {
     margin-bottom: 20px;
   }
 
-  .technician .dashboard-title {
+  #technician-manager-container .dashboard-title {
     font-size: 1.5rem;
   }
 
-  .technician .card-grid {
+  #technician-manager-container .card-grid {
     padding: 8px;
   }
 
-  .technician .card {
+  #technician-manager-container .card {
     padding: 16px;
   }
 
-  .technician .card h2 {
+  #technician-manager-container .card h2 {
     font-size: 1.125rem;
   }
 }
 
 /* Print Styles */
 @media print {
-  .technician .sidebar {
+  #technician-manager-container .sidebar {
     display: none !important;
   }
 
-  .technician .main-content {
+  #technician-manager-container .main-content {
     margin-left: 0 !important;
     padding: 0 !important;
   }

@@ -1,4 +1,3 @@
-// 9) update app.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
@@ -7,14 +6,16 @@ import InventoryManage from "./Components/InventoryMange/InventoryMange";
 import SupplyRequest from "./Components/AdminPanel/SupplyRequest/SupplyRequest";
 import SupplyProducts from "./Components/AdminPanel/SupplyProducts/supplyProducts";
 import AllUser from "./Components/AdminPanel/AllUser/AllUser";
-import AllFeedback from "./Components/AdminPanel/AllFeedback/AllFeedback"; // Added
-import AllEmployee from "./Components/AdminPanel/AllEmployee/AllEmployee"; // Added
+import AllFeedback from "./Components/AdminPanel/AllFeedback/AllFeedback";
+import AllEmployee from "./Components/AdminPanel/AllEmployee/AllEmployee";
 import Login from "./Components/Auth/Login";
 import Signup from "./Components/Auth/Signup";
 import FinanceManager from "./Components/FinanceManager/FinanceManager";
 import TechnicianManager from "./Components/TechnicianDashboard/TechnicianManager";
+import RegisterEmployee from "./Components/TechnicianDashboard/RegisterEmployee";
 import Home from "./Components/UserManager/Home";
 import { isAuthenticated } from "./utils/auth";
+
 function App() {
   return (
     <div className="App">
@@ -58,6 +59,10 @@ function App() {
           element={isAuthenticated() ? <TechnicianManager /> : <Navigate to="/login" />}
         />
         <Route
+          path="/RegisterEmployee"
+          element={isAuthenticated() ? <RegisterEmployee /> : <Navigate to="/login" />}
+        />
+        <Route
           path="/"
           element={isAuthenticated() ? <Home /> : <Navigate to="/login" />}
         />
@@ -66,4 +71,5 @@ function App() {
     </div>
   );
 }
+
 export default App;

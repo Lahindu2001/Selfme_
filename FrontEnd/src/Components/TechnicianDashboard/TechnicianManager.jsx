@@ -1,31 +1,28 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { removeAuthToken } from '../../utils/auth';
+import { NavLink } from 'react-router-dom';
 import './TechnicianManager.css';
 
-const TechnicianManager = () => {
+function TechnicianManager() {
+  // ------------------- STATES -------------------
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const navigate = useNavigate();
   const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
   const firstName = authUser.firstName || 'Technician';
 
+  // ------------------- COMPANY INFORMATION -------------------
   const companyInfo = {
     name: 'SelfMe',
     logo: '/newLogo.png',
   };
 
+  // ------------------- TOGGLE SIDEBAR -------------------
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const handleLogout = () => {
-    removeAuthToken();
-    localStorage.removeItem('authUser');
-    navigate('/login');
-  };
-
+  // ------------------- RENDER -------------------
   return (
-    <div className="technician home-container">
+    <div className="home-container technician-manager">
+      {/* Left Sidebar */}
       <nav className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <img
@@ -35,7 +32,7 @@ const TechnicianManager = () => {
           />
           <div>
             <h2 className="sidebar-title">{companyInfo.name}</h2>
-            <p className="sidebar-subtitle">Technician Panel</p>
+            <p className="sidebar-subtitle">Technician Manager Panel</p>
           </div>
           <button className="sidebar-toggle" onClick={toggleSidebar}>
             {isSidebarOpen ? '✕' : '☰'}
@@ -44,61 +41,26 @@ const TechnicianManager = () => {
         <ul className="sidebar-menu">
           <li>
             <NavLink
-              to="#"
+              to="/RegisterEmployee"
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-              title="Test One"
+              title="Register Employee"
             >
               <span className="icon">🛠️</span>
-              <span className="text">Test One</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="#"
-              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-              title="Test Two"
-            >
-              <span className="icon">🔧</span>
-              <span className="text">Test Two</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="#"
-              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-              title="Test Three"
-            >
-              <span className="icon">⚙️</span>
-              <span className="text">Test Three</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="#"
-              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-              title="Test Four"
-            >
-              <span className="icon">🔩</span>
-              <span className="text">Test Four</span>
+              <span className="text">Register Employee</span>
             </NavLink>
           </li>
         </ul>
-        <div className="sidebar-user-info">
-          <button className="logout-btn" onClick={handleLogout}>
-            <span className="icon">🚪</span>
-            <span className="text">Logout</span>
-          </button>
-        </div>
         <div className="sidebar-footer">
           <p>© {new Date().getFullYear()} {companyInfo.name}</p>
         </div>
       </nav>
+      {/* Main Content Area */}
       <div className="main-content">
         <div className="dashboard">
           <div className="dashboard-header">
             <div>
-              <h1 className="dashboard-title">Technician Dashboard</h1>
-              <p className="dashboard-subtitle">{companyInfo.name} - FUTURE OF SUN - SOLAR POWER</p>
+              <h1 className="dashboard-title">Technician Manager Dashboard</h1>
+              <p className="dashboard-subtitle">Welcome to {companyInfo.name} Technician Manager Panel</p>
             </div>
             <div className="user-info">
               <span className="user-name">Welcome, {firstName}</span>
@@ -106,27 +68,9 @@ const TechnicianManager = () => {
           </div>
           <div className="card-grid">
             <div className="card">
-              <NavLink to="#" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
-                <h2>Test One</h2>
-                <p>Placeholder for Test One functionality.</p>
-              </NavLink>
-            </div>
-            <div className="card">
-              <NavLink to="#" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
-                <h2>Test Two</h2>
-                <p>Placeholder for Test Two functionality.</p>
-              </NavLink>
-            </div>
-            <div className="card">
-              <NavLink to="#" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
-                <h2>Test Three</h2>
-                <p>Placeholder for Test Three functionality.</p>
-              </NavLink>
-            </div>
-            <div className="card">
-              <NavLink to="#" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
-                <h2>Test Four</h2>
-                <p>Placeholder for Test Four functionality.</p>
+              <NavLink to="/RegisterEmployee" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
+                <h2>Register Employee</h2>
+                <p>Register a new employee in the system.</p>
               </NavLink>
             </div>
           </div>
@@ -134,6 +78,6 @@ const TechnicianManager = () => {
       </div>
     </div>
   );
-};
+}
 
 export default TechnicianManager;
