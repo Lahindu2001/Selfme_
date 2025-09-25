@@ -25,7 +25,7 @@ function Nav() {
   };
 
   return (
-    <nav className={`nav sidebar ${isSidebarOpen ? 'open' : ''}`}>
+    <nav id="nav" className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
       <div className="sidebar-header">
         <img src={companyInfo.logo} alt={`${companyInfo.name} Logo`} className="sidebar-logo" />
         <h3 className="sidebar-title">{companyInfo.name}</h3>
