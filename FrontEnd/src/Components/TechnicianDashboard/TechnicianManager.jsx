@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate  } from 'react-router-dom';
+import { removeAuthToken } from '../../utils/auth';
 import './TechnicianManager.css';
+
+
+
+
+
 
 function TechnicianManager() {
   // ------------------- STATES -------------------
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const navigate = useNavigate();
   const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
   const firstName = authUser.firstName || 'Technician';
 
@@ -18,6 +25,12 @@ function TechnicianManager() {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+  
+    const handleLogout = () => {
+      removeAuthToken();
+      localStorage.removeItem('authUser');
+      navigate('/login');
+    };
 
   // ------------------- RENDER -------------------
   return (
@@ -50,6 +63,13 @@ function TechnicianManager() {
             </NavLink>
           </li>
         </ul>
+        <div className="sidebar-user-info">
+       
+          <button className="logout-btn" onClick={handleLogout}>
+            <span className="icon">🚪</span>
+            <span className="text">Logout</span>
+          </button>
+        </div>
         <div className="sidebar-footer">
           <p>© {new Date().getFullYear()} {companyInfo.name}</p>
         </div>
@@ -74,6 +94,7 @@ function TechnicianManager() {
               </NavLink>
             </div>
           </div>
+          
         </div>
       </div>
     </div>
