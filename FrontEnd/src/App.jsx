@@ -12,7 +12,7 @@ import AllEmployee from "./Components/AdminPanel/AllEmployee/AllEmployee"; // Ad
 import Login from "./Components/Auth/Login";
 import Signup from "./Components/Auth/Signup";
 import FinanceManager from "./Components/FinanceManager/FinanceManager";
-import TechnicianManager from "./Components/TechnicianManager/TechnicianManager";
+import TechnicianManager from "./Components/TechnicianDashboard/TechnicianManager";
 import Home from "./Components/UserManager/Home";
 import { isAuthenticated } from "./utils/auth";
 function App() {

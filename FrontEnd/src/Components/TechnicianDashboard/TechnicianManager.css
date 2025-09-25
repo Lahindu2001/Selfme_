@@ -1,0 +1,530 @@
+/* TechnicianManager.css - Technician Dashboard Styling with Consistent Color Palette */
+
+/* Main Container */
+.technician .home-container {
+  font-family: 'poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Sidebar Container */
+.technician .sidebar {
+  width: 195px;
+  background: linear-gradient(180deg, #2e7d32 0%, #81c784 50%, #66bb6a 100%);
+  color: white;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+/* Sidebar Header */
+.technician .sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px 0;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+}
+
+.technician .sidebar-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  object-fit: contain;
+  background: white;
+  padding: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.technician .sidebar-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+  letter-spacing: 1px;
+}
+
+.technician .sidebar-subtitle {
+  font-size: 0.75rem;
+  color: #a8e6cf;
+  margin: 0;
+}
+
+.technician .sidebar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 20px;
+  transition: all 0.3s ease;
+}
+
+.technician .sidebar-toggle:hover {
+  transform: rotate(90deg);
+}
+
+/* Sidebar Menu */
+.technician .sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  flex-grow: 1;
+}
+
+.technician .sidebar-menu li {
+  margin-bottom: 10px;
+}
+
+.technician .sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 20px;
+  color: #a8e6cf;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 100;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.technician .sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.technician .sidebar-link.active {
+  background: linear-gradient(135deg, #66bb6a, #81c784);
+  color: #1b5e20;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(102, 187, 106, 0.4);
+}
+
+.technician .sidebar-link .icon {
+  font-size: 1.3rem;
+}
+
+.technician .sidebar-link .text {
+  flex-grow: 1;
+}
+
+/* Sidebar User Info */
+.technician .sidebar-user-info {
+  padding: 15px 0;
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Logout Button */
+.technician .logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #d90000, #ff0000);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.technician .logout-btn:hover {
+  background: linear-gradient(135deg, #a81919, #d20a0a);
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
+}
+
+.technician .logout-btn .icon {
+  font-size: 1.3rem;
+}
+
+.technician .logout-btn .text {
+  flex-grow: 1;
+}
+
+/* Sidebar Footer */
+.technician .sidebar-footer {
+  padding: 15px 0;
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.technician .sidebar-footer p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #a8e6cf;
+  font-weight: 300;
+}
+
+/* Main Content Area */
+.technician .main-content {
+  margin-left: 20px;
+  padding: 30px;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+}
+
+/* Dashboard Styling */
+.technician .dashboard {
+  padding: 20px;
+  max-width: 100%;
+  width: 100%;
+}
+
+.technician .dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid rgba(102, 187, 106, 0.2);
+}
+
+.technician .dashboard-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #080808;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+.technician .dashboard-subtitle {
+  font-size: 1rem;
+  color: #4a5568;
+  margin-bottom: 0;
+  text-align: left;
+}
+
+/* User Info */
+.technician .user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.technician .user-info .user-name {
+  font-size: 0.875rem;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+/* Card Grid Layout */
+.technician .card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 20px;
+}
+
+/* Individual Card Styling */
+.technician .card {
+  background-color: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+.technician .card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #2e7d32, #81c784);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.technician .card:hover::before {
+  transform: scaleX(1);
+}
+
+.technician .card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 24px rgba(102, 187, 106, 0.4);
+  border: 2px solid #81c784;
+}
+
+.technician .card h2 {
+  font-size: 1.375rem;
+  margin-bottom: 12px;
+  color: #000000;
+  font-weight: 700;
+}
+
+.technician .card p {
+  font-size: 0.875rem;
+  color: #4a5568;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Link Styling for Cards */
+.technician .activehome {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.technician .activehome:hover,
+.technician .activehome:active,
+.technician .activehome:visited {
+  text-decoration: none;
+  color: inherit;
+}
+
+.technician .activehome.active {
+  background: linear-gradient(135deg, #66bb6a, #81c784);
+  color: #1b5e20;
+  font-weight: 700;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .technician .sidebar {
+    width: 70px;
+    padding: 10px;
+  }
+
+  .technician .sidebar.open {
+    width: 250px;
+  }
+
+  .technician .sidebar-title,
+  .technician .sidebar-subtitle,
+  .technician .sidebar-link .text,
+  .technician .logout-btn .text,
+  .technician .sidebar-footer {
+    display: none;
+  }
+
+  .technician .sidebar.open .sidebar-title,
+  .technician .sidebar.open .sidebar-subtitle,
+  .technician .sidebar.open .sidebar-link .text,
+  .technician .sidebar.open .logout-btn .text,
+  .technician .sidebar.open .sidebar-footer {
+    display: block;
+  }
+
+  .technician .sidebar-logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .technician .sidebar-toggle {
+    display: block;
+  }
+
+  .technician .sidebar-link,
+  .technician .logout-btn {
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .technician .sidebar.open .sidebar-link,
+  .technician .sidebar.open .logout-btn {
+    justify-content: flex-start;
+    padding: 15px 20px;
+  }
+
+  .technician .sidebar-link .icon,
+  .technician .logout-btn .icon {
+    font-size: 1.5rem;
+  }
+
+  .technician .sidebar-user-info {
+    align-items: center;
+  }
+
+  .technician .logout-btn {
+    width: auto;
+    padding: 10px;
+  }
+
+  .technician .sidebar.open .logout-btn {
+    width: 100%;
+  }
+
+  .technician .main-content {
+    margin-left: 90px;
+    padding: 15px;
+  }
+
+  .technician .sidebar.open + .main-content {
+    margin-left: 270px;
+  }
+
+  .technician .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .technician .user-info {
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .technician .dashboard-title {
+    font-size: 1.5rem;
+  }
+
+  .technician .dashboard-subtitle {
+    font-size: 0.875rem;
+  }
+
+  .technician .card-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 15px;
+  }
+
+  .technician .card {
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .technician .card h2 {
+    font-size: 1.25rem;
+  }
+
+  .technician .card p {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .technician .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .technician .dashboard-title {
+    font-size: 1.5rem;
+  }
+
+  .technician .dashboard-subtitle {
+    font-size: 0.875rem;
+  }
+
+  .technician .card-grid {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+  .technician .card {
+    padding: 15px;
+  }
+
+  .technician .card h2 {
+    font-size: 1.125rem;
+  }
+
+  .technician .card p {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .technician .sidebar {
+    width: 60px;
+  }
+
+  .technician .sidebar.open {
+    width: 220px;
+  }
+
+  .technician .sidebar-logo {
+    width: 35px;
+    height: 35px;
+  }
+
+  .technician .sidebar-link,
+  .technician .logout-btn {
+    padding: 8px;
+  }
+
+  .technician .sidebar.open .sidebar-link,
+  .technician .sidebar.open .logout-btn {
+    padding: 12px 15px;
+  }
+
+  .technician .main-content {
+    margin-left: 80px;
+  }
+
+  .technician .sidebar.open + .main-content {
+    margin-left: 240px;
+  }
+}
+
+@media (max-width: 480px) {
+  .technician .main-content {
+    padding: 10px;
+  }
+
+  .technician .dashboard-header {
+    margin-bottom: 20px;
+  }
+
+  .technician .dashboard-title {
+    font-size: 1.5rem;
+  }
+
+  .technician .card-grid {
+    padding: 8px;
+  }
+
+  .technician .card {
+    padding: 16px;
+  }
+
+  .technician .card h2 {
+    font-size: 1.125rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .technician .sidebar {
+    display: none !important;
+  }
+
+  .technician .main-content {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+}

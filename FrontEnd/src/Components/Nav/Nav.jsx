@@ -1,27 +1,31 @@
-// 8) update nav.jsx
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../utils/auth';
 import './Nav.css';
+
 function Nav() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
   const firstName = authUser.firstName || 'Admin';
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
   const handleLogout = () => {
     removeAuthToken();
     localStorage.removeItem('authUser');
     navigate('/login');
   };
+
   const companyInfo = {
     name: 'SelfMe',
     logo: '/newLogo.png', // Ensure this logo exists in the public directory
   };
+
   return (
-    <nav className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+    <nav className={`nav sidebar ${isSidebarOpen ? 'open' : ''}`}>
       <div className="sidebar-header">
         <img src={companyInfo.logo} alt={`${companyInfo.name} Logo`} className="sidebar-logo" />
         <h3 className="sidebar-title">{companyInfo.name}</h3>
@@ -104,4 +108,5 @@ function Nav() {
     </nav>
   );
 }
+
 export default Nav;
