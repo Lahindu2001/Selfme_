@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 const Payment = require('../../Model/UserModel/PaymentModel');
 const User = require('../../Model/UserModel');
-const Product = require('../../Model/FinanceManager/ItemModel');
+const Product = require('../../Model/inventory_models/itemModel');
 // Conditionally import Invoice model
 let Invoice;
 try {
-  Invoice = require('../../Model/InvoiceModel');
+ // Invoice = require('../../Model/InvoiceModel');
 } catch (error) {
   console.warn('⚠️ Invoice model not found. Skipping invoice_id population.');
 }

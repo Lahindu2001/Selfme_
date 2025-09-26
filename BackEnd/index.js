@@ -15,7 +15,7 @@ const Payment = require("./Model/UserModel/PaymentModel");
 const salaryRouter = require("./Routes/FinanceManager/salaryRoutes");
 const staffRouter = require("./Routes/FinanceManager/staffRoutes");
 const jobAssigningRouter = require("./Routes/FinanceManager/jobAssigningRoutes");
-const paymentRouter = require("./Routes/UserRoutes/PaymentRoutes");
+const paymentRouter = require("./Routes/FinanceManager/PaymentRoutes");
 
 
 //lahindu
