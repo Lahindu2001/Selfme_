@@ -1,26 +1,31 @@
-// 7) update admin.jsx
+// 6) Updated admin.jsx
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../utils/auth';
 import '../Nav/Nav';
 import './Admin.css';
+
 function Admin() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
   const firstName = authUser.firstName || 'Admin';
+
   const companyInfo = {
     name: 'SelfMe',
     logo: '/newLogo.png', // Logo from Nav.js
   };
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
   const handleLogout = () => {
     removeAuthToken();
     localStorage.removeItem('authUser');
     navigate('/login');
   };
+
   return (
     <div className="home-container admin">
       {/* Left Sidebar */}
@@ -46,28 +51,18 @@ function Admin() {
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
               title="Admin Home"
             >
-              
+             
               <span className="text">Admin Home</span>
             </NavLink>
           </li>
-          
-          <li>
-            <NavLink
-              to="#"
-              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-              title="Supply Request"
-            >
-             
-              <span className="text">Supply Request</span>
-            </NavLink>
-          </li>
+         
           <li>
             <NavLink
               to="/AllUsers"
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
               title="User Management"
             >
-              
+             
               <span className="text">User Management</span>
             </NavLink>
           </li>
@@ -77,7 +72,7 @@ function Admin() {
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
               title="Feedback Management"
             >
-            
+           
               <span className="text">All Feedback</span>
             </NavLink>
           </li>
@@ -87,15 +82,25 @@ function Admin() {
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
               title="Employee Management"
             >
-              
+             
               <span className="text">All Employees</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/ViewSupplyAll"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="Supplier Management"
+            >
+             
+              <span className="text">All Suppliers</span>
             </NavLink>
           </li>
         </ul>
         <div className="sidebar-user-info">
-       
+      
           <button className="logout-btn" onClick={handleLogout}>
-            
+           
             <span className="text">Logout</span>
           </button>
         </div>
@@ -115,25 +120,15 @@ function Admin() {
               <span className="user-name">Welcome, {firstName}</span>
             </div>
           </div>
-        
+       
           <div className="card-grid">
-
              <div className="card">
               <NavLink to="/AllUsers" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
                 <h2>Users</h2>
                 <p>Manage all users and their details.</p>
               </NavLink>
             </div>
-
-            
-            <div className="card">
-              <NavLink to="#" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
-                <h2>Supply Request</h2>
-                <p>Streamline supply orders, track requests, and manage inventory efficiently.</p>
-              </NavLink>
-            </div>
-
-
+           
             <div className="card">
               <NavLink to="/AllFeedback" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
                 <h2>All Feedback</h2>
@@ -147,11 +142,27 @@ function Admin() {
                 <p>View all employee details.</p>
               </NavLink>
             </div>
+            
+            <div className="card">
+              <NavLink to="/ViewSupplyAll" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
+                <h2>All Suppliers</h2>
+                <p>View all supplier details.</p>
+              </NavLink>
+            </div>
 
+
+            <div className="card">
+              <NavLink to="#" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
+                <h2>test</h2>
+                <p>Streamline supply orders, track requests, and manage inventory efficiently.</p>
+              </NavLink>
+            </div>
+            
           </div>
         </div>
       </div>
     </div>
   );
 }
+
 export default Admin;

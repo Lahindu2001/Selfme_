@@ -1,3 +1,4 @@
+// 7) Updated nav.jsx
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../utils/auth';
@@ -40,28 +41,16 @@ function Nav() {
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
             title="Admin Home"
           >
-            
             <span className="text">Admin Home</span>
           </NavLink>
         </li>
-      
-        <li>
-          <NavLink
-            to="#"
-            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-            title="Supply Request"
-          >
-          
-            <span className="text">Supply Request</span>
-          </NavLink>
-        </li>
+    
         <li>
           <NavLink
             to="/AllUsers"
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
             title="User Management"
           >
-            
             <span className="text">User Management</span>
           </NavLink>
         </li>
@@ -71,7 +60,6 @@ function Nav() {
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
             title="Feedback Management"
           >
-            
             <span className="text">All Feedback</span>
           </NavLink>
         </li>
@@ -81,15 +69,24 @@ function Nav() {
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
             title="Employee Management"
           >
-       
             <span className="text">All Employees</span>
           </NavLink>
         </li>
+        <li>
+          <NavLink
+            to="/ViewSupplyAll"
+            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+            title="Supplier Management"
+          >
+            <span className="text">All Suppliers</span>
+          </NavLink>
+        </li>
+       
       </ul>
       <div className="sidebar-user-info">
         <span className="user-name">Welcome, {firstName}</span>
         <button className="logout-btn" onClick={handleLogout}>
-         
+        
           <span className="text">Logout</span>
         </button>
       </div>
