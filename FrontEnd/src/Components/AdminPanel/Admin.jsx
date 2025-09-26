@@ -52,7 +52,7 @@ function Admin() {
           </li>
           <li>
             <NavLink
-              to="/SupplyRequest"
+              to="#"
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
               title="Supply Request Management"
             >
@@ -62,7 +62,7 @@ function Admin() {
           </li>
           <li>
             <NavLink
-              to="/SupplyProducts"
+              to="#"
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
               title="Supply Product Management"
             >
@@ -127,13 +127,13 @@ function Admin() {
         
           <div className="card-grid">
             <div className="card">
-              <NavLink to="/SupplyRequest" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
+              <NavLink to="#" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
                 <h2>Supply Request</h2>
                 <p>Streamline supply orders, track requests, and manage inventory efficiently.</p>
               </NavLink>
             </div>
             <div className="card">
-              <NavLink to="/SupplyProducts" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
+              <NavLink to="#" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
                 <h2>Supply Products</h2>
                 <p>Manage supply product inventory and details.</p>
               </NavLink>

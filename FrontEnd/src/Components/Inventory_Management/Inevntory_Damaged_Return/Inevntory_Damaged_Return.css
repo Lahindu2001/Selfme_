@@ -1,0 +1,173 @@
+/* Layout */
+#idr_inventory-damaged-return {
+  background: #f9fafb;
+  font-family: "Inter", sans-serif;
+  min-height: 100vh;
+}
+
+#idr_damaged-return-container {
+  margin-left: 17.5%;
+  padding: 30px;
+}
+
+/* Page Header */
+#idr_page-header {
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+#idr_page-header h2 {
+  margin: 0 0 8px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+#idr_page-subtitle {
+  font-size: 1rem;
+  color: #64748b;
+}
+
+/* Stats */
+#idr_stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.idr_stat-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.idr_stat-card h3 {
+  margin: 0 0 5px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.idr_stat-number {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Filters */
+#idr_filters-container {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 25px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+}
+
+#idr_search-input,
+#idr_status-filter,
+#idr_category-filter {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+}
+
+#idr_selection-controls {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#idr_select-all-btn {
+  padding: 8px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f3f4f6;
+  cursor: pointer;
+}
+
+#idr_selected-count {
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+/* Error */
+#idr_error-message {
+  background: #fef2f2;
+  border-left: 4px solid #dc2626;
+  padding: 12px 15px;
+  border-radius: 6px;
+  color: #b91c1c;
+  margin-bottom: 20px;
+}
+
+/* PDF Buttons */
+#idr_pdf-controls {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+#idr_pdf-all,
+#idr_pdf-selected {
+  padding: 10px 18px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  background: #111827;
+  color: #fff;
+}
+
+/* Table */
+#idr_inventory-table-container {
+  overflow-x: auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+#idr_inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#idr_inventory-table th,
+#idr_inventory-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.85rem;
+}
+
+#idr_inventory-table th {
+  font-weight: 600;
+  background: #f9fafb;
+}
+
+#idr_inventory-table td img.idr_table-image {
+  width: 50px;
+  height: auto;
+  border-radius: 4px;
+}
+
+.idr_row-selected {
+  background: #f1f5f9;
+}
+
+#idr_no-items {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+}

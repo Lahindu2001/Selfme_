@@ -27,7 +27,7 @@ const Login = () => {
           navigate('/mainAdminhome');
           break;
         case 'Inventory':
-          navigate('/InventoryMange');
+          navigate('/inventory');
           break;
         case 'Finance':
           navigate('/FinanceManager');

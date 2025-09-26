@@ -46,7 +46,7 @@ function Nav() {
         </li>
         <li>
           <NavLink
-            to="/SupplyRequest"
+            to="#"
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
             title="Supply Request Management"
           >
@@ -56,7 +56,7 @@ function Nav() {
         </li>
         <li>
           <NavLink
-            to="/SupplyProducts"
+            to="#"
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
             title="Supply Product Management"
           >

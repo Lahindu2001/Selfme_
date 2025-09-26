@@ -1,0 +1,26 @@
+/* InventoryManagementHome.css */
+.inv-page {
+  display: flex;
+  min-height: 100vh;
+  background: #f8f8f8;
+}
+
+/* sidebar nav එක */
+.inv-sidebar {
+  width: 240px; /* fixed sidebar width */
+  background: #222; /* nav background color */
+  color: white;
+  flex-shrink: 0; /* nav එක ছোট නොවෙන්න */
+  min-height: 100vh;
+  position: fixed; /* sidebar එක fix කරනවා */
+  top: 0;
+  left: 0;
+}
+
+/* main content area */
+.inv-main {
+  flex: 1;
+  padding: 24px;
+  margin-left: 240px; /* sidebar width එකට margin */
+  box-sizing: border-box;
+}
