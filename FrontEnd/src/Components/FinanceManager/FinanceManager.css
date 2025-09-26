@@ -1,44 +1,99 @@
-/* Main Container */
-.home-container {
+/* Scoped Main Container */
+.finance-management {
+  display: flex;
+  min-height: 100vh;
   font-family: Arial, sans-serif;
   background-color: #f4f6f9; /* Light grey background */
-  min-height: 100vh;
+}
+
+/* Sidebar Styling */
+.finance-management .sidebar {
+  width: 260px;
+  background: #1a1f36;
+  color: #fff;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
 }
 
-/* Dashboard Styling */
-.dashboard {
+.finance-management .sidebar-header {
   padding: 20px;
-  max-width: 100%;
-  width: 100%;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.dashboard-header {
+.finance-management .sidebar-nav {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.finance-management .nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  color: #ccc;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.3s, color 0.3s;
+}
+
+.finance-management .nav-item:hover {
+  background: #2d3354;
+  color: #fff;
+}
+
+.finance-management .nav-item.active {
+  background: #2d3354;
+  color: #00bcd4;
+}
+
+.finance-management .nav-icon {
+  margin-right: 10px;
+}
+
+/* Main Content Styling */
+.finance-management .main-content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.finance-management .content-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.dashboard-title {
+.finance-management .content-header h1 {
   font-size: 28px;
   font-weight: bold;
   color: #2c3e50; /* Dark navy */
   margin-bottom: 5px;
-  text-align: left;
 }
 
-.dashboard-subtitle {
+.finance-management .content-header p {
   font-size: 16px;
   color: #7f8c8d; /* Subtle grey */
   margin-bottom: 0;
-  text-align: left;
 }
 
-/* Logout Button Styling */
-.logout-btn {
+.finance-management .user-info {
+  display: flex;
+  align-items: center;
+}
+
+.finance-management .user-name {
+  margin-right: 10px;
+  font-size: 16px;
+  color: #2c3e50;
+}
+
+.finance-management .logout-btn {
   background-color: #e74c3c; /* Red for logout action */
   color: #ffffff;
   border: none;
@@ -50,32 +105,531 @@
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.logout-btn:hover {
+.finance-management .logout-btn:hover {
   background-color: #c0392b; /* Darker red on hover */
   transform: translateY(-2px);
 }
 
-.logout-btn:active {
+.finance-management .logout-btn:active {
   transform: translateY(0);
 }
 
+.finance-management .content-body {
+  flex-grow: 1;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.finance-management .content-section h2 {
+  margin-bottom: 16px;
+  font-size: 20px;
+  color: #444;
+}
+
+.finance-management .dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.finance-management .card {
+  background: #f5f5f5;
+  padding: 16px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.finance-management .card h3 {
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #555;
+}
+
+.finance-management .card .amount {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.finance-management .trend {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.finance-management .trend.positive {
+  color: green;
+}
+
+.finance-management .trend.negative {
+  color: red;
+}
+
+.finance-management .trend.neutral {
+  color: gray;
+}
+
+.finance-management .recent-activities ul {
+  list-style: disc;
+  padding-left: 20px;
+  color: #555;
+}
+
+/* Finance Management Styles */
+.finance-management .content-section {
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.finance-management .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.finance-management .section-header h2 {
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Table Styles */
+.finance-management .table-container {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.finance-management .data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.finance-management .data-table th {
+  background: #34495e;
+  color: white;
+  padding: 15px 12px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #2c3e50;
+}
+
+.finance-management .data-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+
+.finance-management .data-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.finance-management .data-table tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.finance-management .data-table tr:nth-child(even):hover {
+  background-color: #e9ecef;
+}
+
+/* Button Styles */
+.finance-management .btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  margin: 2px;
+}
+
+.finance-management .btn-primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.finance-management .btn-primary:hover {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+}
+
+.finance-management .btn-warning {
+  background-color: #f39c12;
+  color: white;
+}
+
+.finance-management .btn-warning:hover {
+  background-color: #e67e22;
+}
+
+.finance-management .btn-danger {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.finance-management .btn-danger:hover {
+  background-color: #c0392b;
+}
+
+.finance-management .btn-info {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.finance-management .btn-info:hover {
+  background-color: #138496;
+}
+
+.finance-management .btn-sm {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* Action Buttons */
+.finance-management .action-buttons {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+/* Badge Styles */
+.finance-management .badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.finance-management .badge-primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.finance-management .badge-secondary {
+  background-color: #95a5a6;
+  color: white;
+}
+
+/* Status Styles */
+.finance-management .status {
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.finance-management .status.pending {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.finance-management .status.paid {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.finance-management .status.overdue {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Modal Styles */
+.finance-management .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.finance-management .modal {
+  background: white;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.finance-management .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+  border-radius: 10px 10px 0 0;
+}
+
+.finance-management .modal-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.finance-management .close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.finance-management .close-btn:hover {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.finance-management .modal-body {
+  padding: 20px;
+}
+
+.finance-management .modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 20px;
+  border-top: 1px solid #e9ecef;
+  background: #f8f9fa;
+}
+
+/* Form Styles */
+.finance-management .form-group {
+  margin-bottom: 20px;
+}
+
+.finance-management .form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #495057;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.finance-management .form-group input,
+.finance-management .form-group select,
+.finance-management .form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.finance-management .form-group input:focus,
+.finance-management .form-group select:focus,
+.finance-management .form-group textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.finance-management .form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.finance-management .form-row .form-group {
+  flex: 1;
+}
+
+/* Alert Styles */
+.finance-management .alert {
+  padding: 12px 20px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.finance-management .alert-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.finance-management .alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.finance-management .alert-warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.finance-management .alert-info {
+  background-color: #cce7f0;
+  color: #055160;
+  border: 1px solid #b6d7ff;
+}
+
+/* Loading and No Data Styles */
+.finance-management .loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+  color: #6c757d;
+}
+
+.finance-management .no-data {
+  text-align: center;
+  padding: 50px;
+  color: #6c757d;
+}
+
+.finance-management .no-data p {
+  font-size: 16px;
+  margin: 0;
+}
+
 /* Responsive Design */
+.finance-management .content-section {
+  padding: 10px;
+}
+
+.finance-management .section-header {
+  flex-direction: column;
+  gap: 15px;
+  align-items: stretch;
+}
+
+.finance-management .table-container {
+  overflow-x: auto;
+}
+
+.finance-management .data-table {
+  min-width: 800px;
+}
+
+.finance-management .modal {
+  width: 95%;
+  margin: 10px;
+}
+
+.finance-management .form-row {
+  flex-direction: column;
+  gap: 0;
+}
+
+.finance-management .action-buttons {
+  flex-direction: column;
+  gap: 2px;
+}
+
 @media (max-width: 600px) {
-  .dashboard-header {
+  .finance-management .content-header {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .logout-btn {
+  .finance-management .user-info {
     margin-top: 10px;
     align-self: flex-end;
   }
 
-  .dashboard-title {
+  .finance-management .content-header h1 {
     font-size: 24px;
   }
 
-  .dashboard-subtitle {
+  .finance-management .content-header p {
     font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .finance-management .data-table th,
+  .finance-management .data-table td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+
+  .finance-management .btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .finance-management .btn-sm {
+    padding: 3px 6px;
+    font-size: 10px;
+  }
+}
+
+/* Animation for smooth transitions */
+.finance-management .modal {
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Hover effects for table rows */
+.finance-management .data-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+/* Print styles for salary slips */
+@media print {
+  .finance-management .content-section {
+    background: white;
+    padding: 0;
+  }
+
+  .finance-management .section-header,
+  .finance-management .modal,
+  .finance-management .action-buttons {
+    display: none;
+  }
+
+  .finance-management .data-table {
+    border: 1px solid #000;
+  }
+
+  .finance-management .data-table th {
+    background: #f0f0f0 !important;
+    color: #000 !important;
   }
 }

@@ -1,29 +1,35 @@
-// 8) Updated app.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
+
 //dasunika
 import Home from "./Components/UserManager/Home";
 import Login from "./Components/Auth/Login";
 import Signup from "./Components/Auth/Signup";
 import UserDashboard from "./Components/UserManager/UserDashboard";
+
+
 //lahindu
 import AdminPanel from "./Components/AdminPanel/Admin";
-import InventoryManage from "./Components/InventoryMange/InventoryMange";
 import AllUser from "./Components/AdminPanel/AllUser/AllUser";
 import AllFeedback from "./Components/AdminPanel/AllFeedback/AllFeedback";
 import AllEmployee from "./Components/AdminPanel/AllEmployee/AllEmployee";
 import ViewSupplyAll from "./Components/AdminPanel/VeiwSupplyAll/ViewSupplyAll";
 import GetSupplyAll from "./Components/AdminPanel/GetSupplyAll/GetSupplyAll"; 
+
 //linuka
 import FinanceManager from "./Components/FinanceManager/FinanceManager";
+
 //sulakshi
 import TechnicianDashboard from "./Components/TechnicianDashboard/TechnicianDashboard";
 import RegisterEmployee from "./Components/TechnicianDashboard/RegisterEmployee";
 import RegisteredEmployees from "./Components/TechnicianDashboard/RegisteredEmployees";
 import AssignedTasks from "./Components/TechnicianDashboard/AssignedTasks";
 import CompletedTasks from "./Components/TechnicianDashboard/CompletedTasks";
-//home
+
+
+//hasas
+import InventoryManage from "./Components/InventoryMange/InventoryMange";
 import InventoryManagementHome from "./components/Inventory_Management/Inventory_Management_Home/Inventory_Management_Home";
 import Add_Items from "./components/Inventory_Management/Add_Items/Add_Items";
 import View_All_Items from "./components/Inventory_Management/View_All_Items/View_All_Items";
@@ -38,6 +44,8 @@ import View_Suppliers from "./components/Inventory_Management/View_Suppliers/Vie
 import Order_Place from "./components/Inventory_Management/Order_Place/Order_Place";
 import Stock_Outs from "./components/Inventory_Management/Stock_Outs/Stock_Outs";
 import Stock_Outs_History from "./components/Inventory_Management/Stock_Out_History/Stock_Out_History";
+
+
 import { isAuthenticated } from "./utils/auth";
 function App() {
   return (

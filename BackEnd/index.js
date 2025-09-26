@@ -11,7 +11,11 @@ const Product = require("./Model/inventory_models/itemModel");
 const Cart = require("./Model/UserModel/CartModel");
 const Payment = require("./Model/UserModel/PaymentModel");
 
-
+//linuka
+const salaryRouter = require("./Routes/FinanceManager/salaryRoutes");
+const staffRouter = require("./Routes/FinanceManager/staffRoutes");
+const jobAssigningRouter = require("./Routes/FinanceManager/jobAssigningRoutes");
+const paymentRouter = require("./Routes/UserRoutes/PaymentRoutes");
 
 
 //lahindu
@@ -31,6 +35,7 @@ const productRequestRoutes = require("./Routes/item_routes/productRequestRoutes"
 const supplierRouter = require("./Routes/item_routes/supplierRoutes");
 const orderRoutes = require("./Routes/item_routes/orderRoutes");
 const stockOutRoutes = require ("./Routes/item_routes/stockOutRoutes");
+
 const path = require("path");
 const fs = require("fs");
 const cors = require("cors");
@@ -86,6 +91,14 @@ app.use("/orders", orderRoutes);
 app.use("/productRequests", productRequestRoutes);
 app.use("/suppliers", supplierRouter);
 app.use("/stockouts", stockOutRoutes);
+
+//linuka
+
+app.use("/api/finance/salary", salaryRouter);
+app.use("/api/finance/staff", staffRouter);
+app.use("/api/finance/job-assigning", jobAssigningRouter);
+app.use("/api/finance/payments", paymentRouter);
+
 // ------------------- DATABASE -------------------
 mongoose
   .connect("mongodb+srv://admin:M8jreHLM0FG5ZEGi@cluster1.lmzaxue.mongodb.net/")

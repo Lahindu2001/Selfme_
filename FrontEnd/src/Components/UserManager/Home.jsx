@@ -1,4 +1,3 @@
-// FrontEnd/src/Components/UserManager/Home.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -8,7 +7,7 @@ import Navbar from "../Nav/Navbar";
 import Footer from "../Footer/Footer";
 import Cart from "../UserManager/cart";
 import Payment from "../UserManager/Payment";
-import UserDashboard from "../UserManager/UserDashboard"; // Added import
+import UserDashboard from "../UserManager/UserDashboard";
 
 // Image imports with fallbacks
 import BannerImg1 from "./Home-Images/BannerImg1.jpg";
@@ -113,7 +112,7 @@ function Home() {
   }
   if (view === "products") {
     return (
-      <div style={{ textAlign: "center", margin: "50px" }}>
+      <div className="home-container" style={{ textAlign: "center", margin: "50px" }}>
         <Navbar />
         <h2>Products Page</h2>
         <p>Explore our range of solar products.</p>
@@ -123,7 +122,7 @@ function Home() {
   }
   if (view === "packages") {
     return (
-      <div className="packages-page" style={{ margin: "50px" }}>
+      <div className="home-container packages-page" style={{ margin: "50px" }}>
         <Navbar />
         <h2>Our Solar Packages</h2>
         {loading && <p>Loading packages...</p>}
@@ -210,7 +209,7 @@ function Home() {
   }
   if (view === "service") {
     return (
-      <div style={{ textAlign: "center", margin: "50px" }}>
+      <div className="home-container" style={{ textAlign: "center", margin: "50px" }}>
         <Navbar />
         <h2>Service Page</h2>
         <p>Learn about our installation and maintenance services.</p>
@@ -220,7 +219,7 @@ function Home() {
   }
   if (view === "feedback") {
     return (
-      <div style={{ textAlign: "center", margin: "50px" }}>
+      <div className="home-container" style={{ textAlign: "center", margin: "50px" }}>
         <Navbar />
         <h2>Feedback Page</h2>
         <p>Share your feedback with us.</p>
@@ -230,7 +229,7 @@ function Home() {
   }
   if (view === "about") {
     return (
-      <div style={{ textAlign: "center", margin: "50px" }}>
+      <div className="home-container" style={{ textAlign: "center", margin: "50px" }}>
         <Navbar />
         <h2>About Us Page</h2>
         <p>Discover more about Selfme.lk.</p>
@@ -240,7 +239,7 @@ function Home() {
   }
   if (view === "contact") {
     return (
-      <div style={{ textAlign: "center", margin: "50px" }}>
+      <div className="home-container" style={{ textAlign: "center", margin: "50px" }}>
         <Navbar />
         <h2>Contact Page</h2>
         <p>Get in touch with our team.</p>
@@ -317,7 +316,7 @@ function Home() {
   };
 
   return (
-    <div>
+    <div className="home-container">
       <Navbar />
       <div id="default-carousel" className="relative w-full" data-carousel="slide">
         <div className="relative h-56 overflow-hidden rounded-lg md:h-96">
