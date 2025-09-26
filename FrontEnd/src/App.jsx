@@ -6,6 +6,7 @@ import "./App.css";
 import Home from "./Components/UserManager/Home";
 import Login from "./Components/Auth/Login";
 import Signup from "./Components/Auth/Signup";
+import UserDashboard from "./Components/UserManager/UserDashboard";
 //lahindu
 import AdminPanel from "./Components/AdminPanel/Admin";
 import InventoryManage from "./Components/InventoryMange/InventoryMange";
@@ -164,6 +165,13 @@ function App() {
           element={isAuthenticated() ? <TechnicianDashboard /> : <Navigate to="/login" />}
         />
         {/*sulakshi*/}
+
+        {/*dasunika*/}
+        <Route
+          path="/dashboard"
+          element={isAuthenticated() ? <UserDashboard /> : <Navigate to="/login" />}
+        />
+        {/*dasunika*/}
       
         <Route
           path="/"

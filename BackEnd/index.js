@@ -1,16 +1,30 @@
-
 const express = require("express");
 const mongoose = require("mongoose");
+
 const authRouter = require("./Routes/AuthRoutes");
+const cartRoutes = require("./Routes/UserRoutes/CartRoute");
+const paymentRoutes = require("./Routes/UserRoutes/PaymentRoutes");
+const itemRoute = require("./Routes/UserRoutes/itemCartRoutes");
+
+// Import models to ensure they are registered
+const Product = require("./Model/inventory_models/itemModel"); 
+const Cart = require("./Model/UserModel/CartModel");
+const Payment = require("./Model/UserModel/PaymentModel");
+
+
+
+
 //lahindu
 const userRouter = require("./Routes/AdminandSupplyRoutes/userRoutes");
 const allFeedbackRouter = require("./Routes/AdminandSupplyRoutes/AllFeedbackRoutes");
 const allEmployeeRouter = require("./Routes/AdminandSupplyRoutes/AllEmployeeRoutes");
 const viewSupplyAllRoute = require("./Routes/AdminandSupplyRoutes/ViewSupplyAllRoute");
 const getSupplyAllRoute = require("./Routes/AdminandSupplyRoutes/GetSupplyAllRoute"); 
+
 //sulakshi
 const employeeRouter = require("./Routes/TechRoute/employeeRoutes");
 const assignmentRoutes = require("./Routes/TechRoute/assignmentRoutes");
+
 //hasaranga
 const itemRoutes = require("./Routes/item_routes/ItemRoutes");
 const productRequestRoutes = require("./Routes/item_routes/productRequestRoutes");
@@ -21,31 +35,51 @@ const path = require("path");
 const fs = require("fs");
 const cors = require("cors");
 const app = express();
+
 // ------------------- MIDDLEWARE -------------------
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
+
+
 // Ensure uploads folder exists
 const uploadDir = path.join(__dirname, "Uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
+
+
+app.use("/auth", authRouter);
+app.use("/api", cartRoutes);
+app.use("/api", paymentRoutes);
+app.use("/api", itemRoute);
+app.use("/item_images", express.static(path.join(__dirname, "item_images")));
+
+
+// Test route
+app.get("/test", (req, res) => res.json({ message: "Server is working" }));
+
 // Serve static files
 app.use("/images", express.static(path.join(__dirname, "item_images")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads"))); 
+
 // Serve static files from uploads folder
 app.use("/Uploads", express.static(uploadDir));
+
 // ------------------- ROUTES -------------------
 app.use("/auth", authRouter);
+
 //lahindu
 app.use("/all-users", userRouter);
 app.use("/all-feedback", allFeedbackRouter);
 app.use("/all-employees", allEmployeeRouter);
 app.use("/all-suppliers", viewSupplyAllRoute);
 app.use("/all-productrequests", getSupplyAllRoute); 
+
 //sulakshi
 app.use("/employees", employeeRouter);
 app.use("/assignments", assignmentRoutes);
+
 //hasaranga
 app.use("/products", itemRoutes);
 app.use("/orders", orderRoutes);

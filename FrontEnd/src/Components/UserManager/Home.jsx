@@ -1,9 +1,16 @@
+// FrontEnd/src/Components/UserManager/Home.jsx
 import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
-import { removeAuthToken } from '../../utils/auth';
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
+import { removeAuthToken } from "../../utils/auth";
 import "./Home.css";
 import Navbar from "../Nav/Navbar";
 import Footer from "../Footer/Footer";
+import Cart from "../UserManager/cart";
+import Payment from "../UserManager/Payment";
+import UserDashboard from "../UserManager/UserDashboard"; // Added import
+
+// Image imports with fallbacks
 import BannerImg1 from "./Home-Images/BannerImg1.jpg";
 import BannerImg2 from "./Home-Images/BannerImg2.jpg";
 import BannerImg3 from "./Home-Images/BannerImg3.jpg";
@@ -30,7 +37,218 @@ import CTA_image from "./Home-Images/cta-image.jpg";
 
 function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const view = query.get("view");
+
+  // Force re-render on query parameter change
+  useEffect(() => {
+    // This ensures the component re-renders when the view parameter changes
+  }, [location.search]);
+
+  // Fetch items for the Packages page
+  useEffect(() => {
+    if (view === "packages") {
+      const fetchItems = async () => {
+        setLoading(true);
+        try {
+          const response = await axios.get("http://localhost:5000/api/items");
+          const data = Array.isArray(response.data) ? response.data : [];
+          setItems(data);
+          setLoading(false);
+        } catch (err) {
+          if (err.response && err.response.status === 404) {
+            setError("API endpoint not found. Please check the backend server.");
+          } else {
+            setError("Failed to fetch items. Please try again later.");
+          }
+          setItems([]);
+          setLoading(false);
+        }
+      };
+      fetchItems();
+    }
+  }, [view]);
+
+  // Handle adding item to cart
+  const handleAddToCart = async (itemId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please log in to add items to cart.");
+        navigate("/login");
+        return;
+      }
+
+      const response = await axios.post(
+        "http://localhost:5000/api/cart",
+        { itemId, quantity: 1 },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert("Item added to cart successfully!");
+    } catch (err) {
+      if (err.response && err.response.status === 401) {
+        alert("Session expired. Please log in again.");
+        removeAuthToken();
+        navigate("/login");
+      } else {
+        alert("Failed to add item to cart. Please try again.");
+      }
+    }
+  };
+
+  // Handle view query parameter
+  if (view === "dashboard") {
+    return <UserDashboard />;
+  }
+  if (view === "cart") {
+    return <Cart />;
+  }
+  if (view === "payment") {
+    return <Payment />;
+  }
+  if (view === "products") {
+    return (
+      <div style={{ textAlign: "center", margin: "50px" }}>
+        <Navbar />
+        <h2>Products Page</h2>
+        <p>Explore our range of solar products.</p>
+        <Footer />
+      </div>
+    );
+  }
+  if (view === "packages") {
+    return (
+      <div className="packages-page" style={{ margin: "50px" }}>
+        <Navbar />
+        <h2>Our Solar Packages</h2>
+        {loading && <p>Loading packages...</p>}
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        {Array.isArray(items) && items.length > 0 ? (
+          <div style={{ overflowX: "auto" }}>
+            <table
+              className="packages-table"
+              style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}
+            >
+              <thead>
+                <tr style={{ backgroundColor: "#f2f2f2" }}>
+                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Image</th>
+                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Serial Number</th>
+                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Item Name</th>
+                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Category</th>
+                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Description</th>
+                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Quantity in Stock</th>
+                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Re-order Level</th>
+                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Supplier</th>
+                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Purchase Price</th>
+                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Selling Price</th>
+                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Status</th>
+                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item._id}>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>
+                      <img
+                        src={
+                          item.item_image
+                            ? `http://localhost:5000/item_images/${item.item_image}`
+                            : kw5Solar
+                        }
+                        alt={item.item_name || "Item image"}
+                        style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                        onError={(e) => {
+                          e.target.src = kw5Solar; // Fallback image
+                        }}
+                      />
+                    </td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.serial_number || "N/A"}</td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.item_name || "N/A"}</td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.category || "N/A"}</td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.description || "N/A"}</td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.quantity_in_stock || 0}</td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.re_order_level || 0}</td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.supplier_name || "N/A"}</td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>
+                      Rs. {(item.purchase_price || 0).toLocaleString()}
+                    </td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>
+                      Rs. {(item.selling_price || 0).toLocaleString()}
+                    </td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.status || "N/A"}</td>
+                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>
+                      <button
+                        onClick={() => handleAddToCart(item._id)}
+                        style={{
+                          backgroundColor: "#28a745",
+                          color: "white",
+                          padding: "5px 10px",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Add to Cart
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          !loading && <p>No packages available at the moment.</p>
+        )}
+        <Footer />
+      </div>
+    );
+  }
+  if (view === "service") {
+    return (
+      <div style={{ textAlign: "center", margin: "50px" }}>
+        <Navbar />
+        <h2>Service Page</h2>
+        <p>Learn about our installation and maintenance services.</p>
+        <Footer />
+      </div>
+    );
+  }
+  if (view === "feedback") {
+    return (
+      <div style={{ textAlign: "center", margin: "50px" }}>
+        <Navbar />
+        <h2>Feedback Page</h2>
+        <p>Share your feedback with us.</p>
+        <Footer />
+      </div>
+    );
+  }
+  if (view === "about") {
+    return (
+      <div style={{ textAlign: "center", margin: "50px" }}>
+        <Navbar />
+        <h2>About Us Page</h2>
+        <p>Discover more about Selfme.lk.</p>
+        <Footer />
+      </div>
+    );
+  }
+  if (view === "contact") {
+    return (
+      <div style={{ textAlign: "center", margin: "50px" }}>
+        <Navbar />
+        <h2>Contact Page</h2>
+        <p>Get in touch with our team.</p>
+        <Footer />
+      </div>
+    );
+  }
+
   const slides = [
     {
       image: BannerImg1,
@@ -98,28 +316,10 @@ function Home() {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
-  // Check if user is authenticated
-  const isAuthenticated = !!localStorage.getItem('authToken'); // Example check
-
-  // Function to handle logout
-  const handleLogout = () => {
-    removeAuthToken(); // Remove the auth token
-    navigate('/logout'); // Navigate to login page after logout
-  };
-
   return (
     <div>
       <Navbar />
-      {isAuthenticated && (
-        <button className="logout-btn" onClick={handleLogout}>
-          Logout
-        </button>
-      )}
-      <div
-        id="default-carousel"
-        className="relative w-full"
-        data-carousel="slide"
-      >
+      <div id="default-carousel" className="relative w-full" data-carousel="slide">
         <div className="relative h-56 overflow-hidden rounded-lg md:h-96">
           {slides.map((slide, index) => (
             <div
@@ -133,6 +333,9 @@ function Home() {
                 src={slide.image}
                 className="absolute block w-full h-full object-cover"
                 alt={`Selfme.lk Solar - ${slide.title}`}
+                onError={(e) => {
+                  e.target.src = kw5Solar; // Fallback image
+                }}
               />
               <div className="banner-overlay">
                 <div className="banner-content">
@@ -141,17 +344,11 @@ function Home() {
                     <h2 className="banner-subtitle">{slide.subtitle}</h2>
                     <p className="banner-description">{slide.description}</p>
                     <div className="highlight-badge">
-                      <span className="highlight-text">
-                        ✨ {slide.highlight}
-                      </span>
+                      <span className="highlight-text">✨ {slide.highlight}</span>
                     </div>
                     <div className="banner-actions">
-                      <button className="cta-button primary">
-                        {slide.buttonText}
-                      </button>
-                      <button className="cta-button secondary">
-                        Contact Us
-                      </button>
+                      <button className="cta-button primary">{slide.buttonText}</button>
+                      <button className="cta-button secondary">Contact Us</button>
                     </div>
                   </div>
                 </div>
@@ -159,11 +356,63 @@ function Home() {
             </div>
           ))}
         </div>
+        <button
+          type="button"
+          className="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+          data-carousel-prev
+          onClick={goToPrev}
+        >
+          <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50">
+            <svg
+              className="w-4 h-4 text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 6 10"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M5 1 1 5l4 4"
+              />
+            </svg>
+            <span className="sr-only">Previous</span>
+          </span>
+        </button>
+        <button
+          type="button"
+          className="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+          data-carousel-next
+          onClick={goToNext}
+        >
+          <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50">
+            <svg
+              className="w-4 h-4 text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 6 10"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m1 9 4-4-4-4"
+              />
+            </svg>
+            <span className="sr-only">Next</span>
+          </span>
+        </button>
       </div>
+
+      {/* Why Choose Us Section */}
       <h2 className="after-heading-choose-us">Why Choose Us</h2>
       <div className="service-box-section">
         <div className="service-box">
-          <img src={Warranty} alt="Warranty Icon" />
+          <img src={Warranty} alt="Warranty Icon" onError={(e) => { e.target.src = kw5Solar; }} />
           <h2>Trust & Warranty</h2>
           <p>
             Our products come with comprehensive warranties to ensure your peace
@@ -171,7 +420,7 @@ function Home() {
           </p>
         </div>
         <div className="service-box">
-          <img src={Quality} alt="Quality Icon" />
+          <img src={Quality} alt="Quality Icon" onError={(e) => { e.target.src = kw5Solar; }} />
           <h2>High Quality Work</h2>
           <p>
             We use only premium materials and follow industry best practices to
@@ -179,15 +428,15 @@ function Home() {
           </p>
         </div>
         <div className="service-box">
-          <img src={PowerSaving} alt="Customer Support Icon" />
+          <img src={PowerSaving} alt="Power Saving Icon" onError={(e) => { e.target.src = kw5Solar; }} />
           <h2>Power Saving</h2>
           <p>
-            Our dedicated support team is available round the clock to address
-            any questions or concerns about your solar system.
+            Reduce your electricity bills by up to 80% with our energy-efficient
+            solar solutions.
           </p>
         </div>
         <div className="service-box">
-          <img src={CusSupport} alt="Customer Support Icon" />
+          <img src={CusSupport} alt="Customer Support Icon" onError={(e) => { e.target.src = kw5Solar; }} />
           <h2>24/7 Support</h2>
           <p>
             Our dedicated support team is available round the clock to address
@@ -195,11 +444,13 @@ function Home() {
           </p>
         </div>
       </div>
+
+      {/* About Us Section */}
       <div className="about-us">
         <h2 className="section-title">About Selfme.lk</h2>
         <div className="about-us-main">
           <div className="about-us-image">
-            <img src={Aboutus_banner} alt="About Selfme.lk solar solutions" />
+            <img src={Aboutus_banner} alt="About Selfme.lk solar solutions" onError={(e) => { e.target.src = kw5Solar; }} />
           </div>
           <div className="about-us-content">
             <p className="about-text">
@@ -208,7 +459,8 @@ function Home() {
               renewable energy solutions. With years of experience in the
               industry, we specialize in high-quality solar panel installations,
               energy storage systems, and comprehensive maintenance services.
-              <br></br>
+              <br />
+              <br />
               Our strategic collaborations with industry leaders like Kelani
               Cables guarantee superior wiring solutions that meet international
               safety standards, while our certified partnership with CEB (Ceylon
@@ -222,43 +474,44 @@ function Home() {
           </div>
         </div>
       </div>
+
+      {/* Products Section */}
       <div className="Products">
         <h2>Our Product Categories</h2>
         <div className="Product-section">
           <div className="products-category">
-            <img src={kw5Solar} alt="temp solar" />
+            <img src={kw5Solar} alt="5KW Home Solar System" onError={(e) => { e.target.src = kw5Solar; }} />
             <h3>5KW Home Solar System</h3>
-            <p>Perfect for houses, save 70% bill</p>
+            <p>Perfect for houses, save 70% on electricity bills</p>
             <button>View Details</button>
           </div>
           <div className="products-category">
-            <img src={BusinessSolar} alt="" />
+            <img src={BusinessSolar} alt="20KW Business Package" onError={(e) => { e.target.src = kw5Solar; }} />
             <h3>20KW Business Package</h3>
-            <p>Best for small businesses</p>
+            <p>Best for small businesses and offices</p>
             <button>View Details</button>
           </div>
           <div className="products-category">
-            <img src={Battery} alt="" />
+            <img src={Battery} alt="Lithium-ion Battery Pack" onError={(e) => { e.target.src = kw5Solar; }} />
             <h3>Lithium-ion Battery Pack</h3>
-            <p>Long lifespan, maintenance free</p>
+            <p>Long lifespan, maintenance-free energy storage</p>
             <button>View Details</button>
           </div>
           <div className="products-category">
-            <img src={Inverter} alt="" />
+            <img src={Inverter} alt="Hybrid Inverter" onError={(e) => { e.target.src = kw5Solar; }} />
             <h3>Hybrid Inverter</h3>
-            <p>Smart switching between solar & grid</p>
+            <p>Smart switching between solar & grid power</p>
             <button>View Details</button>
           </div>
         </div>
         <button className="allProducts-btn">View All Products</button>
       </div>
-      <h2 className="after-heading-choose-us">Our testimonials</h2>
+
+      {/* Testimonials Section */}
+      <h2 className="after-heading-choose-us">Our Testimonials</h2>
       <div className="testimonial-section">
         <div className="testimonial">
-          <img
-            src="https://randomuser.me/api/portraits/men/32.jpg"
-            alt="Customer"
-          />
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Customer" />
           <div className="rating">
             <span className="star">★</span>
             <span className="star">★</span>
@@ -267,16 +520,10 @@ function Home() {
             <span className="star">★</span>
           </div>
           <h4>Jake Gyllenhaal</h4>
-          <p>
-            "The solar installation was seamless and the energy savings are
-            incredible!"
-          </p>
+          <p>"The solar installation was seamless and the energy savings are incredible!"</p>
         </div>
         <div className="testimonial">
-          <img
-            src="https://randomuser.me/api/portraits/women/44.jpg"
-            alt="Customer"
-          />
+          <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Customer" />
           <div className="rating">
             <span className="star">★</span>
             <span className="star">★</span>
@@ -285,16 +532,10 @@ function Home() {
             <span className="star">★</span>
           </div>
           <h4>Sarah Johnson</h4>
-          <p>
-            "Excellent service and professional team. My electricity bill
-            dropped by 70%!"
-          </p>
+          <p>"Excellent service and professional team. My electricity bill dropped by 70%!"</p>
         </div>
         <div className="testimonial">
-          <img
-            src="https://randomuser.me/api/portraits/men/75.jpg"
-            alt="Customer"
-          />
+          <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Customer" />
           <div className="rating">
             <span className="star">★</span>
             <span className="star">★</span>
@@ -303,16 +544,10 @@ function Home() {
             <span className="star">★</span>
           </div>
           <h4>Michael Chen</h4>
-          <p>
-            "The system works perfectly even during power outages. Highly
-            recommend!"
-          </p>
+          <p>"The system works perfectly even during power outages. Highly recommend!"</p>
         </div>
         <div className="testimonial">
-          <img
-            src="https://randomuser.me/api/portraits/women/68.jpg"
-            alt="Customer"
-          />
+          <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Customer" />
           <div className="rating">
             <span className="star">★</span>
             <span className="star">★</span>
@@ -321,48 +556,50 @@ function Home() {
             <span className="star">★</span>
           </div>
           <h4>Emily Rodriguez</h4>
-          <p>
-            "The installation was quick and the team was very knowledgeable."
-          </p>
+          <p>"The installation was quick and the team was very knowledgeable."</p>
         </div>
       </div>
+
+      {/* Gallery Section */}
       <div className="gallery-section">
         <h1>Our Gallery</h1>
         <div className="gallery-grid">
           <div className="gallery-item">
-            <img src={Gimage1} alt="Solar installation project" />
+            <img src={Gimage1} alt="Solar installation project 1" onError={(e) => { e.target.src = kw5Solar; }} />
             <div className="image-overlay"></div>
           </div>
           <div className="gallery-item">
-            <img src={Gimage2} alt="Solar installation project" />
+            <img src={Gimage2} alt="Solar installation project 2" onError={(e) => { e.target.src = kw5Solar; }} />
             <div className="image-overlay"></div>
           </div>
           <div className="gallery-item">
-            <img src={Gimage3} alt="Solar installation project" />
+            <img src={Gimage3} alt="Solar installation project 3" onError={(e) => { e.target.src = kw5Solar; }} />
             <div className="image-overlay"></div>
           </div>
           <div className="gallery-item">
-            <img src={Gimage4} alt="Solar installation project" />
+            <img src={Gimage4} alt="Solar installation project 4" onError={(e) => { e.target.src = kw5Solar; }} />
             <div className="image-overlay"></div>
           </div>
           <div className="gallery-item">
-            <img src={Gimage5} alt="Solar installation project" />
+            <img src={Gimage5} alt="Solar installation project 5" onError={(e) => { e.target.src = kw5Solar; }} />
             <div className="image-overlay"></div>
           </div>
           <div className="gallery-item">
-            <img src={Gimage6} alt="Solar installation project" />
+            <img src={Gimage6} alt="Solar installation project 6" onError={(e) => { e.target.src = kw5Solar; }} />
             <div className="image-overlay"></div>
           </div>
           <div className="gallery-item">
-            <img src={Gimage7} alt="Solar installation project" />
+            <img src={Gimage7} alt="Solar installation project 7" onError={(e) => { e.target.src = kw5Solar; }} />
             <div className="image-overlay"></div>
           </div>
           <div className="gallery-item">
-            <img src={Gimage8} alt="Solar installation project" />
+            <img src={Gimage8} alt="Solar installation project 8" onError={(e) => { e.target.src = kw5Solar; }} />
             <div className="image-overlay"></div>
           </div>
         </div>
       </div>
+
+      {/* CTA Section */}
       <div className="cta-section">
         <div className="cta-container">
           <div className="cta-content">
@@ -377,95 +614,11 @@ function Home() {
             </div>
           </div>
           <div className="cta-image">
-            <img src={CTA_image} alt="" />
+            <img src={CTA_image} alt="Solar energy solutions" onError={(e) => { e.target.src = kw5Solar; }} />
           </div>
         </div>
       </div>
-      <div className="ourTeam-section">
-        <h2>Our Team</h2>
-        <div className="team-container">
-          <div className="team-member">
-            <img
-              src="https://randomuser.me/api/portraits/women/32.jpg"
-              alt="Sameera Dharmasiri"
-            />
-            <h4>Sameera Dharmasiri</h4>
-            <p className="position">CEO & Founder</p>
-            <p className="bio">
-              15+ years in renewable energy. Founded Selfme.lk to bring
-              affordable solar solutions to Sri Lankan homes and businesses.
-            </p>
-            <div className="social-links">
-              <a href="#">
-                <i className="fab fa-linkedin"></i>
-              </a>
-              <a href="#">
-                <i className="fab fa-twitter"></i>
-              </a>
-            </div>
-          </div>
-          <div className="team-member">
-            <img
-              src="https://randomuser.me/api/portraits/men/45.jpg"
-              alt="Rajith Perera"
-            />
-            <h4>Rajith Perera</h4>
-            <p className="position">Solar Engineer</p>
-            <p className="bio">
-              Certified solar specialist with 8 years experience. Designs
-              efficient systems tailored to Sri Lanka's climate.
-            </p>
-            <div className="social-links">
-              <a href="#">
-                <i className="fab fa-linkedin"></i>
-              </a>
-              <a href="#">
-                <i className="fab fa-twitter"></i>
-              </a>
-            </div>
-          </div>
-          <div className="team-member">
-            <img
-              src="https://randomuser.me/api/portraits/women/68.jpg"
-              alt="Nayana Silva"
-            />
-            <h4>Nayana Silva</h4>
-            <p className="position">Installation Manager</p>
-            <p className="bio">
-              Leads our installation teams with 10 years of field experience.
-              Ensures flawless implementation of every project.
-            </p>
-            <div className="social-links">
-              <a href="#">
-                <i className="fab fa-linkedin"></i>
-              </a>
-              <a href="#">
-                <i className="fab fa-twitter"></i>
-              </a>
-            </div>
-          </div>
-          <div className="team-member">
-            <img
-              src="https://randomuser.me/api/portraits/men/22.jpg"
-              alt="Dinesh Fernando"
-            />
-            <h4>Dinesh Fernando</h4>
-            <p className="position">Customer Support</p>
-            <p className="bio">
-              5+ years in customer care. Provides ongoing support and
-              maintenance guidance for all solar system owners.
-            </p>
-            <div className="social-links">
-              <a href="#">
-                <i className="fab fa-linkedin"></i>
-              </a>
-              <a href="#">
-                <i className="fab fa-twitter"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+
       <Footer />
     </div>
   );
