@@ -3,28 +3,23 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../utils/auth';
 import './Nav.css';
-
 function Nav() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
   const firstName = authUser.firstName || 'Admin';
-
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
   const handleLogout = () => {
     removeAuthToken();
     localStorage.removeItem('authUser');
     navigate('/login');
   };
-
   const companyInfo = {
     name: 'SelfMe',
     logo: '/newLogo.png', // Ensure this logo exists in the public directory
   };
-
   return (
     <nav id="nav" className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
       <div className="sidebar-header">
@@ -44,7 +39,7 @@ function Nav() {
             <span className="text">Admin Home</span>
           </NavLink>
         </li>
-    
+   
         <li>
           <NavLink
             to="/AllUsers"
@@ -81,12 +76,21 @@ function Nav() {
             <span className="text">All Suppliers</span>
           </NavLink>
         </li>
-       
+        <li>
+          <NavLink
+            to="/GetSupplyAll"
+            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+            title="Product Request Management"
+          >
+            <span className="text">All Product Requests</span>
+          </NavLink>
+        </li>
+      
       </ul>
       <div className="sidebar-user-info">
         <span className="user-name">Welcome, {firstName}</span>
         <button className="logout-btn" onClick={handleLogout}>
-        
+       
           <span className="text">Logout</span>
         </button>
       </div>
@@ -96,5 +100,4 @@ function Nav() {
     </nav>
   );
 }
-
 export default Nav;

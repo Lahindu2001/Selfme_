@@ -1,4 +1,4 @@
-// 3) Updated index.js
+
 const express = require("express");
 const mongoose = require("mongoose");
 const authRouter = require("./Routes/AuthRoutes");
@@ -7,6 +7,7 @@ const userRouter = require("./Routes/AdminandSupplyRoutes/userRoutes");
 const allFeedbackRouter = require("./Routes/AdminandSupplyRoutes/AllFeedbackRoutes");
 const allEmployeeRouter = require("./Routes/AdminandSupplyRoutes/AllEmployeeRoutes");
 const viewSupplyAllRoute = require("./Routes/AdminandSupplyRoutes/ViewSupplyAllRoute");
+const getSupplyAllRoute = require("./Routes/AdminandSupplyRoutes/GetSupplyAllRoute"); 
 //sulakshi
 const employeeRouter = require("./Routes/TechRoute/employeeRoutes");
 const assignmentRoutes = require("./Routes/TechRoute/assignmentRoutes");
@@ -16,7 +17,6 @@ const productRequestRoutes = require("./Routes/item_routes/productRequestRoutes"
 const supplierRouter = require("./Routes/item_routes/supplierRoutes");
 const orderRoutes = require("./Routes/item_routes/orderRoutes");
 const stockOutRoutes = require ("./Routes/item_routes/stockOutRoutes");
-
 const path = require("path");
 const fs = require("fs");
 const cors = require("cors");
@@ -32,7 +32,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 // Serve static files
 app.use("/images", express.static(path.join(__dirname, "item_images")));
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Add this line
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); 
 // Serve static files from uploads folder
 app.use("/Uploads", express.static(uploadDir));
 // ------------------- ROUTES -------------------
@@ -42,6 +42,7 @@ app.use("/all-users", userRouter);
 app.use("/all-feedback", allFeedbackRouter);
 app.use("/all-employees", allEmployeeRouter);
 app.use("/all-suppliers", viewSupplyAllRoute);
+app.use("/all-productrequests", getSupplyAllRoute); 
 //sulakshi
 app.use("/employees", employeeRouter);
 app.use("/assignments", assignmentRoutes);
