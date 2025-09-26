@@ -11,9 +11,14 @@ import AllEmployee from "./Components/AdminPanel/AllEmployee/AllEmployee";
 import Login from "./Components/Auth/Login";
 import Signup from "./Components/Auth/Signup";
 import FinanceManager from "./Components/FinanceManager/FinanceManager";
-import TechnicianManager from "./Components/TechnicianDashboard/TechnicianManager";
+
+import TechnicianDashboard from "./Components/TechnicianDashboard/TechnicianDashboard";
 import RegisterEmployee from "./Components/TechnicianDashboard/RegisterEmployee";
 import RegisteredEmployees from "./Components/TechnicianDashboard/RegisteredEmployees";
+import AssignedTasks from "./Components/TechnicianDashboard/AssignedTasks";
+import CompletedTasks from "./Components/TechnicianDashboard/CompletedTasks";
+
+
 import Home from "./Components/UserManager/Home";
 import { isAuthenticated } from "./utils/auth";
 
@@ -55,10 +60,7 @@ function App() {
           path="/FinanceManager"
           element={isAuthenticated() ? <FinanceManager /> : <Navigate to="/login" />}
         />
-        <Route
-          path="/TechnicianManager"
-          element={isAuthenticated() ? <TechnicianManager /> : <Navigate to="/login" />}
-        />
+ 
 
         <Route
           path="/register-employee"
@@ -68,6 +70,23 @@ function App() {
         <Route
           path="/employees"
           element={isAuthenticated() ? <RegisteredEmployees /> : <Navigate to="/login" />}
+        /> 
+
+        
+        <Route
+          path="/assigned-tasks"
+          element={isAuthenticated() ? <AssignedTasks /> : <Navigate to="/login" />}
+        /> 
+
+        
+        <Route
+          path="/completed-tasks"
+          element={isAuthenticated() ? <CompletedTasks  /> : <Navigate to="/login" />}
+        /> 
+
+        <Route
+          path="/technicianDashboard"
+          element={isAuthenticated() ? <TechnicianDashboard  /> : <Navigate to="/login" />}
         /> 
 
         <Route

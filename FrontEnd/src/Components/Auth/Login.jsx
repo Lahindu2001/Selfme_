@@ -33,7 +33,7 @@ const Login = () => {
           navigate('/FinanceManager');
           break;
         case 'Technician':
-          navigate('/TechnicianManager');
+          navigate('/TechnicianDashboard');
           break;
         case 'Customer':
           navigate('/'); // Navigate to Home.jsx

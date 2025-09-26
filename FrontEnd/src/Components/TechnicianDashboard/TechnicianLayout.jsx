@@ -1,73 +1,99 @@
-import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-//import Navbar from "../Nav/Navbar";
-//import Footer from "../Footer/Footer";
-import "./TechnicianDashboard.css";
+import React, { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { removeAuthToken } from '../../utils/auth';
+import './TechnicianLayout.css';
 
 function TechnicianLayout({ children }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
+  const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+  const firstName = authUser.firstName || 'Technician';
 
-  // Helper to check if a route is active
-  const isActive = (path) => location.pathname === path;
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const handleLogout = () => {
+    removeAuthToken();
+    localStorage.removeItem('authUser');
+    navigate('/login');
+  };
+
+  const companyInfo = {
+    name: 'SelfMe',
+    logo: '/newLogo.png',
+  };
 
   return (
-    <div>
-      
-      {/* <Navbar /> */}
-      <div className="technician-dashboard">
-        <div className="dashboard-btn-group">
-          <button
-            className={`cta-button primary${
-              isActive("/technicianDashboard") ? " active-btn" : ""
-            }`}
-            onClick={() => navigate("/technicianDashboard")}
-          >
-            Tasks
+    <div className="technician-layout">
+      <nav id="technician-nav" className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-header">
+          <img src={companyInfo.logo} alt={`${companyInfo.name} Logo`} className="sidebar-logo" />
+          <h3 className="sidebar-title">{companyInfo.name}</h3>
+          <button className="sidebar-toggle" onClick={toggleSidebar}>
+            {isSidebarOpen ? '✕' : '☰'}
           </button>
-          <button
-            className={`cta-button primary${
-              isActive("/register-employee")
-                ? " active-btn"
-                : ""
-            }`}
-            onClick={() => navigate("/register-employee")}
-          >
-            Register Employee
-          </button>
-
-
-           
-          <button
-            className={`cta-button primary${
-              isActive("/employees") ? " active-btn" : ""
-            }`}
-            onClick={() => navigate("/employees")}
-          >
-            Registered Employees
-          </button>
-{/* 
-         
-          <button
-            className={`cta-button primary${
-              isActive("/technicianDashboard/assigned-tasks") ? " active-btn" : ""
-            }`}
-            onClick={() => navigate("/technicianDashboard/assigned-tasks")}
-          >
-            Pending Tasks
-          </button>
-          <button
-            className={`cta-button primary${
-              isActive("/technicianDashboard/completed-tasks") ? " active-btn" : ""
-            }`}
-            onClick={() => navigate("/technicianDashboard/completed-tasks")}
-          >
-            Completed Tasks
-          </button> */}
         </div>
+        <ul className="sidebar-menu">
+          <li>
+            <NavLink
+              to="/technicianDashboard"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="Tasks"
+            >
+              <span className="text">Tasks</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/register-employee"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="Register Employee"
+            >
+              <span className="text">Register Employee</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/employees"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="Registered Employees"
+            >
+              <span className="text">Registered Employees</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/assigned-tasks"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="Pending Tasks"
+            >
+              <span className="text">Pending Tasks</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/completed-tasks"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="Completed Tasks"
+            >
+              <span className="text">Completed Tasks</span>
+            </NavLink>
+          </li>
+        </ul>
+        <div className="sidebar-user-info">
+          <span className="user-name">Welcome, {firstName}</span>
+          <button className="logout-btn" onClick={handleLogout}>
+            <span className="text">Logout</span>
+          </button>
+        </div>
+        <div className="sidebar-footer">
+          <p>© {new Date().getFullYear()} {companyInfo.name}</p>
+        </div>
+      </nav>
+      <div className="technician-content">
         {children}
       </div>
-      {/* <Footer /> */}
     </div>
   );
 }
