@@ -44,24 +44,15 @@ function Nav() {
             <span className="text">Admin Home</span>
           </NavLink>
         </li>
+      
         <li>
           <NavLink
             to="#"
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-            title="Supply Request Management"
-          >
-            
-            <span className="text">Supply Request</span>
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="#"
-            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-            title="Supply Product Management"
+            title="Supply Request"
           >
           
-            <span className="text">Supply Products</span>
+            <span className="text">Supply Request</span>
           </NavLink>
         </li>
         <li>

@@ -50,24 +50,15 @@ function Admin() {
               <span className="text">Admin Home</span>
             </NavLink>
           </li>
+          
           <li>
             <NavLink
               to="#"
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-              title="Supply Request Management"
-            >
-              
-              <span className="text">Supply Request</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="#"
-              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-              title="Supply Product Management"
+              title="Supply Request"
             >
              
-              <span className="text">Supply Products</span>
+              <span className="text">Supply Request</span>
             </NavLink>
           </li>
           <li>
@@ -126,40 +117,37 @@ function Admin() {
           </div>
         
           <div className="card-grid">
+
+             <div className="card">
+              <NavLink to="/AllUsers" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
+                <h2>Users</h2>
+                <p>Manage all users and their details.</p>
+              </NavLink>
+            </div>
+
+            
             <div className="card">
               <NavLink to="#" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
                 <h2>Supply Request</h2>
                 <p>Streamline supply orders, track requests, and manage inventory efficiently.</p>
               </NavLink>
             </div>
-            <div className="card">
-              <NavLink to="#" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
-                <h2>Supply Products</h2>
-                <p>Manage supply product inventory and details.</p>
-              </NavLink>
-            </div>
-            <div className="card">
-              <NavLink to="/AllUsers" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
-                <h2>Users</h2>
-                <p>Manage all users and their details.</p>
-              </NavLink>
-            </div>
+
+
             <div className="card">
               <NavLink to="/AllFeedback" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
                 <h2>All Feedback</h2>
                 <p>Manage all feedbacks and replies.</p>
               </NavLink>
             </div>
+
             <div className="card">
               <NavLink to="/AllEmployees" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
                 <h2>All Employees</h2>
                 <p>View all employee details.</p>
               </NavLink>
             </div>
-            <div className="card">
-              <h2>Test1</h2>
-              <p>Test1</p>
-            </div>
+
           </div>
         </div>
       </div>

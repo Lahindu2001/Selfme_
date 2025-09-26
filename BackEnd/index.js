@@ -1,16 +1,17 @@
 const express = require("express");
 const mongoose = require("mongoose");
-
-const userRouter = require("./Routes/AdminandSupplyRoutes/userRoutes");
 const authRouter = require("./Routes/AuthRoutes");
+
+//lahindu
+const userRouter = require("./Routes/AdminandSupplyRoutes/userRoutes");
 const allFeedbackRouter = require("./Routes/AdminandSupplyRoutes/AllFeedbackRoutes");
 const allEmployeeRouter = require("./Routes/AdminandSupplyRoutes/AllEmployeeRoutes");
 
-
+//sulakshi
 const employeeRouter = require("./Routes/TechRoute/employeeRoutes");
 const assignmentRoutes = require("./Routes/TechRoute/assignmentRoutes");
 
-
+//hasaranga
 const itemRoutes = require("./Routes/item_routes/ItemRoutes");
 const productRequestRoutes = require("./Routes/item_routes/productRequestRoutes");
 const supplierRouter = require("./Routes/item_routes/supplierRoutes");
@@ -44,17 +45,19 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Add thi
 app.use("/Uploads", express.static(uploadDir));
 // ------------------- ROUTES -------------------
 
-
-
-app.use("/all-users", userRouter);
 app.use("/auth", authRouter);
+
+//lahindu
+app.use("/all-users", userRouter);
 app.use("/all-feedback", allFeedbackRouter);
 app.use("/all-employees", allEmployeeRouter);
 
+
+//sulakshi
 app.use("/employees", employeeRouter);
 app.use("/assignments", assignmentRoutes);
 
-
+//hasaranga
 app.use("/products", itemRoutes);
 app.use("/orders", orderRoutes);
 app.use("/productRequests", productRequestRoutes);

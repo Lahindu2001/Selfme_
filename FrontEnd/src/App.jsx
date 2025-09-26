@@ -42,18 +42,14 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route
-          path="/mainAdminhome"
-          element={isAuthenticated() ? <AdminPanel /> : <Navigate to="/login" />}
-        />
+        
+
+
+        {/*hasa*/}
         <Route
           path="/InventoryMange"
           element={isAuthenticated() ? <InventoryManage /> : <Navigate to="/login" />}
         />
-
-
-
-
          <Route
           path="/inventory"
           element={isAuthenticated() ? <InventoryManagementHome /> : <Navigate to="/login" />}
@@ -114,7 +110,7 @@ function App() {
           path="/viewSuppliers"
           element={isAuthenticated() ? <View_Suppliers /> : <Navigate to="/login" />}
         />
-        
+        {/*hasa*/}
 
 
 
@@ -123,17 +119,11 @@ function App() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+        {/*lahi*/}
+        <Route
+          path="/mainAdminhome"
+          element={isAuthenticated() ? <AdminPanel /> : <Navigate to="/login" />}
+        />
         <Route
           path="/AllUsers"
           element={isAuthenticated() ? <AllUser /> : <Navigate to="/login" />}
@@ -146,12 +136,27 @@ function App() {
           path="/AllEmployees"
           element={isAuthenticated() ? <AllEmployee /> : <Navigate to="/login" />}
         />
+       {/*lahi*/}
+
+
+
+
+
+
+      {/*linuka*/}
         <Route
           path="/FinanceManager"
           element={isAuthenticated() ? <FinanceManager /> : <Navigate to="/login" />}
         />
- 
 
+      {/*linuka*/}
+
+
+
+
+
+
+      {/*sulakshi*/}
         <Route
           path="/register-employee"
           element={isAuthenticated() ? <RegisterEmployee /> : <Navigate to="/login" />}
@@ -178,6 +183,12 @@ function App() {
           path="/technicianDashboard"
           element={isAuthenticated() ? <TechnicianDashboard  /> : <Navigate to="/login" />}
         /> 
+
+        {/*sulakshi*/}
+
+
+
+        
 
         <Route
           path="/"
