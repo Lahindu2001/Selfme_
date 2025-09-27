@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import TechnicianLayout from './TechnicianLayout';
+import './TechnicianDashboard.css';
 
 function TechnicianDashboard() {
   const navigate = useNavigate();

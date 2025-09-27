@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
     cb(null, fileName);
   }
 });
-const upload = multer({ 
+const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
     const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];

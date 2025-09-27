@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const Payment = require('../../Model/UserModel/PaymentModel');
 const Cart = require('../../Model/UserModel/CartModel');
-const Product = require('../../Model/UserModel/PaymentModel');
 const Invoice = require('../../Model/UserModel/InvoiceModel');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
@@ -14,10 +13,10 @@ const createPayment = async (req, res) => {
       return res.status(401).json({ message: "No token provided" });
     }
     const decoded = jwt.verify(token, "your_jwt_secret_key_here");
-    const userId = decoded.userId;
+    const userid = decoded.userid; // Use custom userid from token
 
     // Validate cart items
-    const cartItems = await Cart.find({ userId, receipt: null }).populate({
+    const cartItems = await Cart.find({ userid, receipt: null }).populate({
       path: 'itemId',
       select: 'item_name selling_price item_image',
     });
@@ -29,14 +28,13 @@ const createPayment = async (req, res) => {
     const totalAmount = cartItems.reduce((sum, item) => sum + Number(item.subtotal), 0);
     const taxAmount = Math.round(totalAmount * 0.085);
     const expectedTotal = totalAmount + taxAmount;
-
     if (Number(amount) !== expectedTotal) {
       return res.status(400).json({ message: "Payment amount does not match cart total" });
     }
 
     // Create invoice
     const invoice = new Invoice({
-      userId,
+      userid, // Changed to userid
       items: cartItems.map((item) => ({
         itemId: item.itemId,
         quantity: item.quantity,
@@ -54,14 +52,14 @@ const createPayment = async (req, res) => {
       throw new Error("Bank transfer slip is required");
     }
     if (req.file) {
-      reference_no = `/uploads/${req.file.filename}`;
+      reference_no = `/Uploads/${req.file.filename}`;
     }
 
     const payment = new Payment({
       payment_id: uuidv4(),
       invoice_id: invoice._id,
-      userId,
-      itemId: cartItems.map(item => item.itemId._id), // Add itemIds from cart
+      userid, // Changed to userid
+      itemId: cartItems.map(item => item.itemId._id),
       payment_method,
       amount,
       payment_date: payment_date ? new Date(payment_date) : new Date(),
@@ -76,13 +74,13 @@ const createPayment = async (req, res) => {
       amount,
       payment_method,
       status,
-      userId: userId.toString(),
+      userid,
     });
 
     await payment.save();
 
     // Update cart items to associate with this invoice
-    await Cart.updateMany({ userId, receipt: null }, { receipt: invoice._id });
+    await Cart.updateMany({ userid, receipt: null }, { receipt: invoice._id });
 
     console.log("✅ Payment created:", payment.payment_id);
     res.status(201).json({ message: "Payment created successfully", payment });
@@ -127,9 +125,9 @@ const getPayments = async (req, res) => {
       return res.status(401).json({ message: "No token provided" });
     }
     const decoded = jwt.verify(token, "your_jwt_secret_key_here");
-    const userId = decoded.userId;
+    const userid = decoded.userid; // Changed to userid
 
-    const payments = await Payment.find({ userId })
+    const payments = await Payment.find({ userid }) // Changed to userid
       .populate({
         path: 'invoice_id',
         populate: {

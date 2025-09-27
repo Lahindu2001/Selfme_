@@ -79,9 +79,9 @@ app.use("/api/finance/job-assigning", jobAssigningRouter);
 app.use("/api/finance/payments", paymentRouter);
 // ------------------- DATABASE -------------------
 mongoose
-  .connect("mongodb+srv://adminSelfme:P40YIFy04Am8rnDe@cluster0.4bp3tta.mongodb.net/selfmedb")
+  .connect("mongodb+srv://adminSelfme:P40YIFy04Am8rnDe@cluster0.4bp3tta.mongodb.net/selfmedbn")
   .then(() => console.log("✅ Connected to MongoDB"))
   .then(() => {
-    app.listen(5000, () => console.log("🚀 Server running on port 5000"));
+    app.listen(5000, () => console.log("🚀 Server running on port 5000")); 
   })
   .catch((err) => console.log(err));

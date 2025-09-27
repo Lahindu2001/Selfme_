@@ -96,7 +96,6 @@ function Payment() {
       formData.append("status", "Pending");
       formData.append("invoice_id", invoiceId);
       formData.append("slip", slipFile);
-
       console.log("📤 Submitting payment...");
       const response = await axios.post("http://localhost:5000/api/payments", formData, {
         headers: {
@@ -107,7 +106,7 @@ function Payment() {
       });
       console.log("✅ Payment submitted:", response.data);
       alert("Payment submitted successfully! Waiting for admin review.");
-      navigate("/?view=dashboard"); // Changed from /?view=cart to /?view=dashboard
+      navigate("/?view=dashboard");
     } catch (err) {
       console.error("💥 Payment submission error:", err);
       let errorMessage = "Failed to submit payment.";
@@ -152,7 +151,6 @@ function Payment() {
   };
 
   console.log("📊 Rendering Payment - cartItems:", cartItems.length, "loading:", loading, "error:", error);
-
   return (
     <div>
       <Navbar />

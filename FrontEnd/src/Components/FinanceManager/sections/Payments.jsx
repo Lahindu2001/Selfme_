@@ -78,7 +78,7 @@ const Payments = () => {
       if (res.data.payment && res.data.payment.payment_id) {
         const updatedPayment = {
           ...res.data.payment,
-          customer_id: res.data.payment.customer_id || { firstName: 'Unknown', lastName: '', email: '' }
+          customer_id: res.data.payment.customer_id || { firstName: 'Unknown', lastName: '', email: '', userid: '' }
         };
         setPayments(payments.map(p =>
           p.payment_id === selectedPayment.payment_id ? updatedPayment : p
@@ -116,12 +116,13 @@ const Payments = () => {
         20,
         50
       );
-      doc.text(`Email: ${selectedPayment.customer_id?.email || ''}`, 20, 60);
-      doc.text(`Payment ID: ${selectedPayment.payment_id}`, 20, 70);
-      doc.text(`Amount Paid: Rs. ${selectedPayment.amount?.toLocaleString() || '0'}`, 20, 80);
-      doc.text(`Payment Date: ${new Date(selectedPayment.payment_date).toLocaleDateString()}`, 20, 90);
-      doc.text('Payment Method: Bank Transfer', 20, 100);
-      doc.text('Thank you for your payment!', 105, 120, { align: 'center' });
+      doc.text(`User ID: ${selectedPayment.customer_id?.userid || 'N/A'}`, 20, 60);
+      doc.text(`Email: ${selectedPayment.customer_id?.email || ''}`, 20, 70);
+      doc.text(`Payment ID: ${selectedPayment.payment_id}`, 20, 80);
+      doc.text(`Amount Paid: Rs. ${selectedPayment.amount?.toLocaleString() || '0'}`, 20, 90);
+      doc.text(`Payment Date: ${new Date(selectedPayment.payment_date).toLocaleDateString()}`, 20, 100);
+      doc.text('Payment Method: Bank Transfer', 20, 110);
+      doc.text('Thank you for your payment!', 105, 130, { align: 'center' });
       doc.save(`receipt_${selectedPayment.payment_id}.pdf`);
       setSuccessMessage('Receipt generated and downloaded.');
       console.log('✅ Receipt generated for:', selectedPayment.payment_id);
@@ -132,22 +133,22 @@ const Payments = () => {
   };
 
   console.log('Rendering Payments component, payments:', payments.length, 'selectedPayment:', selectedPayment?.payment_id);
-
   return (
-    <div className="payments-container">
-      <h2>Payment Management</h2>
-      {isLoading && <p className="loading">Loading payments...</p>}
-      {error && <p className="error" style={{ color: 'red', fontWeight: 'bold', backgroundColor: '#ffe6e6', padding: '10px', borderRadius: '4px' }}>{error}</p>}
-      {successMessage && <p className="success" style={{ color: 'green', fontWeight: 'bold', backgroundColor: '#e6ffe6', padding: '10px', borderRadius: '4px' }}>{successMessage}</p>}
+    <div className="payments-container" style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Payment Management</h2>
+      {isLoading && <p className="loading" style={{ textAlign: 'center' }}>Loading payments...</p>}
+      {error && <p className="error" style={{ color: 'red', fontWeight: 'bold', backgroundColor: '#ffe6e6', padding: '10px', borderRadius: '4px', textAlign: 'center' }}>{error}</p>}
+      {successMessage && <p className="success" style={{ color: 'green', fontWeight: 'bold', backgroundColor: '#e6ffe6', padding: '10px', borderRadius: '4px', textAlign: 'center' }}>{successMessage}</p>}
       <div className="payment-list">
-        <h3>Payments</h3>
+        <h3 style={{ marginBottom: '10px' }}>Payments</h3>
         {payments.length === 0 && !isLoading ? (
-          <p>No payments found.</p>
+          <p style={{ textAlign: 'center', color: '#666' }}>No payments found.</p>
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #ddd' }}>
             <thead>
               <tr style={{ backgroundColor: '#007BFF', color: 'white' }}>
                 <th style={{ padding: '10px', border: '1px solid #ddd' }}>Payment ID</th>
+                <th style={{ padding: '10px', border: '1px solid #ddd' }}>User ID</th>
                 <th style={{ padding: '10px', border: '1px solid #ddd' }}>Customer</th>
                 <th style={{ padding: '10px', border: '1px solid #ddd' }}>Amount</th>
                 <th style={{ padding: '10px', border: '1px solid #ddd' }}>Status</th>
@@ -155,16 +156,17 @@ const Payments = () => {
             </thead>
             <tbody>
               {payments.map(payment => (
-                <tr 
-                  key={payment.payment_id} 
-                  onClick={() => handleSelectPayment(payment)} 
-                  style={{ 
-                    cursor: 'pointer', 
+                <tr
+                  key={payment.payment_id}
+                  onClick={() => handleSelectPayment(payment)}
+                  style={{
+                    cursor: 'pointer',
                     backgroundColor: selectedPayment?.payment_id === payment.payment_id ? '#e9ecef' : 'white',
                     border: '1px solid #ddd'
                   }}
                 >
                   <td style={{ padding: '10px', border: '1px solid #ddd' }}>{payment.payment_id || 'N/A'}</td>
+                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>{payment.customer_id?.userid || 'N/A'}</td>
                   <td style={{ padding: '10px', border: '1px solid #ddd' }}>
                     {payment.customer_id?.firstName || 'Unknown'} {payment.customer_id?.lastName || ''}
                   </td>
@@ -179,9 +181,10 @@ const Payments = () => {
         )}
       </div>
       {selectedPayment ? (
-        <div className="payment-details">
-          <h3>Payment Details</h3>
+        <div className="payment-details" style={{ marginTop: '20px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
+          <h3 style={{ marginBottom: '15px' }}>Payment Details</h3>
           <p><strong>Payment ID:</strong> {selectedPayment.payment_id || 'N/A'}</p>
+          <p><strong>User ID:</strong> {selectedPayment.customer_id?.userid || 'N/A'}</p>
           <p><strong>Customer:</strong> {selectedPayment.customer_id?.firstName || 'Unknown'} {selectedPayment.customer_id?.lastName || ''}</p>
           <p><strong>Email:</strong> {selectedPayment.customer_id?.email || 'N/A'}</p>
           <p><strong>Amount:</strong> Rs. {selectedPayment.amount?.toLocaleString() || '0'}</p>
@@ -189,7 +192,7 @@ const Payments = () => {
           <p><strong>Payment Date:</strong> {selectedPayment.payment_date ? new Date(selectedPayment.payment_date).toLocaleDateString() : 'N/A'}</p>
           {selectedPayment.reference_no && (
             <div>
-              <h4>Bank Slip</h4>
+              <h4 style={{ marginTop: '15px' }}>Bank Slip</h4>
               {selectedPayment.reference_no.endsWith('.pdf') ? (
                 <a
                   href={`http://localhost:5000${selectedPayment.reference_no}`}
@@ -209,9 +212,9 @@ const Payments = () => {
               )}
             </div>
           )}
-          <div style={{ marginTop: '20px' }}>
-            <button 
-              onClick={() => handleUpdateStatus('Paid')} 
+          <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+            <button
+              onClick={() => handleUpdateStatus('Paid')}
               disabled={isLoading || selectedPayment.status === 'Paid'}
               style={{
                 padding: '10px 20px',
@@ -219,14 +222,13 @@ const Payments = () => {
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
-                cursor: selectedPayment.status === 'Paid' ? 'not-allowed' : 'pointer',
-                marginRight: '10px'
+                cursor: selectedPayment.status === 'Paid' ? 'not-allowed' : 'pointer'
               }}
             >
               Mark as Paid
             </button>
-            <button 
-              onClick={() => handleUpdateStatus('Failed')} 
+            <button
+              onClick={() => handleUpdateStatus('Failed')}
               disabled={isLoading || selectedPayment.status === 'Failed'}
               style={{
                 padding: '10px 20px',
@@ -234,14 +236,13 @@ const Payments = () => {
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
-                cursor: selectedPayment.status === 'Failed' ? 'not-allowed' : 'pointer',
-                marginRight: '10px'
+                cursor: selectedPayment.status === 'Failed' ? 'not-allowed' : 'pointer'
               }}
             >
               Mark as Failed
             </button>
-            <button 
-              onClick={generateReceiptPDF} 
+            <button
+              onClick={generateReceiptPDF}
               disabled={isLoading || selectedPayment.status !== 'Paid'}
               style={{
                 padding: '10px 20px',
@@ -257,7 +258,7 @@ const Payments = () => {
           </div>
         </div>
       ) : (
-        <p className="no-selection" style={{ color: '#666', fontStyle: 'italic' }}>
+        <p className="no-selection" style={{ color: '#666', fontStyle: 'italic', textAlign: 'center', marginTop: '20px' }}>
           Please select a payment to view details.
         </p>
       )}

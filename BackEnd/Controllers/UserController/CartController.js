@@ -1,9 +1,8 @@
-// Controllers/UserController/CartController.js
 const jwt = require("jsonwebtoken");
 const Cart = require("../../Model/UserModel/CartModel");
-const Product = require("../../Model/inventory_models/itemModel"); // Changed from ItemModel to ProductModel
+const Product = require("../../Model/inventory_models/itemModel");
 
-console.log("Product Model Loaded:", Product ? "Yes" : "No"); // Debug log to confirm import
+console.log("Product Model Loaded:", Product ? "Yes" : "No");
 
 const addToCart = async (req, res) => {
   try {
@@ -13,23 +12,25 @@ const addToCart = async (req, res) => {
       return res.status(401).json({ message: "No token provided" });
     }
     const decoded = jwt.verify(token, "your_jwt_secret_key_here");
-    const userId = decoded.userId;
+    const userid = decoded.userid; // Changed to userid
 
     // Validate product exists
-    const product = await Product.findById(itemId); // Changed Item to Product
+    const product = await Product.findById(itemId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
+
     // Validate stock
     if (product.quantity_in_stock < quantity) {
       return res.status(400).json({ message: "Insufficient stock" });
     }
+
     // Calculate subtotal
     const unitPrice = product.selling_price;
     const subtotal = quantity * unitPrice;
 
     // Check if the item is already in the cart
-    let cartItem = await Cart.findOne({ userId, itemId, receipt: null });
+    let cartItem = await Cart.findOne({ userid, itemId, receipt: null }); // Changed to userid
     if (cartItem) {
       cartItem.quantity += quantity;
       cartItem.subtotal = cartItem.quantity * cartItem.unit_price;
@@ -40,7 +41,7 @@ const addToCart = async (req, res) => {
       return res.status(200).json({ message: "Product quantity updated in cart", cartItem });
     } else {
       cartItem = new Cart({
-        userId,
+        userid, // Changed to userid
         itemId,
         quantity,
         unit_price: unitPrice,
@@ -66,14 +67,14 @@ const getCart = async (req, res) => {
       return res.status(401).json({ message: "No token provided" });
     }
     const decoded = jwt.verify(token, "your_jwt_secret_key_here");
-    const userId = decoded.userId;
+    const userid = decoded.userid; // Changed to userid
 
     // Fetch all unpaid cart items, populate product details
-    const cartItems = await Cart.find({ userId, receipt: null }).populate({
+    const cartItems = await Cart.find({ userid, receipt: null }).populate({ // Changed to userid
       path: 'itemId',
-      select: 'item_name description item_image selling_price' // Updated to match Product schema
+      select: 'item_name description item_image selling_price'
     });
-    console.log("Fetched Cart Items:", cartItems); // Debug log
+    console.log("Fetched Cart Items:", cartItems);
     res.status(200).json(cartItems);
   } catch (err) {
     console.error("getCart error:", err);
@@ -93,16 +94,16 @@ const updateCartItem = async (req, res) => {
       return res.status(401).json({ message: "No token provided" });
     }
     const decoded = jwt.verify(token, "your_jwt_secret_key_here");
-    const userId = decoded.userId;
+    const userid = decoded.userid; // Changed to userid
 
     // Find the cart item
-    const cartItem = await Cart.findOne({ _id: cartItemId, userId, receipt: null });
+    const cartItem = await Cart.findOne({ _id: cartItemId, userid, receipt: null }); // Changed to userid
     if (!cartItem) {
       return res.status(404).json({ message: "Cart item not found" });
     }
 
     // Fetch the product to check stock
-    const product = await Product.findById(cartItem.itemId); // Changed Item to Product
+    const product = await Product.findById(cartItem.itemId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -114,7 +115,6 @@ const updateCartItem = async (req, res) => {
     cartItem.quantity = quantity;
     cartItem.subtotal = quantity * cartItem.unit_price;
     await cartItem.save();
-
     res.status(200).json(cartItem);
   } catch (err) {
     console.error("updateCartItem error:", err);
@@ -133,14 +133,13 @@ const deleteCartItem = async (req, res) => {
       return res.status(401).json({ message: "No token provided" });
     }
     const decoded = jwt.verify(token, "your_jwt_secret_key_here");
-    const userId = decoded.userId;
+    const userid = decoded.userid; // Changed to userid
 
     // Find and delete the cart item
-    const cartItem = await Cart.findOneAndDelete({ _id: cartItemId, userId, receipt: null });
+    const cartItem = await Cart.findOneAndDelete({ _id: cartItemId, userid, receipt: null }); // Changed to userid
     if (!cartItem) {
       return res.status(404).json({ message: "Cart item not found" });
     }
-
     res.status(200).json({ message: "Item removed from cart" });
   } catch (err) {
     console.error("deleteCartItem error:", err);

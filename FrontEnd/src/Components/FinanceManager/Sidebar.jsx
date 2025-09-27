@@ -2,7 +2,6 @@ import React from 'react';
 
 const icons = {
   receipt: '🧾',
-  report: '📊',
   salary: '💰',
   payment: '💳',
   tax: '📋',
@@ -12,12 +11,11 @@ const icons = {
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: icons.dashboard },
-  { id: 'receipts', label: 'Generate Receipts', icon: icons.receipt },
-  { id: 'reports', label: 'Financial Reports', icon: icons.report },
+  { id: 'supplier-payment-status', label: 'Supplier Payment Status', icon: icons.receipt },
   { id: 'salaries', label: 'Manage Salaries', icon: icons.salary },
   { id: 'payments', label: 'Payment Status', icon: icons.payment },
   { id: 'tax', label: 'Tax Compliance', icon: icons.tax },
-  { id: 'analytics', label: 'Analytics Dashboard', icon: icons.analytics }
+  { id: 'financial-overview', label: 'Financial Overview', icon: icons.analytics }
 ];
 
 const Sidebar = ({ activeSection, setActiveSection }) => {
