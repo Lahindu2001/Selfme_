@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router();
 // Insert Model
-const AllFeedback = require("../../Model/AdminandSupplyModel/AllFeedbackModel");
+const AllFeedback = require("../../Model/UserModel/SubmitFeedbackModel");
 // Insert controller
 const AllFeedbackController = require("../../Controllers/AdminandSupplyControllers/AllFeedbackController");
 router.get("/", AllFeedbackController.getAllFeedbacks);

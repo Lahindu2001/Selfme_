@@ -8,7 +8,7 @@ import Footer from "../Footer/Footer";
 import Cart from "../UserManager/cart";
 import Payment from "../UserManager/Payment";
 import UserDashboard from "../UserManager/UserDashboard";
-
+import SubmitFeedback from "../UserManager/SubmitFeedback";
 // Image imports with fallbacks
 import BannerImg1 from "./Home-Images/BannerImg1.jpg";
 import BannerImg2 from "./Home-Images/BannerImg2.jpg";
@@ -82,7 +82,6 @@ function Home() {
         navigate("/login");
         return;
       }
-
       const response = await axios.post(
         "http://localhost:5000/api/cart",
         { itemId, quantity: 1 },
@@ -109,6 +108,9 @@ function Home() {
   }
   if (view === "payment") {
     return <Payment />;
+  }
+  if (view === "feedback") {
+    return <SubmitFeedback />;
   }
   if (view === "products") {
     return (
@@ -213,16 +215,6 @@ function Home() {
         <Navbar />
         <h2>Service Page</h2>
         <p>Learn about our installation and maintenance services.</p>
-        <Footer />
-      </div>
-    );
-  }
-  if (view === "feedback") {
-    return (
-      <div className="home-container" style={{ textAlign: "center", margin: "50px" }}>
-        <Navbar />
-        <h2>Feedback Page</h2>
-        <p>Share your feedback with us.</p>
         <Footer />
       </div>
     );
@@ -406,7 +398,6 @@ function Home() {
           </span>
         </button>
       </div>
-
       {/* Why Choose Us Section */}
       <h2 className="after-heading-choose-us">Why Choose Us</h2>
       <div className="service-box-section">
@@ -443,7 +434,6 @@ function Home() {
           </p>
         </div>
       </div>
-
       {/* About Us Section */}
       <div className="about-us">
         <h2 className="section-title">About Selfme.lk</h2>
@@ -473,7 +463,6 @@ function Home() {
           </div>
         </div>
       </div>
-
       {/* Products Section */}
       <div className="Products">
         <h2>Our Product Categories</h2>
@@ -505,7 +494,6 @@ function Home() {
         </div>
         <button className="allProducts-btn">View All Products</button>
       </div>
-
       {/* Testimonials Section */}
       <h2 className="after-heading-choose-us">Our Testimonials</h2>
       <div className="testimonial-section">
@@ -558,7 +546,6 @@ function Home() {
           <p>"The installation was quick and the team was very knowledgeable."</p>
         </div>
       </div>
-
       {/* Gallery Section */}
       <div className="gallery-section">
         <h1>Our Gallery</h1>
@@ -597,7 +584,6 @@ function Home() {
           </div>
         </div>
       </div>
-
       {/* CTA Section */}
       <div className="cta-section">
         <div className="cta-container">
@@ -617,7 +603,6 @@ function Home() {
           </div>
         </div>
       </div>
-
       <Footer />
     </div>
   );

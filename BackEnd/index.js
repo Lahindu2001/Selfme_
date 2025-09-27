@@ -4,10 +4,12 @@ const authRouter = require("./Routes/AuthRoutes");
 const cartRoutes = require("./Routes/UserRoutes/CartRoute");
 const paymentRoutes = require("./Routes/UserRoutes/PaymentRoutes");
 const itemRoute = require("./Routes/UserRoutes/itemCartRoutes");
+const submitFeedbackRoute = require("./Routes/UserRoutes/SubmitFeedbackRoute"); // New route
 // Import models to ensure they are registered
 const Product = require("./Model/inventory_models/itemModel");
 const Cart = require("./Model/UserModel/CartModel");
 const Payment = require("./Model/UserModel/PaymentModel");
+const SubmitFeedback = require("./Model/UserModel/SubmitFeedbackModel"); // New model
 //linuka
 const salaryRouter = require("./Routes/FinanceManager/salaryRoutes");
 const staffRouter = require("./Routes/FinanceManager/staffRoutes");
@@ -28,11 +30,12 @@ const itemRoutes = require("./Routes/item_routes/ItemRoutes");
 const productRequestRoutes = require("./Routes/item_routes/productRequestRoutes");
 const supplierRouter = require("./Routes/item_routes/supplierRoutes");
 const orderRoutes = require("./Routes/item_routes/orderRoutes");
-const stockOutRoutes = require ("./Routes/item_routes/stockOutRoutes");
+const stockOutRoutes = require("./Routes/item_routes/stockOutRoutes");
 const path = require("path");
 const fs = require("fs");
 const cors = require("cors");
 const app = express();
+
 // ------------------- MIDDLEWARE -------------------
 app.use(express.json());
 app.use(cors());
@@ -46,6 +49,7 @@ app.use("/auth", authRouter);
 app.use("/api", cartRoutes);
 app.use("/api", paymentRoutes);
 app.use("/api", itemRoute);
+app.use("/api/feedback", submitFeedbackRoute); // New feedback route
 app.use("/item_images", express.static(path.join(__dirname, "item_images")));
 // Test route
 app.get("/test", (req, res) => res.json({ message: "Server is working" }));
@@ -54,6 +58,7 @@ app.use("/images", express.static(path.join(__dirname, "item_images")));
 app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
 // Serve static files from uploads folder
 app.use("/Uploads", express.static(uploadDir));
+
 // ------------------- ROUTES -------------------
 app.use("/auth", authRouter);
 //lahindu
@@ -77,11 +82,12 @@ app.use("/api/finance/salary", salaryRouter);
 app.use("/api/finance/staff", staffRouter);
 app.use("/api/finance/job-assigning", jobAssigningRouter);
 app.use("/api/finance/payments", paymentRouter);
+
 // ------------------- DATABASE -------------------
 mongoose
   .connect("mongodb+srv://adminSelfme:P40YIFy04Am8rnDe@cluster0.4bp3tta.mongodb.net/selfmedbn")
   .then(() => console.log("✅ Connected to MongoDB"))
   .then(() => {
-    app.listen(5000, () => console.log("🚀 Server running on port 5000")); 
+    app.listen(5000, () => console.log("🚀 Server running on port 5000"));
   })
   .catch((err) => console.log(err));
