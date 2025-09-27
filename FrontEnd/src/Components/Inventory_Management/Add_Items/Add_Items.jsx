@@ -21,6 +21,7 @@ const Add_Items = () => {
   const [itemImage, setItemImage] = useState(null);
   const [suppliers, setSuppliers] = useState([]);
   const [errors, setErrors] = useState({});
+  const [isSerialGenerated, setIsSerialGenerated] = useState(false);
 
   const categories = [
     "Solar Panels",
@@ -49,50 +50,151 @@ const Add_Items = () => {
     fetchSuppliers();
   }, []);
 
-  // Handle input changes
+  // Handle input changes with validation
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let processedValue = value;
+
+    switch (name) {
+      case "quantity_in_stock":
+      case "re_order_level": {
+        if (value === "") {
+          processedValue = "";
+        } else {
+          const numValue = parseInt(value);
+          if (!isNaN(numValue) && numValue > 0 && numValue <= 500) {
+            processedValue = numValue.toString();
+          } else if (numValue > 500) {
+            processedValue = "500";
+          } else if (numValue <= 0) {
+            processedValue = "";
+          }
+        }
+        break;
+      }
+
+      case "purchase_price":
+      case "selling_price": {
+        if (value === "") {
+          processedValue = "";
+        } else {
+          const cleanValue = value.replace(/[^\d.]/g, "");
+          const parts = cleanValue.split(".");
+          if (parts.length > 2) {
+            processedValue = parts[0] + "." + parts.slice(1).join("");
+          } else if (parts.length === 2) {
+            processedValue = parts[0] + "." + parts[1].slice(0, 2);
+          } else {
+            processedValue = cleanValue;
+          }
+
+          const numValue = parseFloat(processedValue);
+          if (!isNaN(numValue) && numValue <= 0) {
+            processedValue = "";
+          }
+        }
+        break;
+      }
+
+      default:
+        processedValue = value;
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: processedValue }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
+    if (name === "quantity_in_stock" || name === "re_order_level") {
+      validateReorderLevel();
+    }
+  };
+
+  const validateReorderLevel = () => {
+    const quantity = parseInt(formData.quantity_in_stock) || 0;
+    const reorderLevel = parseInt(formData.re_order_level) || 0;
+    if (reorderLevel > quantity) {
+      setErrors((prev) => ({
+        ...prev,
+        re_order_level:
+          "Re-order level cannot be greater than quantity in stock",
+      }));
+    } else {
+      setErrors((prev) => ({ ...prev, re_order_level: "" }));
+    }
   };
 
   const handleFileChange = (e) => {
     setItemImage(e.target.files[0]);
   };
 
-  // Serial number generator
   const generateSerialNumber = () => {
     const sn = `SN-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     setFormData((prev) => ({ ...prev, serial_number: sn }));
+    setIsSerialGenerated(true);
+  };
+
+  const handleSerialNumberChange = (e) => {
+    if (!isSerialGenerated) {
+      const value = e.target.value.slice(0, 50);
+      setFormData((prev) => ({ ...prev, serial_number: value }));
+      setErrors((prev) => ({ ...prev, serial_number: "" }));
+    }
+  };
+
+  const formatPrice = (price) => {
+    if (price === "" || price === null || price === undefined) return "";
+    const num = parseFloat(price);
+    return isNaN(num) ? "" : num.toFixed(2);
+  };
+
+  const handlePriceBlur = (e) => {
+    const { name, value } = e.target;
+    if (value && value !== "") {
+      const formattedValue = formatPrice(value);
+      setFormData((prev) => ({ ...prev, [name]: formattedValue }));
+    }
   };
 
   // Form validation
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.serial_number)
+
+    if (!formData.serial_number) {
       newErrors.serial_number = "Serial number required";
-    if (!formData.item_name) newErrors.item_name = "Product name required";
+    }
+
+    if (!formData.item_name) {
+      newErrors.item_name = "Product name required";
+    }
+
     if (!formData.category) newErrors.category = "Select a category";
-    if (!formData.quantity_in_stock || formData.quantity_in_stock < 0)
-      newErrors.quantity_in_stock = "Quantity must be 0 or more";
-    if (!formData.re_order_level || formData.re_order_level < 0)
-      newErrors.re_order_level = "Re-order level must be 0 or more";
+
+    if (!formData.quantity_in_stock) {
+      newErrors.quantity_in_stock = "Quantity must be greater than 0";
+    }
+
+    if (!formData.re_order_level) {
+      newErrors.re_order_level = "Re-order level must be greater than 0";
+    } else if (
+      parseInt(formData.re_order_level) >
+      parseInt(formData.quantity_in_stock || 0)
+    ) {
+      newErrors.re_order_level =
+        "Re-order level cannot be greater than quantity in stock";
+    }
+
     if (!formData.supplier_name) newErrors.supplier_name = "Select a supplier";
-    if (!formData.purchase_price || formData.purchase_price < 0)
-      newErrors.purchase_price = "Purchase price must be 0 or more";
-    if (!formData.selling_price || formData.selling_price < 0)
-      newErrors.selling_price = "Selling price must be 0 or more";
-    if (
-      (formData.status === "Damaged" || formData.status === "Returned") &&
-      !formData.product_remark
-    )
-      newErrors.product_remark = "Remark required for Damaged/Returned items";
+
+    if (!formData.purchase_price) {
+      newErrors.purchase_price = "Purchase price must be greater than 0";
+    }
+
+    if (!formData.selling_price) {
+      newErrors.selling_price = "Selling price must be greater than 0";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -107,13 +209,15 @@ const Add_Items = () => {
       ];
       Object.keys(formData).forEach((key) => {
         let value = formData[key];
-        if (numericFields.includes(key))
+        if (numericFields.includes(key)) {
           value = value === "" ? null : Number(value);
+        }
         data.append(key, value);
       });
+
       if (itemImage) data.append("item_image", itemImage);
 
-      const res = await axios.post("http://localhost:5000/products", data, {
+      await axios.post("http://localhost:5000/products", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -133,13 +237,10 @@ const Add_Items = () => {
       });
       setItemImage(null);
       setErrors({});
+      setIsSerialGenerated(false);
     } catch (error) {
-      if (error.response) {
-        if (error.response.data.code === 11000) {
-          alert("Error: Serial Number already exists!");
-        } else {
-          alert(`Error: ${error.response.data.message}`);
-        }
+      if (error.response?.data?.code === 11000) {
+        alert("Error: Serial Number already exists!");
       } else {
         alert("Error adding product");
       }
@@ -164,15 +265,17 @@ const Add_Items = () => {
                     name="serial_number"
                     placeholder="SN12345"
                     value={formData.serial_number}
-                    onChange={handleChange}
+                    onChange={handleSerialNumberChange}
+                    readOnly={isSerialGenerated}
                     required
                   />
                   <button
                     type="button"
                     className="generate-btn"
                     onClick={generateSerialNumber}
+                    disabled={isSerialGenerated}
                   >
-                    Generate
+                    {isSerialGenerated ? "Generated" : "Generate"}
                   </button>
                 </div>
                 {errors.serial_number && (
@@ -185,9 +288,9 @@ const Add_Items = () => {
                 <input
                   type="text"
                   name="item_name"
-                  placeholder="Battery Z300"
                   value={formData.item_name}
                   onChange={handleChange}
+                  maxLength={100}
                   required
                 />
                 {errors.item_name && (
@@ -235,12 +338,13 @@ const Add_Items = () => {
             </div>
 
             <div className="form-group">
-              <label>Description</label>
+              <label>Description (Max 500 characters)</label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 rows="3"
+                maxLength={500}
               />
             </div>
 
@@ -261,6 +365,9 @@ const Add_Items = () => {
                   name="quantity_in_stock"
                   value={formData.quantity_in_stock}
                   onChange={handleChange}
+                  min="1"
+                  max="500"
+                  required
                 />
                 {errors.quantity_in_stock && (
                   <span className="error-text">{errors.quantity_in_stock}</span>
@@ -273,6 +380,9 @@ const Add_Items = () => {
                   name="re_order_level"
                   value={formData.re_order_level}
                   onChange={handleChange}
+                  min="1"
+                  max="500"
+                  required
                 />
                 {errors.re_order_level && (
                   <span className="error-text">{errors.re_order_level}</span>
@@ -286,6 +396,7 @@ const Add_Items = () => {
                 name="supplier_name"
                 value={formData.supplier_name}
                 onChange={handleChange}
+                required
               >
                 <option value="">-- Select Supplier --</option>
                 {suppliers.map((sup) => (
@@ -308,12 +419,13 @@ const Add_Items = () => {
               <div className="form-group">
                 <label>Purchase Price *</label>
                 <input
-                  type="number"
+                  type="text"
                   name="purchase_price"
                   value={formData.purchase_price}
                   onChange={handleChange}
-                  step="0.01"
-                  min="0"
+                  onBlur={handlePriceBlur}
+                  placeholder="0.00"
+                  required
                 />
                 {errors.purchase_price && (
                   <span className="error-text">{errors.purchase_price}</span>
@@ -322,12 +434,13 @@ const Add_Items = () => {
               <div className="form-group">
                 <label>Selling Price *</label>
                 <input
-                  type="number"
+                  type="text"
                   name="selling_price"
                   value={formData.selling_price}
                   onChange={handleChange}
-                  step="0.01"
-                  min="0"
+                  onBlur={handlePriceBlur}
+                  placeholder="0.00"
+                  required
                 />
                 {errors.selling_price && (
                   <span className="error-text">{errors.selling_price}</span>
@@ -352,6 +465,8 @@ const Add_Items = () => {
                   value={formData.product_remark}
                   onChange={handleChange}
                   rows="3"
+                  maxLength={200}
+                  required
                 />
                 {errors.product_remark && (
                   <span className="error-text">{errors.product_remark}</span>

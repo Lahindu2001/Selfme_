@@ -4,7 +4,7 @@ import InventoryManagementNav from "../Inventory_Management_Nav/Inventory_Manage
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import "./Stock_Out_History.css";
-import logo from "./logo selfme.png"; // Make sure this path is correct
+import logo from "./logo selfme.png";
 
 const API = "http://localhost:5000";
 
@@ -57,7 +57,14 @@ const Stock_Outs_History = () => {
   const closeDetails = () => setSelected(null);
 
   const displayItemName = (it) =>
-    it.item_name || (it.product && (it.product.item_name || it.product.itemName)) || "Item";
+    it.item_name ||
+    (it.product && (it.product.item_name || it.product.itemName)) ||
+    "Item";
+
+  const formatPrice = (price) =>
+    `LKR ${Number(price || 0).toLocaleString("en-LK", {
+      minimumFractionDigits: 2,
+    })}`;
 
   // ---------------- PDF GENERATION ----------------
   const handlePrintPDF = () => {
@@ -82,8 +89,16 @@ const Stock_Outs_History = () => {
 
         doc.setFontSize(9);
         doc.setTextColor(100, 100, 100);
-        doc.text("No/346, Madalanda, Dompe, Colombo, Sri Lanka", margin + 25, 21);
-        doc.text("Phone: +94 717 882 883 | Email: Selfmepvtltd@gmail.com", margin + 25, 26);
+        doc.text(
+          "No/346, Madalanda, Dompe, Colombo, Sri Lanka",
+          margin + 25,
+          21
+        );
+        doc.text(
+          "Phone: +94 717 882 883 | Email: Selfmepvtltd@gmail.com",
+          margin + 25,
+          26
+        );
 
         doc.setDrawColor(200, 200, 200);
         doc.setLineWidth(0.5);
@@ -91,14 +106,19 @@ const Stock_Outs_History = () => {
 
         doc.setFontSize(14);
         doc.setTextColor(0, 53, 128);
-        doc.text("Stock Out Orders Report", pageWidth / 2, 45, { align: "center" });
+        doc.text("Stock Out Orders Report", pageWidth / 2, 45, {
+          align: "center",
+        });
 
         doc.setFontSize(10);
         doc.setTextColor(80, 80, 80);
-        doc.text(`Generated on: ${formattedDate} at ${formattedTime}`, margin, 55);
+        doc.text(
+          `Generated on: ${formattedDate} at ${formattedTime}`,
+          margin,
+          55
+        );
         doc.text(`Total Orders: ${orders.length}`, margin, 62);
 
-        // ---------------- PDF TABLE BODY ----------------
         let tableColumns = [
           { header: "#", dataKey: "index" },
           { header: "Stock Out ID", dataKey: "stockOutId" },
@@ -114,21 +134,28 @@ const Stock_Outs_History = () => {
         let tableData = [];
 
         orders.forEach((order, i) => {
-          const placed = new Date(order.createdAt || order.orderDate || Date.now());
-          const dateTime = `${placed.toLocaleDateString()} ${placed.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+          const placed = new Date(
+            order.createdAt || order.orderDate || Date.now()
+          );
+          const dateTime = `${placed.toLocaleDateString()} ${placed.toLocaleTimeString(
+            [],
+            { hour: "2-digit", minute: "2-digit" }
+          )}`;
           const items = order.items || [];
-          const stockOutId = order.stock_out_id || `SO-${placed.getFullYear()}-${(i + 1).toString().padStart(4, '0')}`;
+          const stockOutId =
+            order.stock_out_id ||
+            `SO-${placed.getFullYear()}-${(i + 1).toString().padStart(4, "0")}`;
 
           items.forEach((it, idx) => {
             tableData.push({
               index: i + 1,
-              stockOutId: stockOutId,
+              stockOutId,
               type: order.type === "technical" ? "Technical" : "Customer",
               itemName: it.item_name || it.product?.item_name || "N/A",
               quantity: it.quantity,
-              unitPrice: `LKR ${Number(it.price || 0).toLocaleString()}`,
-              subtotal: `LKR ${(Number(it.price || 0) * Number(it.quantity || 0)).toLocaleString()}`,
-              total: idx === 0 ? `LKR ${Number(order.total || 0).toLocaleString()}` : "",
+              unitPrice: formatPrice(it.price),
+              subtotal: formatPrice(it.price * it.quantity),
+              total: idx === 0 ? formatPrice(order.total) : "",
               dateTime: idx === 0 ? dateTime : "",
             });
           });
@@ -136,14 +163,14 @@ const Stock_Outs_History = () => {
           if (items.length === 0) {
             tableData.push({
               index: i + 1,
-              stockOutId: stockOutId,
+              stockOutId,
               type: order.type === "technical" ? "Technical" : "Customer",
               itemName: "N/A",
               quantity: "-",
               unitPrice: "-",
               subtotal: "-",
-              total: `LKR ${Number(order.total || 0).toLocaleString()}`,
-              dateTime: dateTime,
+              total: formatPrice(order.total),
+              dateTime,
             });
           }
         });
@@ -155,7 +182,12 @@ const Stock_Outs_History = () => {
           theme: "grid",
           margin: { left: margin, right: margin },
           styles: { fontSize: 8, cellPadding: 2 },
-          headStyles: { fillColor: [0, 53, 128], textColor: 255, fontStyle: "bold", halign: "center" },
+          headStyles: {
+            fillColor: [0, 53, 128],
+            textColor: 255,
+            fontStyle: "bold",
+            halign: "center",
+          },
           columnStyles: {
             index: { halign: "center" },
             stockOutId: { halign: "center", fontStyle: "bold" },
@@ -190,30 +222,33 @@ const Stock_Outs_History = () => {
   return (
     <div className="stockouts-history-page">
       <InventoryManagementNav />
-
       <div className="stockouts-container">
-        {/* Dashboard Header */}
         <div className="dashboard-header">
           <h1>Stock Out History</h1>
-          <p>Track confirmed stock out orders for customers and technical teams</p>
+          <p>
+            Track confirmed stock out orders for customers and technical teams
+          </p>
           <div className="header-actions">
-            <button onClick={handlePrintPDF} className="btn-secondary">
+            <button onClick={handlePrintPDF} className="view-btn">
               Generate PDF
             </button>
-            <button onClick={fetchOrders} className="btn-primary" style={{ marginLeft: "10px" }}>
+            <button
+              onClick={fetchOrders}
+              className="view-btn"
+              style={{ marginLeft: "10px", background: "#6b7280" }}
+            >
               Refresh
             </button>
           </div>
         </div>
 
-        {/* Statistics Cards */}
         <div className="stats-cards">
           <div className="stat-card">
             <div className="stat-number">{stats.totalOrders}</div>
             <div className="stat-label">Total Orders</div>
           </div>
           <div className="stat-card">
-            <div className="stat-number">LKR {stats.totalAmount.toLocaleString()}</div>
+            <div className="stat-number">{formatPrice(stats.totalAmount)}</div>
             <div className="stat-label">Total Value</div>
           </div>
           <div className="stat-card">
@@ -226,7 +261,6 @@ const Stock_Outs_History = () => {
           </div>
         </div>
 
-        {/* Orders Table */}
         <div className="orders-section">
           <div className="section-header">
             <h2>Confirmed Orders</h2>
@@ -255,27 +289,49 @@ const Stock_Outs_History = () => {
                 </thead>
                 <tbody>
                   {orders.map((o, index) => {
-                    const placed = new Date(o.createdAt || o.orderDate || Date.now());
-                    const itemsCount = (o.items || []).reduce((sum, item) => sum + (item.quantity || 0), 0);
-                    const stockOutId = o.stock_out_id || `SO-${placed.getFullYear()}-${(index + 1).toString().padStart(4, '0')}`;
+                    const placed = new Date(
+                      o.createdAt || o.orderDate || Date.now()
+                    );
+                    const itemsCount = (o.items || []).reduce(
+                      (sum, item) => sum + (item.quantity || 0),
+                      0
+                    );
+                    const stockOutId =
+                      o.stock_out_id ||
+                      `SO-${placed.getFullYear()}-${(index + 1)
+                        .toString()
+                        .padStart(4, "0")}`;
 
                     return (
                       <tr key={o._id}>
                         <td>{index + 1}</td>
-                        <td className="stock-out-id-cell">
-                          <strong>{stockOutId}</strong>
+                        <td>{stockOutId}</td>
+                        <td>
+                          {o.type === "technical" ? "Technical" : "Customer"}
                         </td>
-                        <td>{o.type === "technical" ? "Technical" : "Customer"}</td>
-                        <td>{o.customer_id || (o.type === "technical" ? "Technical Team" : "N/A")}</td>
+                        <td>
+                          {o.customer_id ||
+                            (o.type === "technical" ? "Technical Team" : "N/A")}
+                        </td>
                         <td>{itemsCount}</td>
-                        <td>LKR {Number(o.total || 0).toLocaleString()}</td>
+                        <td>{formatPrice(o.total)}</td>
                         <td>{placed.toLocaleDateString()}</td>
-                        <td>{placed.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</td>
                         <td>
-                          <span className="status-badge confirmed">Confirmed</span>
+                          {placed.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </td>
                         <td>
-                          <button onClick={() => openDetails(o)} className="view-btn">
+                          <span className="status-badge confirmed">
+                            Confirmed
+                          </span>
+                        </td>
+                        <td>
+                          <button
+                            onClick={() => openDetails(o)}
+                            className="view-btn"
+                          >
                             View Details
                           </button>
                         </td>
@@ -288,7 +344,6 @@ const Stock_Outs_History = () => {
           )}
         </div>
 
-        {/* Order Details Modal */}
         {selected && (
           <div className="modal-overlay">
             <div className="modal">
@@ -298,17 +353,45 @@ const Stock_Outs_History = () => {
                   ×
                 </button>
               </div>
-
               <div className="modal-content">
                 <div className="modal-info">
-                  <p><strong>Stock Out ID:</strong> {selected.stock_out_id || `SO-${new Date(selected.createdAt || selected.orderDate).getFullYear()}-0001`}</p>
-                  <p><strong>Order Type:</strong> {selected.type === "technical" ? "Technical Team" : "Customer"}</p>
-                  <p><strong>Customer/Team:</strong> {selected.customer_id || (selected.type === "technical" ? "Technical Team" : "N/A")}</p>
-                  <p><strong>Date:</strong> {new Date(selected.createdAt || selected.orderDate).toLocaleDateString()}</p>
-                  <p><strong>Time:</strong> {new Date(selected.createdAt || selected.orderDate).toLocaleTimeString()}</p>
-                  <p><strong>Status:</strong> <span className="status-badge confirmed">Confirmed</span></p>
+                  <p>
+                    <strong>Stock Out ID:</strong>{" "}
+                    {selected.stock_out_id ||
+                      `SO-${new Date(
+                        selected.createdAt || selected.orderDate
+                      ).getFullYear()}-0001`}
+                  </p>
+                  <p>
+                    <strong>Order Type:</strong>{" "}
+                    {selected.type === "technical"
+                      ? "Technical Team"
+                      : "Customer"}
+                  </p>
+                  <p>
+                    <strong>Customer/Team:</strong>{" "}
+                    {selected.customer_id ||
+                      (selected.type === "technical"
+                        ? "Technical Team"
+                        : "N/A")}
+                  </p>
+                  <p>
+                    <strong>Date:</strong>{" "}
+                    {new Date(
+                      selected.createdAt || selected.orderDate
+                    ).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <strong>Time:</strong>{" "}
+                    {new Date(
+                      selected.createdAt || selected.orderDate
+                    ).toLocaleTimeString()}
+                  </p>
+                  <p>
+                    <strong>Status:</strong>{" "}
+                    <span className="status-badge confirmed">Confirmed</span>
+                  </p>
                 </div>
-
                 <div className="modal-items">
                   <h4>Order Items</h4>
                   <table className="modal-items-table">
@@ -316,8 +399,8 @@ const Stock_Outs_History = () => {
                       <tr>
                         <th>Item Name</th>
                         <th>Quantity</th>
-                        <th>Unit Price (LKR)</th>
-                        <th>Subtotal (LKR)</th>
+                        <th>Unit Price</th>
+                        <th>Subtotal</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -325,23 +408,28 @@ const Stock_Outs_History = () => {
                         <tr key={idx}>
                           <td>{displayItemName(it)}</td>
                           <td className="text-center">{it.quantity}</td>
-                          <td className="text-right">{Number(it.price || 0).toLocaleString()}</td>
-                          <td className="text-right">{(Number(it.price || 0) * Number(it.quantity || 0)).toLocaleString()}</td>
+                          <td className="text-right">
+                            {formatPrice(it.price)}
+                          </td>
+                          <td className="text-right">
+                            {formatPrice(it.price * it.quantity)}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td colSpan="3" className="text-right"><strong>Grand Total:</strong></td>
-                        <td className="text-right total-amount">
-                          <strong>LKR {Number(selected.total || 0).toLocaleString()}</strong>
+                        <td colSpan="3" className="text-right">
+                          <strong>Grand Total:</strong>
+                        </td>
+                        <td className="text-right">
+                          <strong>{formatPrice(selected.total)}</strong>
                         </td>
                       </tr>
                     </tfoot>
                   </table>
                 </div>
               </div>
-
               <div className="modal-footer">
                 <button onClick={closeDetails} className="modal-close-btn">
                   Close

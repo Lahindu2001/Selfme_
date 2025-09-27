@@ -11,9 +11,10 @@ const Re_Order = () => {
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [orderQuantity, setOrderQuantity] = useState(1);
+  const [orderQuantity, setOrderQuantity] = useState("");
   const [selectedSupplier, setSelectedSupplier] = useState("");
   const [ordering, setOrdering] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     fetchLowStockItems();
@@ -65,18 +66,57 @@ const Re_Order = () => {
     };
 
     setSelectedItem(safeItem);
-    setOrderQuantity(
-      Math.max(1, safeItem.re_order_level - safeItem.quantity_in_stock + 10)
-    );
+    setOrderQuantity("");
     setSelectedSupplier("");
     setShowModal(true);
+    setErrors({});
+  };
+
+  const handleQuantityChange = (e) => {
+    let value = e.target.value;
+    let processedValue = value;
+
+    if (value === "") {
+      processedValue = "";
+    } else {
+      const numValue = parseInt(value);
+      if (!isNaN(numValue) && numValue > 0 && numValue <= 500) {
+        processedValue = numValue.toString();
+      } else if (numValue > 500) {
+        processedValue = "500";
+      } else if (numValue <= 0) {
+        processedValue = "";
+      }
+    }
+
+    setOrderQuantity(processedValue);
+    setErrors((prev) => ({ ...prev, orderQuantity: "" }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!selectedSupplier) {
+      newErrors.supplier = "Please select a supplier";
+    }
+
+    if (!orderQuantity || orderQuantity === "") {
+      newErrors.orderQuantity = "Quantity must be greater than 0";
+    } else {
+      const quantity = parseInt(orderQuantity);
+      if (isNaN(quantity) || quantity < 1) {
+        newErrors.orderQuantity = "Quantity must be greater than 0";
+      } else if (quantity > 500) {
+        newErrors.orderQuantity = "Quantity cannot exceed 500";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handlePlaceOrder = async () => {
-    if (!selectedSupplier || orderQuantity <= 0) {
-      alert("Please select supplier and enter valid quantity");
-      return;
-    }
+    if (!validateForm()) return;
 
     try {
       setOrdering(true);
@@ -292,7 +332,8 @@ const Re_Order = () => {
                     <p>
                       Total Price:{" "}
                       {formatCurrency(
-                        Number(selectedItem.purchase_price ?? 0) * orderQuantity
+                        Number(selectedItem.purchase_price ?? 0) *
+                          (orderQuantity || 0)
                       )}
                     </p>
                   </div>
@@ -303,17 +344,24 @@ const Re_Order = () => {
                   <input
                     type="number"
                     min="1"
-                    max="1000"
+                    max="500"
                     value={orderQuantity}
-                    onChange={(e) => setOrderQuantity(Number(e.target.value))}
+                    onChange={handleQuantityChange}
+                    placeholder="Enter quantity"
                   />
+                  {errors.orderQuantity && (
+                    <span className="error-text">{errors.orderQuantity}</span>
+                  )}
                 </div>
 
                 <div className="form-group">
                   <label>Select Supplier *</label>
                   <select
                     value={selectedSupplier}
-                    onChange={(e) => setSelectedSupplier(e.target.value)}
+                    onChange={(e) => {
+                      setSelectedSupplier(e.target.value);
+                      setErrors((prev) => ({ ...prev, supplier: "" }));
+                    }}
                   >
                     <option value="">Choose a supplier...</option>
                     {suppliers.map((sup) => (
@@ -322,6 +370,9 @@ const Re_Order = () => {
                       </option>
                     ))}
                   </select>
+                  {errors.supplier && (
+                    <span className="error-text">{errors.supplier}</span>
+                  )}
                 </div>
               </div>
 
@@ -335,7 +386,7 @@ const Re_Order = () => {
                 <button
                   className="btn-primary"
                   onClick={handlePlaceOrder}
-                  disabled={!selectedSupplier || orderQuantity <= 0 || ordering}
+                  disabled={!selectedSupplier || !orderQuantity || ordering}
                 >
                   {ordering ? "Placing..." : "Confirm Order"}
                 </button>

@@ -8,6 +8,7 @@ import logo from "./logo selfme.png";
 
 function Product_Request_Status() {
   const [requests, setRequests] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filterStatus, setFilterStatus] = useState("all");
@@ -15,9 +16,11 @@ function Product_Request_Status() {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [updateFormData, setUpdateFormData] = useState({});
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     fetchRequests();
+    fetchSuppliers();
   }, []);
 
   const fetchRequests = async () => {
@@ -33,51 +36,182 @@ function Product_Request_Status() {
     }
   };
 
+  const fetchSuppliers = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/suppliers");
+      const activeSuppliers = res.data.filter((sup) => sup.status === "Active");
+      setSuppliers(activeSuppliers);
+    } catch (err) {
+      console.error("Error fetching suppliers:", err);
+    }
+  };
+
+  const formatPrice = (price) => {
+    if (price === "" || price === null || price === undefined) return "";
+    const num = parseFloat(price);
+    return isNaN(num) ? "" : num.toFixed(2);
+  };
+
   const handleUpdateClick = (request) => {
     setSelectedRequest(request);
     setUpdateFormData({
       supplier_name: request.supplier_name || "",
       product_item: request.product_item || "",
-      quantity: request.quantity ?? 1,
+      quantity: request.quantity ?? "",
       need_date: request.need_date ? request.need_date.split("T")[0] : "",
-      unit_price: request.unit_price ?? 0,
-      total_cost: request.total_cost ?? 0,
+      unit_price: formatPrice(request.unit_price),
+      total_cost: formatPrice(request.total_cost),
       remark: request.remark || "",
       financial_status: request.financial_status || "pending",
       request_status: request.request_status || "pending",
     });
     setShowUpdateModal(true);
+    setErrors({});
   };
 
   const handleUpdateChange = (e) => {
     const { name, value } = e.target;
+    let processedValue = value;
+
+    switch (name) {
+      case "supplier_name":
+        processedValue = value;
+        break;
+      case "product_item":
+        processedValue = value.slice(0, 100);
+        break;
+      case "quantity":
+        if (value === "") {
+          processedValue = "";
+        } else {
+          const numValue = parseInt(value);
+          if (!isNaN(numValue) && numValue > 0 && numValue <= 500) {
+            processedValue = numValue.toString();
+          } else if (numValue > 500) {
+            processedValue = "500";
+          } else if (numValue <= 0) {
+            processedValue = "";
+          }
+        }
+        break;
+      case "unit_price":
+        if (value === "") {
+          processedValue = "";
+        } else {
+          const cleanValue = value.replace(/[^\d.]/g, "");
+          const parts = cleanValue.split(".");
+          if (parts.length > 2) {
+            processedValue = parts[0] + "." + parts.slice(1).join("");
+          } else if (parts.length === 2) {
+            processedValue = parts[0] + "." + parts[1].slice(0, 2);
+          } else {
+            processedValue = cleanValue;
+          }
+          const numValue = parseFloat(processedValue);
+          if (!isNaN(numValue) && numValue <= 0) {
+            processedValue = "";
+          }
+        }
+        break;
+      case "remark":
+        processedValue = value.slice(0, 200);
+        break;
+      default:
+        processedValue = value;
+    }
+
     setUpdateFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: processedValue,
     }));
+
+    setErrors((prev) => ({ ...prev, [name]: "" }));
 
     if (name === "quantity" || name === "unit_price") {
       const quantity =
         name === "quantity"
-          ? parseFloat(value) || 0
-          : parseFloat(updateFormData.quantity) || 0;
+          ? parseInt(processedValue) || 0
+          : parseInt(updateFormData.quantity) || 0;
       const unitPrice =
         name === "unit_price"
-          ? parseFloat(value) || 0
+          ? parseFloat(processedValue) || 0
           : parseFloat(updateFormData.unit_price) || 0;
       setUpdateFormData((prev) => ({
         ...prev,
-        total_cost: quantity * unitPrice,
+        total_cost: formatPrice(quantity * unitPrice),
       }));
     }
   };
 
+  const handlePriceBlur = (e) => {
+    const { name, value } = e.target;
+    if (value && value !== "") {
+      const formattedValue = formatPrice(value);
+      setUpdateFormData((prev) => ({
+        ...prev,
+        [name]: formattedValue,
+      }));
+    }
+  };
+
+  const validateUpdateForm = () => {
+    const newErrors = {};
+
+    if (!updateFormData.supplier_name) {
+      newErrors.supplier_name = "Please select a supplier";
+    }
+
+    if (!updateFormData.product_item) {
+      newErrors.product_item = "Product name is required";
+    } else if (updateFormData.product_item.length > 100) {
+      newErrors.product_item = "Product name cannot exceed 100 characters";
+    }
+
+    if (!updateFormData.quantity || updateFormData.quantity === "") {
+      newErrors.quantity = "Quantity must be greater than 0";
+    } else {
+      const quantity = parseInt(updateFormData.quantity);
+      if (isNaN(quantity) || quantity < 1) {
+        newErrors.quantity = "Quantity must be greater than 0";
+      } else if (quantity > 500) {
+        newErrors.quantity = "Quantity cannot exceed 500";
+      }
+    }
+
+    if (!updateFormData.need_date) {
+      newErrors.need_date = "Need date is required";
+    }
+
+    if (!updateFormData.unit_price || updateFormData.unit_price === "") {
+      newErrors.unit_price = "Unit price must be greater than 0";
+    } else {
+      const price = parseFloat(updateFormData.unit_price);
+      if (isNaN(price) || price <= 0) {
+        newErrors.unit_price = "Unit price must be greater than 0";
+      }
+    }
+
+    if (updateFormData.remark.length > 200) {
+      newErrors.remark = "Remark cannot exceed 200 characters";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
+    if (!validateUpdateForm()) return;
+
     try {
       const response = await axios.put(
         `http://localhost:5000/productrequests/${selectedRequest._id}`,
-        updateFormData
+        {
+          ...updateFormData,
+          quantity: parseInt(updateFormData.quantity),
+          unit_price: parseFloat(updateFormData.unit_price),
+          total_cost: parseFloat(updateFormData.total_cost),
+        }
       );
       setRequests((prev) =>
         prev.map((req) =>
@@ -172,10 +306,7 @@ function Product_Request_Status() {
           .reduce((a, b) => a + (b.total_cost ?? 0), 0);
 
         doc.text(
-          `Total Pending Value: Rs. ${totalPending.toLocaleString("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}`,
+          `Total Pending Value: LKR ${formatPrice(totalPending)}`,
           margin,
           69
         );
@@ -187,8 +318,8 @@ function Product_Request_Status() {
           { header: "Product", dataKey: "product" },
           { header: "Quantity", dataKey: "quantity" },
           { header: "Need Date", dataKey: "needDate" },
-          { header: "Unit Price (Rs.)", dataKey: "unitPrice" },
-          { header: "Total Cost (Rs.)", dataKey: "totalCost" },
+          { header: "Unit Price (LKR)", dataKey: "unitPrice" },
+          { header: "Total Cost (LKR)", dataKey: "totalCost" },
           { header: "Request Status", dataKey: "requestStatus" },
           { header: "Financial Status", dataKey: "financialStatus" },
           { header: "Created", dataKey: "created" },
@@ -206,14 +337,8 @@ function Product_Request_Status() {
                 day: "numeric",
               })
             : "N/A",
-          unitPrice: (req.unit_price ?? 0).toLocaleString("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }),
-          totalCost: (req.total_cost ?? 0).toLocaleString("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }),
+          unitPrice: formatPrice(req.unit_price),
+          totalCost: formatPrice(req.total_cost),
           requestStatus: req.request_status || "pending",
           financialStatus: req.financial_status || "pending",
           created: req.createdAt
@@ -338,6 +463,8 @@ function Product_Request_Status() {
     new Intl.NumberFormat("en-LK", {
       style: "currency",
       currency: "LKR",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(amount ?? 0);
 
   if (loading) {
@@ -533,14 +660,24 @@ function Product_Request_Status() {
                 <div className="form-grid">
                   <div className="form-group">
                     <label htmlFor="supplier_name">Supplier Name *</label>
-                    <input
-                      type="text"
+                    <select
                       id="supplier_name"
                       name="supplier_name"
                       value={updateFormData.supplier_name}
                       onChange={handleUpdateChange}
                       required
-                    />
+                    >
+                      <option value="">Select Supplier</option>
+                      {suppliers.map((sup) => (
+                        <option key={sup._id} value={sup.name}>
+                          {sup.name}{" "}
+                          {sup.company_name ? `- ${sup.company_name}` : ""}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.supplier_name && (
+                      <span className="error-text">{errors.supplier_name}</span>
+                    )}
                   </div>
                   <div className="form-group">
                     <label htmlFor="product_item">Product Item *</label>
@@ -550,8 +687,12 @@ function Product_Request_Status() {
                       name="product_item"
                       value={updateFormData.product_item}
                       onChange={handleUpdateChange}
+                      maxLength={100}
                       required
                     />
+                    {errors.product_item && (
+                      <span className="error-text">{errors.product_item}</span>
+                    )}
                   </div>
                   <div className="form-group">
                     <label htmlFor="quantity">Quantity *</label>
@@ -562,8 +703,12 @@ function Product_Request_Status() {
                       value={updateFormData.quantity}
                       onChange={handleUpdateChange}
                       min="1"
+                      max="500"
                       required
                     />
+                    {errors.quantity && (
+                      <span className="error-text">{errors.quantity}</span>
+                    )}
                   </div>
                   <div className="form-group">
                     <label htmlFor="need_date">Need Date *</label>
@@ -575,19 +720,25 @@ function Product_Request_Status() {
                       onChange={handleUpdateChange}
                       required
                     />
+                    {errors.need_date && (
+                      <span className="error-text">{errors.need_date}</span>
+                    )}
                   </div>
                   <div className="form-group">
                     <label htmlFor="unit_price">Unit Price (LKR) *</label>
                     <input
-                      type="number"
+                      type="text"
                       id="unit_price"
                       name="unit_price"
                       value={updateFormData.unit_price}
                       onChange={handleUpdateChange}
-                      min="0"
-                      step="0.01"
+                      onBlur={handlePriceBlur}
+                      placeholder="0.00"
                       required
                     />
+                    {errors.unit_price && (
+                      <span className="error-text">{errors.unit_price}</span>
+                    )}
                   </div>
                   <div className="form-group">
                     <label htmlFor="total_cost">Total Cost (LKR)</label>
@@ -636,8 +787,12 @@ function Product_Request_Status() {
                     value={updateFormData.remark}
                     onChange={handleUpdateChange}
                     rows="3"
+                    maxLength={200}
                     placeholder="Additional notes or specifications..."
                   />
+                  {errors.remark && (
+                    <span className="error-text">{errors.remark}</span>
+                  )}
                 </div>
                 <div className="modal-actions">
                   <button

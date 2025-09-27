@@ -32,6 +32,11 @@ const Inevntory_Damaged_Return = () => {
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [pdfLoading, setPdfLoading] = useState(false);
 
+  // Simplified remark editing state
+  const [editingItem, setEditingItem] = useState(null);
+  const [newRemark, setNewRemark] = useState("");
+  const [savingRemark, setSavingRemark] = useState(false);
+
   useEffect(() => {
     const fetchItems = async () => {
       try {
@@ -82,6 +87,66 @@ const Inevntory_Damaged_Return = () => {
     if (selectedItems.size === filteredItems.length)
       setSelectedItems(new Set());
     else setSelectedItems(new Set(filteredItems.map((i) => i._id)));
+  };
+
+  // Open edit modal
+  const openEditModal = (item) => {
+    setEditingItem(item);
+    setNewRemark(item.product_remark || "");
+  };
+
+  // Close edit modal
+  const closeEditModal = () => {
+    setEditingItem(null);
+    setNewRemark("");
+    setError(null);
+  };
+
+  // Save remark
+  const saveRemark = async () => {
+    if (savingRemark || !editingItem) return;
+
+    try {
+      setSavingRemark(true);
+      const response = await axios.put(
+        `http://localhost:5000/products/${editingItem._id}`,
+        {
+          product_remark: newRemark,
+        }
+      );
+
+      if (response.data) {
+        // Update the local state
+        const updatedItems = items.map((item) =>
+          item._id === editingItem._id
+            ? { ...item, product_remark: newRemark }
+            : item
+        );
+        setItems(updatedItems);
+
+        const updatedFilteredItems = filteredItems.map((item) =>
+          item._id === editingItem._id
+            ? { ...item, product_remark: newRemark }
+            : item
+        );
+        setFilteredItems(updatedFilteredItems);
+
+        closeEditModal();
+      }
+    } catch (err) {
+      setError("Failed to update remark. Please try again.");
+      console.error("Error updating remark:", err);
+    } finally {
+      setSavingRemark(false);
+    }
+  };
+
+  // Format currency function
+  const formatCurrency = (value) => {
+    return value.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   };
 
   const stats = {
@@ -144,10 +209,7 @@ const Inevntory_Damaged_Return = () => {
         0
       );
       doc.text(
-        `Total Capital Value: Rs. ${reportTotalCapital.toLocaleString("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })}`,
+        `Total Capital Value: LKR ${formatCurrency(reportTotalCapital)}`,
         margin,
         69
       );
@@ -160,8 +222,8 @@ const Inevntory_Damaged_Return = () => {
         { header: "Category", dataKey: "category" },
         { header: "Status", dataKey: "status" },
         { header: "Quantity", dataKey: "stock" },
-        { header: "Unit Price (Rs.)", dataKey: "unitPrice" },
-        { header: "Total Value (Rs.)", dataKey: "totalValue" },
+        { header: "Unit Price (LKR)", dataKey: "unitPrice" },
+        { header: "Total Value (LKR)", dataKey: "totalValue" },
         { header: "Remark", dataKey: "remark" },
       ];
 
@@ -181,14 +243,8 @@ const Inevntory_Damaged_Return = () => {
               : item.category,
           status: item.status,
           stock: item.quantity_in_stock,
-          unitPrice: unitPrice.toLocaleString("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }),
-          totalValue: totalValue.toLocaleString("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }),
+          unitPrice: formatCurrency(unitPrice),
+          totalValue: formatCurrency(totalValue),
           remark: item.product_remark || "-",
         };
       });
@@ -309,11 +365,7 @@ const Inevntory_Damaged_Return = () => {
           <div className="idr_stat-card">
             <h3>Total Capital</h3>
             <span className="idr_stat-number">
-              Rs.{" "}
-              {stats.totalCapital.toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
+              LKR {formatCurrency(stats.totalCapital)}
             </span>
           </div>
         </div>
@@ -421,6 +473,7 @@ const Inevntory_Damaged_Return = () => {
                 <th>Unit Price</th>
                 <th>Total Value</th>
                 <th>Remark</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -459,15 +512,28 @@ const Inevntory_Damaged_Return = () => {
                       <td>{item.category}</td>
                       <td>{item.status}</td>
                       <td>{item.quantity_in_stock}</td>
-                      <td>Rs. {unitPrice.toLocaleString()}</td>
-                      <td>Rs. {totalValue.toLocaleString()}</td>
-                      <td>{item.product_remark || "-"}</td>
+                      <td>LKR {formatCurrency(unitPrice)}</td>
+                      <td>LKR {formatCurrency(totalValue)}</td>
+                      <td>
+                        <div className="idr_remark-display">
+                          {item.product_remark || "No remark"}
+                        </div>
+                      </td>
+                      <td>
+                        <button
+                          onClick={() => openEditModal(item)}
+                          className="idr_edit-btn"
+                          title="Edit Remark"
+                        >
+                          Edit Remark
+                        </button>
+                      </td>
                     </tr>
                   );
                 })
               ) : (
                 <tr>
-                  <td colSpan="11" id="idr_no-items">
+                  <td colSpan="12" id="idr_no-items">
                     No items found
                     {searchTerm && ` matching "${searchTerm}"`}
                   </td>
@@ -476,6 +542,60 @@ const Inevntory_Damaged_Return = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Edit Remark Modal */}
+        {editingItem && (
+          <div className="idr_modal-overlay">
+            <div className="idr_modal-content">
+              <div className="idr_modal-header">
+                <h3>Edit Remark</h3>
+                <button className="idr_modal-close" onClick={closeEditModal}>
+                  ×
+                </button>
+              </div>
+              <div className="idr_modal-body">
+                <div className="idr_modal-item-info">
+                  <p>
+                    <strong>Item:</strong> {editingItem.item_name}
+                  </p>
+                  <p>
+                    <strong>Serial:</strong> {editingItem.serial_number}
+                  </p>
+                </div>
+                <div className="idr_form-group">
+                  <label htmlFor="remark">Remark:</label>
+                  <textarea
+                    id="remark"
+                    value={newRemark}
+                    onChange={(e) => setNewRemark(e.target.value)}
+                    placeholder="Enter your remark here..."
+                    rows="4"
+                    maxLength={200}
+                  />
+                  <span className="idr_char-count">
+                    {newRemark.length}/200 characters
+                  </span>
+                </div>
+              </div>
+              <div className="idr_modal-actions">
+                <button
+                  className="idr_btn-cancel"
+                  onClick={closeEditModal}
+                  disabled={savingRemark}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="idr_btn-save"
+                  onClick={saveRemark}
+                  disabled={savingRemark}
+                >
+                  {savingRemark ? "Saving..." : "Save Remark"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

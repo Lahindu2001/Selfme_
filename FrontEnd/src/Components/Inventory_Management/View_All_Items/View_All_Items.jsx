@@ -30,6 +30,8 @@ const View_All_Items = () => {
     formData: {},
     imagePreview: null,
     newImage: null,
+    errors: {},
+    isSerialGenerated: false,
   });
   const navigate = useNavigate();
 
@@ -121,6 +123,138 @@ const View_All_Items = () => {
     setDeleteModal({ isOpen: false, item: null, loading: false });
   };
 
+  // Enhanced input change handler with validations
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    let processedValue = value;
+
+    switch (name) {
+      case "serial_number":
+        if (!editModal.isSerialGenerated) {
+          processedValue = value.slice(0, 50);
+        } else {
+          return; // Prevent editing if serial number is generated
+        }
+        break;
+
+      case "item_name":
+        processedValue = value.slice(0, 100);
+        break;
+
+      case "description":
+        processedValue = value.slice(0, 500);
+        break;
+
+      case "quantity_in_stock":
+      case "re_order_level": {
+        if (value === "") {
+          processedValue = "";
+        } else {
+          const numValue = parseInt(value);
+          if (!isNaN(numValue) && numValue > 0 && numValue <= 500) {
+            processedValue = numValue.toString();
+          } else if (numValue > 500) {
+            processedValue = "500";
+          } else if (numValue <= 0) {
+            processedValue = "";
+          }
+        }
+        break;
+      }
+
+      case "purchase_price":
+      case "selling_price": {
+        if (value === "") {
+          processedValue = "";
+        } else {
+          const cleanValue = value.replace(/[^\d.]/g, "");
+          const parts = cleanValue.split(".");
+          if (parts.length > 2) {
+            processedValue = parts[0] + "." + parts.slice(1).join("");
+          } else if (parts.length === 2) {
+            processedValue = parts[0] + "." + parts[1].slice(0, 2);
+          } else {
+            processedValue = cleanValue;
+          }
+
+          const numValue = parseFloat(processedValue);
+          if (!isNaN(numValue) && numValue <= 0) {
+            processedValue = "";
+          }
+        }
+        break;
+      }
+
+      case "product_remark":
+        processedValue = value.slice(0, 200);
+        break;
+
+      default:
+        processedValue = value;
+    }
+
+    setEditModal((prev) => ({
+      ...prev,
+      formData: { ...prev.formData, [name]: processedValue },
+      errors: { ...prev.errors, [name]: "" },
+    }));
+
+    if (name === "quantity_in_stock" || name === "re_order_level") {
+      validateReorderLevel();
+    }
+  };
+
+  // Generate serial number
+  const generateSerialNumber = () => {
+    const sn = `SN-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    setEditModal((prev) => ({
+      ...prev,
+      formData: { ...prev.formData, serial_number: sn },
+      isSerialGenerated: true,
+    }));
+  };
+
+  // Validate that re-order level is less than quantity
+  const validateReorderLevel = () => {
+    const quantity = parseInt(editModal.formData.quantity_in_stock) || 0;
+    const reorderLevel = parseInt(editModal.formData.re_order_level) || 0;
+
+    if (reorderLevel > quantity) {
+      setEditModal((prev) => ({
+        ...prev,
+        errors: {
+          ...prev.errors,
+          re_order_level:
+            "Re-order level cannot be greater than quantity in stock",
+        },
+      }));
+    } else {
+      setEditModal((prev) => ({
+        ...prev,
+        errors: { ...prev.errors, re_order_level: "" },
+      }));
+    }
+  };
+
+  // Format price for display with .00 format
+  const formatPrice = (price) => {
+    if (price === "" || price === null || price === undefined) return "";
+    const num = parseFloat(price);
+    return isNaN(num) ? "" : num.toFixed(2);
+  };
+
+  // Handle price blur to format with .00
+  const handlePriceBlur = (e) => {
+    const { name, value } = e.target;
+    if (value && value !== "") {
+      const formattedValue = formatPrice(value);
+      setEditModal((prev) => ({
+        ...prev,
+        formData: { ...prev.formData, [name]: formattedValue },
+      }));
+    }
+  };
+
   const openEditModal = (item) => {
     setEditModal({
       isOpen: true,
@@ -134,8 +268,8 @@ const View_All_Items = () => {
         quantity_in_stock: item.quantity_in_stock,
         re_order_level: item.re_order_level,
         supplier_name: item.supplier_name || "",
-        purchase_price: item.purchase_price,
-        selling_price: item.selling_price,
+        purchase_price: formatPrice(item.purchase_price),
+        selling_price: formatPrice(item.selling_price),
         status: item.status,
         product_remark: item.product_remark || "",
       },
@@ -143,6 +277,8 @@ const View_All_Items = () => {
         ? `http://localhost:5000/images/${item.item_image}`
         : null,
       newImage: null,
+      errors: {},
+      isSerialGenerated: true,
     });
   };
 
@@ -154,15 +290,9 @@ const View_All_Items = () => {
       formData: {},
       imagePreview: null,
       newImage: null,
+      errors: {},
+      isSerialGenerated: false,
     });
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditModal((prev) => ({
-      ...prev,
-      formData: { ...prev.formData, [name]: value },
-    }));
   };
 
   const handleImageChange = (e) => {
@@ -174,6 +304,87 @@ const View_All_Items = () => {
         imagePreview: URL.createObjectURL(file),
       }));
     }
+  };
+
+  // Form validation for edit modal
+  const validateEditForm = () => {
+    const newErrors = {};
+    const formData = editModal.formData;
+
+    if (!formData.serial_number) {
+      newErrors.serial_number = "Serial number required";
+    } else if (formData.serial_number.length > 50) {
+      newErrors.serial_number = "Serial number cannot exceed 50 characters";
+    }
+
+    if (!formData.item_name) {
+      newErrors.item_name = "Product name required";
+    } else if (formData.item_name.length > 100) {
+      newErrors.item_name = "Product name cannot exceed 100 characters";
+    }
+
+    if (!formData.category) newErrors.category = "Select a category";
+
+    if (formData.description.length > 500) {
+      newErrors.description = "Description cannot exceed 500 characters";
+    }
+
+    if (!formData.quantity_in_stock || formData.quantity_in_stock === "") {
+      newErrors.quantity_in_stock = "Quantity must be greater than 0";
+    } else {
+      const quantity = parseInt(formData.quantity_in_stock);
+      if (isNaN(quantity) || quantity < 1) {
+        newErrors.quantity_in_stock = "Quantity must be greater than 0";
+      } else if (quantity > 500) {
+        newErrors.quantity_in_stock = "Quantity cannot exceed 500";
+      }
+    }
+
+    if (!formData.re_order_level || formData.re_order_level === "") {
+      newErrors.re_order_level = "Re-order level must be greater than 0";
+    } else {
+      const reorderLevel = parseInt(formData.re_order_level);
+      if (isNaN(reorderLevel) || reorderLevel < 1) {
+        newErrors.re_order_level = "Re-order level must be greater than 0";
+      } else if (reorderLevel > 500) {
+        newErrors.re_order_level = "Re-order level cannot exceed 500";
+      } else if (reorderLevel > parseInt(formData.quantity_in_stock || 0)) {
+        newErrors.re_order_level =
+          "Re-order level cannot be greater than quantity in stock";
+      }
+    }
+
+    if (!formData.supplier_name) newErrors.supplier_name = "Select a supplier";
+
+    if (!formData.purchase_price || formData.purchase_price === "") {
+      newErrors.purchase_price = "Purchase price must be greater than 0";
+    } else {
+      const price = parseFloat(formData.purchase_price);
+      if (isNaN(price) || price <= 0) {
+        newErrors.purchase_price = "Purchase price must be greater than 0";
+      }
+    }
+
+    if (!formData.selling_price || formData.selling_price === "") {
+      newErrors.selling_price = "Selling price must be greater than 0";
+    } else {
+      const price = parseFloat(formData.selling_price);
+      if (isNaN(price) || price <= 0) {
+        newErrors.selling_price = "Selling price must be greater than 0";
+      }
+    }
+
+    if (
+      (formData.status === "Damaged" || formData.status === "Returned") &&
+      !formData.product_remark
+    ) {
+      newErrors.product_remark = "Remark required for Damaged/Returned items";
+    } else if (formData.product_remark.length > 200) {
+      newErrors.product_remark = "Remark cannot exceed 200 characters";
+    }
+
+    setEditModal((prev) => ({ ...prev, errors: newErrors }));
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleDeleteConfirm = async () => {
@@ -194,13 +405,27 @@ const View_All_Items = () => {
 
   const handleUpdateConfirm = async () => {
     if (!editModal.item) return;
+
+    if (!validateEditForm()) return;
+
     try {
       setEditModal((prev) => ({ ...prev, loading: true }));
 
       const formData = new FormData();
-      Object.keys(editModal.formData).forEach((key) =>
-        formData.append(key, editModal.formData[key])
-      );
+      const numericFields = [
+        "quantity_in_stock",
+        "re_order_level",
+        "purchase_price",
+        "selling_price",
+      ];
+
+      Object.keys(editModal.formData).forEach((key) => {
+        let value = editModal.formData[key];
+        if (numericFields.includes(key)) {
+          value = value === "" ? null : Number(value);
+        }
+        formData.append(key, value);
+      });
 
       if (editModal.newImage) formData.append("item_image", editModal.newImage);
 
@@ -216,7 +441,17 @@ const View_All_Items = () => {
       fetchItems();
       closeEditModal();
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to update item");
+      if (err.response?.data?.code === 11000) {
+        setEditModal((prev) => ({
+          ...prev,
+          errors: {
+            ...prev.errors,
+            serial_number: "Serial Number already exists",
+          },
+        }));
+      } else {
+        setError(err.response?.data?.message || "Failed to update item");
+      }
       setEditModal((prev) => ({ ...prev, loading: false }));
     }
   };
@@ -259,7 +494,7 @@ const View_All_Items = () => {
           </div>
           <div className="stat-card">
             <h3>Total Value</h3>
-            <p className="stat-number">LKR {totalValue.toLocaleString()}</p>
+            <p className="stat-number">LKR {formatPrice(totalValue)}</p>
           </div>
           <div className="stat-card">
             <h3>Low Stock Items</h3>
@@ -283,7 +518,6 @@ const View_All_Items = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
             />
-            <span className="search-icon">🔍</span>
           </div>
 
           <div className="filter-group">
@@ -380,10 +614,10 @@ const View_All_Items = () => {
 
                   <div className="item-pricing">
                     <span className="selling-price">
-                      LKR {item.selling_price?.toLocaleString()}
+                      LKR {formatPrice(item.selling_price)}
                     </span>
                     <span className="cost-price">
-                      Cost: LKR {item.purchase_price?.toLocaleString()}
+                      Cost: LKR {formatPrice(item.purchase_price)}
                     </span>
                   </div>
 
@@ -519,15 +753,34 @@ const View_All_Items = () => {
 
                   {/* Basic Info */}
                   <div className="form-row">
-                    <div className="form-group">
+                    <div className="form-group serial-number-group">
                       <label>Serial Number *</label>
-                      <input
-                        type="text"
-                        name="serial_number"
-                        value={editModal.formData.serial_number}
-                        onChange={handleInputChange}
-                        required
-                      />
+                      <div className="serial-input-container">
+                        <input
+                          type="text"
+                          name="serial_number"
+                          value={editModal.formData.serial_number}
+                          onChange={handleInputChange}
+                          maxLength={50}
+                          readOnly={editModal.isSerialGenerated}
+                          required
+                        />
+                        <button
+                          type="button"
+                          className="generate-btn"
+                          onClick={generateSerialNumber}
+                          disabled={editModal.isSerialGenerated}
+                        >
+                          {editModal.isSerialGenerated
+                            ? "Generated"
+                            : "Generate"}
+                        </button>
+                      </div>
+                      {editModal.errors.serial_number && (
+                        <span className="error-text">
+                          {editModal.errors.serial_number}
+                        </span>
+                      )}
                     </div>
                     <div className="form-group">
                       <label>Product Name *</label>
@@ -536,8 +789,14 @@ const View_All_Items = () => {
                         name="item_name"
                         value={editModal.formData.item_name}
                         onChange={handleInputChange}
+                        maxLength={100}
                         required
                       />
+                      {editModal.errors.item_name && (
+                        <span className="error-text">
+                          {editModal.errors.item_name}
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -557,6 +816,11 @@ const View_All_Items = () => {
                           </option>
                         ))}
                       </select>
+                      {editModal.errors.category && (
+                        <span className="error-text">
+                          {editModal.errors.category}
+                        </span>
+                      )}
                     </div>
 
                     <div className="form-group">
@@ -586,7 +850,7 @@ const View_All_Items = () => {
                     >
                       <option value="">Select Supplier</option>
                       {suppliers
-                        .filter((supplier) => supplier.status === "Active") // Only active suppliers
+                        .filter((supplier) => supplier.status === "Active")
                         .map((supplier) => (
                           <option key={supplier._id} value={supplier.name}>
                             {supplier.name}{" "}
@@ -596,6 +860,11 @@ const View_All_Items = () => {
                           </option>
                         ))}
                     </select>
+                    {editModal.errors.supplier_name && (
+                      <span className="error-text">
+                        {editModal.errors.supplier_name}
+                      </span>
+                    )}
                   </div>
 
                   <div className="form-group">
@@ -605,7 +874,13 @@ const View_All_Items = () => {
                       value={editModal.formData.description}
                       onChange={handleInputChange}
                       rows="3"
+                      maxLength={500}
                     />
+                    {editModal.errors.description && (
+                      <span className="error-text">
+                        {editModal.errors.description}
+                      </span>
+                    )}
                   </div>
 
                   {/* Inventory Info */}
@@ -617,8 +892,15 @@ const View_All_Items = () => {
                         name="quantity_in_stock"
                         value={editModal.formData.quantity_in_stock}
                         onChange={handleInputChange}
+                        min="1"
+                        max="500"
                         required
                       />
+                      {editModal.errors.quantity_in_stock && (
+                        <span className="error-text">
+                          {editModal.errors.quantity_in_stock}
+                        </span>
+                      )}
                     </div>
 
                     <div className="form-group">
@@ -628,8 +910,15 @@ const View_All_Items = () => {
                         name="re_order_level"
                         value={editModal.formData.re_order_level}
                         onChange={handleInputChange}
+                        min="1"
+                        max="500"
                         required
                       />
+                      {editModal.errors.re_order_level && (
+                        <span className="error-text">
+                          {editModal.errors.re_order_level}
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -638,35 +927,63 @@ const View_All_Items = () => {
                     <div className="form-group">
                       <label>Purchase Price *</label>
                       <input
-                        type="number"
+                        type="text"
                         name="purchase_price"
                         value={editModal.formData.purchase_price}
                         onChange={handleInputChange}
+                        onBlur={handlePriceBlur}
+                        placeholder="0.00"
                         required
                       />
+                      {editModal.errors.purchase_price && (
+                        <span className="error-text">
+                          {editModal.errors.purchase_price}
+                        </span>
+                      )}
                     </div>
 
                     <div className="form-group">
                       <label>Selling Price *</label>
                       <input
-                        type="number"
+                        type="text"
                         name="selling_price"
                         value={editModal.formData.selling_price}
                         onChange={handleInputChange}
+                        onBlur={handlePriceBlur}
+                        placeholder="0.00"
                         required
                       />
+                      {editModal.errors.selling_price && (
+                        <span className="error-text">
+                          {editModal.errors.selling_price}
+                        </span>
+                      )}
                     </div>
                   </div>
 
-                  <div className="form-group">
-                    <label>Product Remark</label>
-                    <textarea
-                      name="product_remark"
-                      value={editModal.formData.product_remark}
-                      onChange={handleInputChange}
-                      rows="2"
-                    />
-                  </div>
+                  {(editModal.formData.status === "Damaged" ||
+                    editModal.formData.status === "Returned") && (
+                    <div className="form-group">
+                      <label>
+                        {editModal.formData.status === "Damaged"
+                          ? "Damage Details *"
+                          : "Return Reason *"}
+                      </label>
+                      <textarea
+                        name="product_remark"
+                        value={editModal.formData.product_remark}
+                        onChange={handleInputChange}
+                        rows="2"
+                        maxLength={200}
+                        required
+                      />
+                      {editModal.errors.product_remark && (
+                        <span className="error-text">
+                          {editModal.errors.product_remark}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 

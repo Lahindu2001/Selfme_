@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation, NavLink, useNavigate  } from "react-router-dom";
+import { Link, useLocation , NavLink, useNavigate } from "react-router-dom";
 import "./Inventory_Management_Nav.css";
 import logo from "./logo selfme.png"; // Corrected import path
 import { removeAuthToken } from '../../../utils/auth';
@@ -16,7 +16,6 @@ const navigate = useNavigate();
     localStorage.removeItem('authUser'); // Clear user data
     navigate('/login');
   };
-
 
 
   const location = useLocation(); // for active link highlighting
@@ -103,6 +102,40 @@ const navigate = useNavigate();
             </div>
           </li>
 
+          {/* Stock Out Management */}
+          <li className="inv-nav__item">
+            <button className="inv-nav__header">
+              <span>Stock Out Management</span>
+            </button>
+            <div className="inv-nav__submenu">
+              <Link
+                to="/material_orders"
+                className={`inv-nav__link ${
+                  isActive("/material_orders") ? "active" : ""
+                }`}
+              >
+                Order Request
+              </Link>
+
+              <Link
+                to="/material_outgoings"
+                className={`inv-nav__link ${
+                  isActive("/material_outgoings") ? "active" : ""
+                }`}
+              >
+                Order Out & Confirm
+              </Link>
+              <Link
+                to="/material_outgoings_history"
+                className={`inv-nav__link ${
+                  isActive("/material_outgoings_history") ? "active" : ""
+                }`}
+              >
+                Order Placed History
+              </Link>
+            </div>
+          </li>
+
           {/* Supplier */}
           <li className="inv-nav__item">
             <button className="inv-nav__header">
@@ -127,89 +160,13 @@ const navigate = useNavigate();
               </Link>
             </div>
           </li>
-
-          {/* Stock Out Management */}
-          <li className="inv-nav__item">
-            <button className="inv-nav__header">
-              <span>Stock Out Management</span>
-            </button>
-            <div className="inv-nav__submenu">
-              <Link
-                to="/material_outgoings"
-                className={`inv-nav__link ${
-                  isActive("/material_outgoings") ? "active" : ""
-                }`}
-              >
-                Order Out & Confirm
-              </Link>
-              <Link
-                to="/material_outgoings_history"
-                className={`inv-nav__link ${
-                  isActive("/material_outgoings_history") ? "active" : ""
-                }`}
-              >
-                Order Placed History
-              </Link>
-            </div>
-          </li>
-
-          {/* Reports */}
-          {/* <li className="inv-nav__item">
-            <button className="inv-nav__header">
-              <span>Reports</span>
-            </button>
-            <div className="inv-nav__submenu">
-              <Link
-                to="/reports/stock"
-                className={`inv-nav__link ${
-                  isActive("/reports/stock") ? "active" : ""
-                }`}
-              >
-                Stock Summary
-              </Link>
-              <Link
-                to="/reports/supplier"
-                className={`inv-nav__link ${
-                  isActive("/reports/supplier") ? "active" : ""
-                }`}
-              >
-                Supplier Report
-              </Link>
-              <Link
-                to="/reports/request"
-                className={`inv-nav__link ${
-                  isActive("/reports/request") ? "active" : ""
-                }`}
-              >
-                Request Fulfillment
-              </Link>
-              <Link
-                to="/reports/damage"
-                className={`inv-nav__link ${
-                  isActive("/reports/damage") ? "active" : ""
-                }`}
-              >
-                Damaged Items Report
-              </Link>
-              <Link
-                to="/reports/valuation"
-                className={`inv-nav__link ${
-                  isActive("/reports/valuation") ? "active" : ""
-                }`}
-              >
-                Inventory Valuation
-              </Link>
-            </div>
-          </li> */}
         </ul>
       </nav>
 
       {/* Footer */}
       <div className="inv-nav__footer">
-
-        <span className="user-name">Welcome, {firstName}</span>
+       <span className="user-name">Welcome, {firstName}</span>
         <button className="nav__signout-btn" onClick={handleLogout}>Logout</button>
-
       </div>
     </aside>
   );

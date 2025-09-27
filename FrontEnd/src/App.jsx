@@ -35,9 +35,11 @@ import Product_Request_Status from "./components/Inventory_Management/Product_Re
 import Inevntory_Damaged_Return from "./components/Inventory_Management/Inevntory_Damaged_Return/Inevntory_Damaged_Return";
 import Add_Suppliers from "./components/Inventory_Management/Supplier/Supplier";
 import View_Suppliers from "./components/Inventory_Management/View_Suppliers/View_Suppliers";
-import Order_Place from "./components/Inventory_Management/Order_Place/Order_Place";
+
 import Stock_Outs from "./components/Inventory_Management/Stock_Outs/Stock_Outs";
 import Stock_Outs_History from "./components/Inventory_Management/Stock_Out_History/Stock_Out_History";
+import Customer_Orders from "./components/Inventory_Management/Customer_Orders/Customer_Orders";
+
 import { isAuthenticated } from "./utils/auth";
 
 function App() {
@@ -96,10 +98,7 @@ function App() {
           path="/damage_return_add"
           element={isAuthenticated() ? <Inevntory_Damaged_Return /> : <Navigate to="/login" />}
         />
-        <Route
-          path="/order_placing"
-          element={isAuthenticated() ? <Order_Place /> : <Navigate to="/login" />}
-        />
+       
         <Route
           path="/material_outgoings"
           element={isAuthenticated() ? <Stock_Outs /> : <Navigate to="/login" />}
@@ -116,6 +115,11 @@ function App() {
           path="/viewSuppliers"
           element={isAuthenticated() ? <View_Suppliers /> : <Navigate to="/login" />}
         />
+        <Route
+          path="/material_orders"
+          element={isAuthenticated() ? <Customer_Orders /> : <Navigate to="/login" />}
+        />
+
         {/* lahindu */}
         <Route
           path="/mainAdminhome"
