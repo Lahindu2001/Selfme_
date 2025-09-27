@@ -101,7 +101,7 @@ app.use("/api/finance/payments", paymentRouter);
 
 // ------------------- DATABASE -------------------
 mongoose
-  .connect("mongodb+srv://admin:M8jreHLM0FG5ZEGi@cluster1.lmzaxue.mongodb.net/")
+  .connect("mongodb+srv://adminSelfme:P40YIFy04Am8rnDe@cluster0.4bp3tta.mongodb.net/selfmedbn")
   .then(() => console.log("✅ Connected to MongoDB"))
   .then(() => {
     app.listen(5000, () => console.log("🚀 Server running on port 5000"));
