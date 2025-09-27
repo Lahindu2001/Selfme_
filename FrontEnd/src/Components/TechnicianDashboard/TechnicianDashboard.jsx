@@ -1,119 +1,321 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import "./TechnicianDashboard.css";
-import TechnicianLayout from "./TechnicianLayout";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import jsPDF from 'jspdf';
+import TechnicianLayout from './TechnicianLayout';
 
 function TechnicianDashboard() {
   const navigate = useNavigate();
+  const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+  const firstName = authUser.firstName || 'Technician';
 
-  // Hardcoded fake Sri Lankan purchase order data
-  const orders = [
-    {
-      id: "PO-001",
-      customerId: "CUST-001",
-      customerName: "Amal Perera",
-      product: "5KW Home Solar System",
-      quantity: 1,
-      amount: "Rs. 250,000",
-      paymentStatus: "Success",
-      orderDate: "2025-09-01",
-      location: "Colombo",
-    },
-    {
-      id: "PO-002",
-      customerId: "CUST-002",
-      customerName: "Nimali Fernando",
-      product: "Lithium-ion Battery Pack",
-      quantity: 2,
-      amount: "Rs. 150,000",
-      paymentStatus: "Success",
-      orderDate: "2025-09-02",
-      location: "Kandy",
-    },
-    {
-      id: "PO-003",
-      customerId: "CUST-003",
-      customerName: "Saman Jayasinghe",
-      product: "Hybrid Inverter",
-      quantity: 1,
-      amount: "Rs. 100,000",
-      paymentStatus: "Success",
-      orderDate: "2025-09-03",
-      location: "Galle",
-    },
-    {
-      id: "PO-004",
-      customerId: "CUST-004",
-      customerName: "Kumari Silva",
-      product: "20KW Business Package",
-      quantity: 1,
-      amount: "Rs. 500,000",
-      paymentStatus: "Success",
-      orderDate: "2025-09-04",
-      location: "Jaffna",
-    },
-    {
-      id: "PO-005",
-      customerId: "CUST-005",
-      customerName: "Ranil Wickramasinghe",
-      product: "5KW Home Solar System",
-      quantity: 1,
-      amount: "Rs. 250,000",
-      paymentStatus: "Success",
-      orderDate: "2025-09-05",
-      location: "Negombo",
-    },
-  ];
-
-  // Navigate to the Register Employee page
-  const handleRegisterEmployee = () => {
-    navigate("/register-employee");
+  const handleLogout = () => {
+    localStorage.removeItem('authUser');
+    navigate('/login');
   };
 
+  // ------------------- STATES -------------------
+  const [payments, setPayments] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const companyInfo = {
+    name: 'SelfMe',
+    tagline: 'FUTURE OF SUN - SOLAR POWER',
+    address: ['No/346, Madalanda, Dompe,', 'Colombo, Sri Lanka'],
+    phone: '+94 717 882 883',
+    email: 'Selfmepvtltd@gmail.com',
+    website: 'www.selfme.com',
+  };
+
+  // ------------------- FETCH PAYMENTS -------------------
+  const fetchPayments = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/paid-payments');
+      setPayments(res.data.payments || []);
+    } catch (err) {
+      console.error('Error fetching payments:', err);
+      setPayments([]);
+    }
+  };
+
+  // ------------------- SEARCH HANDLER -------------------
+  const handleSearch = () => {
+    fetchPayments();
+  };
+
+  useEffect(() => {
+    fetchPayments();
+  }, []);
+
+  // ------------------- LOGO CONVERSION -------------------
+  const getLogoAsBase64 = () => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        const base64 = canvas.toDataURL('image/png');
+        resolve(base64);
+      };
+      img.onerror = () => {
+        console.warn('Could not load logo, proceeding without it');
+        resolve(null);
+      };
+      img.src = '/newLogo.png';
+    });
+  };
+
+  // ------------------- PDF GENERATION -------------------
+  const generatePDF = async (data, title) => {
+    if (!data.length) return alert('No payments to download!');
+    try {
+      const logoBase64 = await getLogoAsBase64();
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+
+      const addLetterhead = () => {
+        if (logoBase64) {
+          doc.addImage(logoBase64, 'PNG', 15, 10, 20, 20);
+        }
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(18);
+        doc.setTextColor(0, 0, 0);
+        doc.text(companyInfo.name, pageWidth / 2, 20, { align: 'center' });
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text(companyInfo.address.join(', '), pageWidth / 2, 28, { align: 'center' });
+        doc.text(`Phone: ${companyInfo.phone} | Email: ${companyInfo.email} | Website: ${companyInfo.website}`, pageWidth / 2, 34, { align: 'center' });
+        doc.setLineWidth(0.5);
+        doc.setDrawColor(212, 175, 55);
+        doc.line(15, 40, pageWidth - 15, 40);
+      };
+
+      const addFooter = (pageNum, totalPages, lastRecordIdx) => {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(100, 100, 100);
+        doc.setLineWidth(0.3);
+        doc.setDrawColor(212, 175, 55);
+        doc.line(15, pageHeight - 20, pageWidth - 15, pageHeight - 20);
+        const footerText = `Generated by ${companyInfo.name} Payment Management System`;
+        doc.text(footerText, pageWidth / 2, pageHeight - 15, { align: 'center' });
+        const recordText = lastRecordIdx >= 0 ? `Payment #${String(lastRecordIdx + 1).padStart(3, '0')}` : '';
+        doc.text(`Page ${pageNum} of ${totalPages} | ${recordText}`, pageWidth - 15, pageHeight - 10, { align: 'right' });
+        const genDate = new Date().toLocaleDateString('en-GB');
+        const genTime = new Date().toLocaleTimeString('en-GB', { hour12: false });
+        doc.text(`Generated on ${genDate} at ${genTime}`, 15, pageHeight - 10);
+      };
+
+      const addSignatureField = () => {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        doc.text('Authorized Signature: __________________', pageWidth - 85, pageHeight - 30);
+      };
+
+      let totalPages = 1;
+      let tempY = 50;
+      let lastRecordIdxPerPage = [];
+      let currentPageRecords = [];
+
+      const fields = ['payment_id', 'invoice_id', 'userId', 'itemId', 'payment_method', 'amount', 'payment_date', 'reference_no', 'status'];
+      data.forEach((_, idx) => {
+        let fieldsCount = fields.length;
+        let itemHeight = fieldsCount * 10 + 20;
+        if (tempY + itemHeight > pageHeight - 40) {
+          totalPages++;
+          lastRecordIdxPerPage.push(currentPageRecords[currentPageRecords.length - 1] || -1);
+          currentPageRecords = [];
+          tempY = 50;
+        }
+        currentPageRecords.push(idx);
+        tempY += itemHeight;
+      });
+      lastRecordIdxPerPage.push(currentPageRecords[currentPageRecords.length - 1] || -1);
+
+      let currentPage = 1;
+      let y = 50;
+      addLetterhead();
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(14);
+      doc.setTextColor(0, 0, 0);
+      doc.text(title, pageWidth / 2, 45, { align: 'center' });
+
+      data.forEach((payment, idx) => {
+        let fieldsCount = fields.length;
+        let itemHeight = fieldsCount * 10 + 20;
+        if (y + itemHeight > pageHeight - 40) {
+          addSignatureField();
+          addFooter(currentPage, totalPages, lastRecordIdxPerPage[currentPage - 1]);
+          doc.addPage();
+          currentPage++;
+          addLetterhead();
+          y = 50;
+        }
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Payment #${String(idx + 1).padStart(3, '0')}`, 15, y);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text(`Payment ID: ${payment.payment_id || 'N/A'}`, pageWidth - 50, y);
+        y += 10;
+        doc.setLineWidth(0.3);
+        doc.setDrawColor(212, 175, 55);
+        doc.rect(15, y, pageWidth - 30, fieldsCount * 10 + 5, 'S');
+        y += 5;
+        fields.forEach((field) => {
+          let label = field.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+          let value = payment[field] || 'N/A';
+          if (field === 'payment_date') {
+            value = new Date(value).toLocaleDateString('en-GB');
+          } else if (field === 'invoice_id') {
+            value = payment.invoice_id?.invoice_number || 'N/A';
+          } else if (field === 'userId') {
+            value = payment.userId ? `${payment.userId.firstName} ${payment.userId.lastName}` : 'N/A';
+          } else if (field === 'itemId') {
+            value = payment.itemId?.map(item => item.name).join(', ') || 'N/A';
+          } else if (field === 'amount') {
+            value = `Rs. ${value.toLocaleString()}`;
+          }
+          if (typeof value === 'string' && value.length > 50) {
+            value = value.substring(0, 47) + '...';
+          }
+          doc.setFont('helvetica', 'bold');
+          doc.text(`${label}:`, 20, y);
+          doc.setFont('helvetica', 'normal');
+          doc.text(String(value), 60, y);
+          y += 10;
+        });
+        y += 5;
+        if (idx < data.length - 1) {
+          doc.setLineWidth(0.2);
+          doc.setDrawColor(212, 175, 55);
+          doc.line(15, y, pageWidth - 15, y);
+          y += 5;
+        }
+      });
+      addSignatureField();
+      addFooter(currentPage, totalPages, lastRecordIdxPerPage[currentPage - 1]);
+
+      const timestamp = new Date().toISOString().split('T')[0];
+      const fileName = `${companyInfo.name}_${title.replace(/\s+/g, '_')}_${timestamp}.pdf`;
+      doc.save(fileName);
+      alert(`Official report "${fileName}" downloaded successfully!`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error generating PDF. Please try again.');
+    }
+  };
+
+  // ------------------- DOWNLOAD FUNCTIONS -------------------
+  const handleDownloadAll = () => generatePDF(payments, 'Paid Payments Directory Report');
+  const handleDownloadSingle = (payment) => generatePDF([payment], `Payment Report - ${payment.payment_id || 'Unnamed'}`);
+
+  // ------------------- FILTERED PAYMENTS -------------------
+  const filteredPayments = payments.filter(
+    (payment) =>
+      (String(payment.payment_id) || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (String(payment.invoice_id?.invoice_number) || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (String(payment.userId ? `${payment.userId.firstName} ${payment.userId.lastName}` : '') || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (String(payment.itemId?.map(item => item.name).join(', ')) || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (String(payment.amount) || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (payment.reference_no || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // ------------------- RENDER -------------------
   return (
-    <TechnicianLayout>
-      <div className="technician-dashboard">
-        <h1>Technician Dashboard</h1>
-        <p>Select an option above to manage tasks or employees.</p>
-        <table className="orders-table">
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Customer ID</th>
-              <th>Customer Name</th>
-              <th>Product</th>
-              <th>Quantity</th>
-              <th>Amount</th>
-              <th>Payment Status</th>
-              <th>Order Date</th>
-              <th>Location</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order.id}>
-                <td>{order.id}</td>
-                <td>{order.customerId}</td>
-                <td>{order.customerName}</td>
-                <td>{order.product}</td>
-                <td>{order.quantity}</td>
-                <td>{order.amount}</td>
-                <td className="status-success">{order.paymentStatus}</td>
-                <td>{order.orderDate}</td>
-                <td>{order.location}</td>
-                <td>
-                  <button
-                    className="cta-button primary"
-                    onClick={handleRegisterEmployee}
-                  >
-                    Register Employee
-                  </button>
-                </td>
+    <TechnicianLayout firstName={firstName} handleLogout={handleLogout}>
+      <div id="technicianDashboard">
+        <div className="title-container">
+          <h2 className="Title">Technician Payment Dashboard</h2>
+          <p className="subtitle">{companyInfo.name} - {companyInfo.tagline}</p>
+        </div>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search by Payment ID, Invoice, User, Item, Amount, Reference..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button className="search-btn" onClick={handleSearch}>
+            Search
+          </button>
+        </div>
+        <div className="download-options professional-section">
+          <h3>Official Report Generation</h3>
+          <p>Download payment reports in PDF format:</p>
+          <div className="download-buttons">
+            <button className="download-all-btn" onClick={handleDownloadAll}>
+              Download Directory ({payments.length} payments)
+            </button>
+            <p className="download-note">
+              Reports include official letterhead with {companyInfo.name} branding and contact details.
+            </p>
+          </div>
+        </div>
+        <div className="payments-table-container">
+          <div className="table-header">
+            <span className="table-payment-count">Total Paid Payments: {payments.length}</span>
+            <span className="filtered-count">
+              {searchTerm && `(Showing ${filteredPayments.length} filtered results)`}
+            </span>
+          </div>
+          <table className="payments-table">
+            <thead>
+              <tr>
+                <th>Payment ID</th>
+                <th>Invoice</th>
+                <th>User</th>
+                <th>Items</th>
+                <th>Payment Method</th>
+                <th>Amount</th>
+                <th>Payment Date</th>
+                <th>Reference No</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredPayments.map((payment) => (
+                <tr key={payment._id}>
+                  <td>{payment.payment_id || 'N/A'}</td>
+                  <td>{payment.invoice_id?.invoice_number || 'N/A'}</td>
+                  <td>{payment.userId ? `${payment.userId.firstName} ${payment.userId.lastName}` : 'N/A'}</td>
+                  <td>{payment.itemId?.map(item => item.name).join(', ') || 'N/A'}</td>
+                  <td>{payment.payment_method || 'N/A'}</td>
+                  <td>{`Rs. ${payment.amount.toLocaleString()}`}</td>
+                  <td>{new Date(payment.payment_date).toLocaleDateString('en-GB')}</td>
+                  <td>{payment.reference_no || 'N/A'}</td>
+                  <td>{payment.status}</td>
+                  <td className="actions-cell">
+                    <button
+                      className="action-btn download-btn"
+                      onClick={() => handleDownloadSingle(payment)}
+                      title="Download Payment Report"
+                    >
+                      Download
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {filteredPayments.length === 0 && (
+            <div className="no-payments-message">
+              <p>No paid payments found matching your search criteria.</p>
+              {searchTerm && (
+                <button className="clear-search-btn" onClick={() => setSearchTerm('')}>
+                  Clear Search
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </TechnicianLayout>
   );

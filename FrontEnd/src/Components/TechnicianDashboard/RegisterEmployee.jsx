@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./TechnicianDashboard.css";
+import "./RegisterEmployee.css";
 import TechnicianLayout from "./TechnicianLayout";
 
 function RegisterEmployee() {
@@ -117,7 +117,7 @@ function RegisterEmployee() {
 
   return (
     <TechnicianLayout>
-      <div className="technician-dashboard">
+      <div id="registerEmployeeDashboard">
         <h2>Register Employee</h2>
         <form className="employee-form" onSubmit={handleRegister} autoComplete="off">
           <div>
