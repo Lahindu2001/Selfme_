@@ -1,12 +1,31 @@
 const User = require("../../Model/UserModel");
+const Counter = require("../../Model/AdminandSupplyModel/counterModel");
 const bcrypt = require('bcrypt');
+
+// Function to get the next sequence value and generate formatted ID
+const getNextSequenceValue = async (sequenceName) => {
+  const counter = await Counter.findOneAndUpdate(
+    { _id: sequenceName },
+    { $inc: { sequence_value: 1 } },
+    { new: true, upsert: true }
+  );
+  const sequence = counter.sequence_value.toString().padStart(4, '0'); // Pad with zeros to get 0001, 0002, etc.
+  return `${counter.prefix}${sequence}`; // e.g., SELFMEID0001
+};
 
 // ------------------- ADD USER -------------------
 const addUser = async (req, res) => {
   const { firstName, lastName, email, password, nic, phone, dob, address, ceboNo, role, status } = req.body;
   try {
+    // Generate custom userid
+    const userid = await getNextSequenceValue('userid');
+
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user
     const newUser = new User({
+      userid, // Add custom userid
       firstName,
       lastName,
       email,
@@ -19,6 +38,7 @@ const addUser = async (req, res) => {
       role,
       status,
     });
+
     await newUser.save();
     return res.status(201).json({ user: newUser });
   } catch (err) {
@@ -43,6 +63,9 @@ const updateUser = async (req, res) => {
     role,
     status,
   };
+  // Exclude userid from being updated
+  delete updateData.userid;
+  
   if (password) {
     updateData.password = await bcrypt.hash(password, 10);
   }

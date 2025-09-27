@@ -1,25 +1,40 @@
-// BackEnd/Controllers/AuthController.js
 const User = require('../Model/UserModel');
+const Counter = require('../Model/AdminandSupplyModel/counterModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = 'your_jwt_secret_key_here'; // Change this to a strong secret in .env
+
+// Function to get the next sequence value and generate formatted ID
+const getNextSequenceValue = async (sequenceName) => {
+  const counter = await Counter.findOneAndUpdate(
+    { _id: sequenceName },
+    { $inc: { sequence_value: 1 } },
+    { new: true, upsert: true }
+  );
+  const sequence = counter.sequence_value.toString().padStart(4, '0'); // Pad with zeros to get 0001, 0002, etc.
+  return `${counter.prefix}${sequence}`; // e.g., SELFMEID0001
+};
 
 // Signup
 const signup = async (req, res) => {
   try {
     const { firstName, lastName, email, password, nic, phone, dob, address, ceboNo, role } = req.body;
-    
+
     // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
-    
+
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
+    // Generate custom userid
+    const userid = await getNextSequenceValue('userid');
+
     // Create user
     const newUser = new User({
+      userid, // Add custom userid
       firstName,
       lastName,
       email,
@@ -31,11 +46,11 @@ const signup = async (req, res) => {
       ceboNo,
       role
     });
-    
+
     await newUser.save();
-    console.log("✅ New user created:", newUser._id, newUser.email);
-    
-    res.status(201).json({ message: 'User created successfully' });
+    console.log("✅ New user created:", newUser._id, newUser.email, newUser.userid);
+
+    res.status(201).json({ message: 'User created successfully', userid: newUser.userid });
   } catch (error) {
     console.error("❌ Signup error:", error);
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -47,38 +62,40 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     console.log("🔐 Login attempt for:", email);
-    
+
     // Find user
     const user = await User.findOne({ email });
     if (!user) {
       console.log("❌ User not found:", email);
       return res.status(400).json({ message: 'Invalid credentials' });
     }
-    
+
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       console.log("❌ Invalid password for:", email);
       return res.status(400).json({ message: 'Invalid credentials' });
     }
-    
-    // FIXED: Use _id instead of userid (MongoDB's default ID)
+
+    // Generate token
     const token = jwt.sign(
-      { 
-        userId: user._id.toString(), // Use MongoDB's _id
-        email: user.email, 
-        role: user.role 
+      {
+        userId: user._id.toString(),
+        email: user.email,
+        role: user.role,
+        userid: user.userid // Include custom userid in token
       },
       JWT_SECRET,
-      { expiresIn: '24h' } // Increased to 24h for testing
+      { expiresIn: '24h' }
     );
-    
-    console.log("✅ Login successful for:", email, "User ID:", user._id);
-    
+
+    console.log("✅ Login successful for:", email, "User ID:", user._id, "Custom UserID:", user.userid);
+
     // Return token and user data
     res.json({
       token,
-      userId: user._id.toString(), // Include userId for frontend
+      userId: user._id.toString(),
+      userid: user.userid, // Include custom userid
       firstName: user.firstName,
       lastName: user.lastName,
       role: user.role

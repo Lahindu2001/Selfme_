@@ -39,6 +39,7 @@ function AllUser() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingUserId, setEditingUserId] = useState(null);
   const [selectedFields, setSelectedFields] = useState({
+    userid: true, // Added userid
     firstName: true,
     lastName: true,
     email: true,
@@ -51,6 +52,7 @@ function AllUser() {
     status: true,
   });
   const defaultInputs = {
+    userid: '', // Added userid
     firstName: '',
     lastName: '',
     email: '',
@@ -202,6 +204,7 @@ function AllUser() {
   const startEdit = (user) => {
     setEditingUserId(user._id);
     setEditInputs({
+      userid: user.userid || '', // Added userid
       firstName: user.firstName || '',
       lastName: user.lastName || '',
       email: user.email || '',
@@ -412,6 +415,7 @@ function AllUser() {
 
   // Define visible fields for table
   const visibleFields = [
+    'userid', // Added userid
     'firstName',
     'lastName',
     'email',
@@ -440,6 +444,16 @@ function AllUser() {
           <div className="add-user-container">
             <h3>Add New User</h3>
             <form className="add-user-form" onSubmit={handleAddUser}>
+              <div className="form-group">
+                <input
+                  type="text"
+                  placeholder="User ID (Auto-generated)"
+                  name="userid"
+                  value={inputs.userid}
+                  readOnly
+                  aria-label="User ID (Auto-generated)"
+                />
+              </div>
               <div className="form-group">
                 <input
                   type="text"
@@ -649,6 +663,16 @@ function AllUser() {
                       <div className="update-user-container">
                         <h1>✏️ Update User Information</h1>
                         <form onSubmit={handleUpdateUser}>
+                          <div className="form-group">
+                            <input
+                              type="text"
+                              placeholder="User ID"
+                              name="userid"
+                              value={editInputs.userid}
+                              readOnly
+                              aria-label="User ID"
+                            />
+                          </div>
                           <div className="form-group">
                             <input
                               type="text"

@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+const Schema = mongoose.Schema;
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
+  userid: { type: String, unique: true, required: true }, // Custom userid field (e.g., SELFMEID0001)
   firstName: { type: String, maxlength: 150 },
   lastName: { type: String, maxlength: 150 },
   email: { type: String, required: true, unique: true, maxlength: 150 },
@@ -19,8 +20,5 @@ const userSchema = new mongoose.Schema({
   status: { type: String, maxlength: 20, default: 'Active' }, // Active/Inactive
   created_at: { type: Date, default: Date.now }
 });
-
-// Add auto-increment for userid
-userSchema.plugin(AutoIncrement, { inc_field: 'userid' });
 
 module.exports = mongoose.model('User', userSchema);
