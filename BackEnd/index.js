@@ -1,5 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
+
+
 const authRouter = require("./Routes/AuthRoutes");
 const cartRoutes = require("./Routes/UserRoutes/CartRoute");
 const paymentRoutes = require("./Routes/UserRoutes/PaymentRoutes");
@@ -64,7 +66,7 @@ app.use("/auth", authRouter);
 //lahindu
 app.use("/all-users", userRouter);
 app.use("/all-feedback", allFeedbackRouter);
-app.use("/all-employees", allEmployeeRouter);
+//app.use("/all-employees", allEmployeeRouter);
 app.use("/all-suppliers", viewSupplyAllRoute);
 app.use("/all-productrequests", getSupplyAllRoute);
 //sulakshi
@@ -85,7 +87,7 @@ app.use("/api/finance/payments", paymentRouter);
 
 // ------------------- DATABASE -------------------
 mongoose
-  .connect("mongodb+srv://adminSelfme:P40YIFy04Am8rnDe@cluster0.4bp3tta.mongodb.net/selfmedbab")
+  .connect("mongodb+srv://adminSelfme:P40YIFy04Am8rnDe@cluster0.4bp3tta.mongodb.net/selfmedbabc")
   .then(() => console.log("✅ Connected to MongoDB"))
   .then(() => {
     app.listen(5000, () => console.log("🚀 Server running on port 5000"));
