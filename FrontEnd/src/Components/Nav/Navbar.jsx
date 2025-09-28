@@ -6,11 +6,11 @@ import "./Navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  
-  // Get user data - fallback to "User" if not available
+
+  // Get user data - fallback to "Guest" if not available
   const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
-  const firstName = authUser.firstName || 'User';
-  
+  const displayName = authUser.firstName || 'Guest'; // Use firstName, fallback to Guest
+
   // Check if token exists
   const hasToken = !!localStorage.getItem('token');
 
@@ -26,7 +26,7 @@ const Navbar = () => {
   };
 
   const handleUserClick = () => {
-    navigate('/dashboard'); // Use direct route
+    navigate('/?view=dashboard'); // Navigate to dashboard
   };
 
   return (
@@ -56,12 +56,10 @@ const Navbar = () => {
       <a href="/contact" id="selfmeNavContact" onClick={(e) => handleNavClick(e, '/?view=contact')}>
         Contact
       </a>
-      
-      {/* User Info - Only show if logged in */}
       {hasToken ? (
         <div className="user-info">
           <span className="user-name" onClick={handleUserClick} style={{ cursor: "pointer" }}>
-            Welcome, {firstName}
+            Welcome, {displayName}
           </span>
           <button className="logout-btn" onClick={handleLogout}>Logout</button>
         </div>

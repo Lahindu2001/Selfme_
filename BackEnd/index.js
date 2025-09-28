@@ -6,13 +6,13 @@ const authRouter = require("./Routes/AuthRoutes");
 const cartRoutes = require("./Routes/UserRoutes/CartRoute");
 const paymentRoutes = require("./Routes/UserRoutes/PaymentRoutes");
 const itemRoute = require("./Routes/UserRoutes/itemCartRoutes");
-const submitFeedbackRoute = require("./Routes/UserRoutes/SubmitFeedbackRoute"); // New route
+const submitFeedbackRoute = require("./Routes/UserRoutes/SubmitFeedbackRoute"); 
 
 // Import models to ensure they are registered
 const Product = require("./Model/inventory_models/itemModel");
 const Cart = require("./Model/UserModel/CartModel");
 const Payment = require("./Model/UserModel/PaymentModel");
-const SubmitFeedback = require("./Model/UserModel/SubmitFeedbackModel"); // New model
+const SubmitFeedback = require("./Model/UserModel/SubmitFeedbackModel"); 
 
 //linuka
 const salaryRouter = require("./Routes/FinanceManager/salaryRoutes");

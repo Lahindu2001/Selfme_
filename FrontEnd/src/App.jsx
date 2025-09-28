@@ -6,7 +6,9 @@ import Home from "./Components/UserManager/Home";
 import Login from "./Components/Auth/Login";
 import Signup from "./Components/Auth/Signup";
 import UserDashboard from "./Components/UserManager/UserDashboard";
-import SubmitFeedback from "./Components/UserManager/SubmitFeedback"; // Import new component
+import SubmitFeedback from "./Components/UserManager/SubmitFeedback"; 
+import ViewFeedback from "./Components/UserManager/ViewFeedback";
+
 //lahindu
 import AdminPanel from "./Components/AdminPanel/Admin";
 import AllUser from "./Components/AdminPanel/AllUser/AllUser";
@@ -58,6 +60,10 @@ function App() {
         <Route
           path="/feedback"
           element={isAuthenticated() ? <SubmitFeedback /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/feedback/view"
+          element={isAuthenticated() ? <ViewFeedback /> : <Navigate to="/login" />}
         />
         {/* hasa */}
         <Route

@@ -22,28 +22,13 @@ function AllFeedback() {
   // ------------------- STATES -------------------
   const [feedbacks, setFeedbacks] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showAddFeedbackForm, setShowAddFeedbackForm] = useState(false);
   const [selectedFields, setSelectedFields] = useState({
     customer_id: true,
-    order_id: true,
-    job_id: true,
     rating: true,
     comments: true,
     created_at: true,
     feedback_id: true,
   });
-
-  const defaultInputs = {
-    feedback_id: '',
-    customer_id: '',
-    order_id: '',
-    job_id: '',
-    rating: '',
-    comments: '',
-  };
-
-  const [inputs, setInputs] = useState(defaultInputs);
-  const [errors, setErrors] = useState({});
 
   // ------------------- COMPANY INFORMATION -------------------
   const companyInfo = {
@@ -53,101 +38,6 @@ function AllFeedback() {
     phone: '+94 717 882 883',
     email: 'Selfmepvtltd@gmail.com',
     website: 'www.selfme.com',
-  };
-
-  // ------------------- VALIDATION FUNCTIONS -------------------
-  const validateFeedbackId = (value) => value !== '';
-  const validateCustomerId = (value) => value === '' || /^\d+$/.test(value);
-  const validateOrderId = (value) => value === '' || /^\d+$/.test(value);
-  const validateJobId = (value) => value === '' || /^\d+$/.test(value);
-  const validateRating = (value) => value === '' || (Number(value) >= 1 && Number(value) <= 5);
-  const validateComments = (value) => value === '' || /^[a-zA-Z0-9\s,.]*$/.test(value);
-
-  // ------------------- INPUT HANDLERS -------------------
-  const handleFeedbackId = (e) => {
-    const value = e.target.value;
-    if (validateFeedbackId(value)) {
-      setInputs((prev) => ({ ...prev, feedback_id: value }));
-      setErrors((prev) => ({ ...prev, feedback_id: '' }));
-    }
-  };
-
-  const handleCustomerId = (e) => {
-    const value = e.target.value;
-    if (validateCustomerId(value)) {
-      setInputs((prev) => ({ ...prev, customer_id: value }));
-      setErrors((prev) => ({ ...prev, customer_id: '' }));
-    }
-  };
-
-  const handleOrderId = (e) => {
-    const value = e.target.value;
-    if (validateOrderId(value)) {
-      setInputs((prev) => ({ ...prev, order_id: value }));
-      setErrors((prev) => ({ ...prev, order_id: '' }));
-    }
-  };
-
-  const handleJobId = (e) => {
-    const value = e.target.value;
-    if (validateJobId(value)) {
-      setInputs((prev) => ({ ...prev, job_id: value }));
-      setErrors((prev) => ({ ...prev, job_id: '' }));
-    }
-  };
-
-  const handleRating = (e) => {
-    const value = e.target.value;
-    if (validateRating(value)) {
-      setInputs((prev) => ({ ...prev, rating: value }));
-      setErrors((prev) => ({ ...prev, rating: '' }));
-    }
-  };
-
-  const handleComments = (e) => {
-    const value = e.target.value;
-    if (validateComments(value)) {
-      setInputs((prev) => ({ ...prev, comments: value }));
-      setErrors((prev) => ({ ...prev, comments: '' }));
-    }
-  };
-
-  // ------------------- HANDLE KEY PRESS -------------------
-  const handleKeyPress = (e, field) => {
-    if (['customer_id', 'order_id', 'job_id', 'rating'].includes(field) && !/[0-9]/.test(e.key)) {
-      e.preventDefault();
-    }
-    if (field === 'comments' && !/[a-zA-Z0-9\s,.]/.test(e.key)) {
-      e.preventDefault();
-    }
-  };
-
-  // ------------------- ADD FEEDBACK -------------------
-  const handleAddFeedback = async (e) => {
-    e.preventDefault();
-    const newErrors = {};
-    if (!validateFeedbackId(inputs.feedback_id)) newErrors.feedback_id = 'Valid Feedback ID required';
-    if (!validateCustomerId(inputs.customer_id) || inputs.customer_id === '') newErrors.customer_id = 'Valid Customer ID required';
-    if (!validateOrderId(inputs.order_id) || inputs.order_id === '') newErrors.order_id = 'Valid Order ID required';
-    if (!validateJobId(inputs.job_id) || inputs.job_id === '') newErrors.job_id = 'Valid Job ID required';
-    if (!validateRating(inputs.rating) || inputs.rating === '') newErrors.rating = 'Rating must be between 1 and 5';
-    if (!validateComments(inputs.comments) || inputs.comments === '') newErrors.comments = 'Valid comments required';
-    
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
-
-    try {
-      const res = await axios.post(URL, { ...inputs });
-      setFeedbacks([...feedbacks, res.data]);
-      setInputs(defaultInputs);
-      setShowAddFeedbackForm(false);
-      setErrors({});
-      alert('Feedback added successfully!');
-      window.location.reload();
-    } catch (err) {
-      console.error('Error adding feedback:', err);
-      setErrors({ submit: err.response?.data?.message || 'Failed to add feedback' });
-    }
   };
 
   // ------------------- DELETE FEEDBACK -------------------
@@ -346,8 +236,6 @@ function AllFeedback() {
   const filteredFeedbacks = feedbacks.filter(
     (feedback) =>
       (String(feedback.customer_id) || '').includes(searchTerm) ||
-      (String(feedback.order_id) || '').includes(searchTerm) ||
-      (String(feedback.job_id) || '').includes(searchTerm) ||
       (String(feedback.rating) || '').includes(searchTerm) ||
       (feedback.comments?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
       (String(feedback.feedback_id) || '').includes(searchTerm)
@@ -363,95 +251,10 @@ function AllFeedback() {
           <p className="subtitle">{companyInfo.name} - {companyInfo.tagline}</p>
         </div>
 
-          {/*form*/}
-        <button
-          className="add-user-toggle"
-          onClick={() => setShowAddFeedbackForm(!showAddFeedbackForm)}
-        >
-          {showAddFeedbackForm ? '✕ Hide Add Feedback Form' : '➕ Show Add Feedback Form'}
-        </button>
-
-        {showAddFeedbackForm && (
-          <div className="add-user-container">
-            <h3>Add New Feedback</h3>
-            <form className="add-user-form" onSubmit={handleAddFeedback}>
-              <div className="form-group">
-                <input
-                  type="text"
-                  placeholder="Feedback ID"
-                  value={inputs.feedback_id}
-                  onChange={handleFeedbackId}
-                  required
-                />
-                {errors.feedback_id && <p className="error">{errors.feedback_id}</p>}
-              </div>
-              <div className="form-group">
-                <input
-                  type="text"
-                  placeholder="Customer ID"
-                  value={inputs.customer_id}
-                  onChange={handleCustomerId}
-                  onKeyPress={(e) => handleKeyPress(e, 'customer_id')}
-                  required
-                />
-                {errors.customer_id && <p className="error">{errors.customer_id}</p>}
-              </div>
-              <div className="form-group">
-                <input
-                  type="text"
-                  placeholder="Order ID"
-                  value={inputs.order_id}
-                  onChange={handleOrderId}
-                  onKeyPress={(e) => handleKeyPress(e, 'order_id')}
-                  required
-                />
-                {errors.order_id && <p className="error">{errors.order_id}</p>}
-              </div>
-              <div className="form-group">
-                <input
-                  type="text"
-                  placeholder="Job ID"
-                  value={inputs.job_id}
-                  onChange={handleJobId}
-                  onKeyPress={(e) => handleKeyPress(e, 'job_id')}
-                  required
-                />
-                {errors.job_id && <p className="error">{errors.job_id}</p>}
-              </div>
-              <div className="form-group">
-                <input
-                  type="text"
-                  placeholder="Rating (1-5)"
-                  value={inputs.rating}
-                  onChange={handleRating}
-                  onKeyPress={(e) => handleKeyPress(e, 'rating')}
-                  required
-                />
-                {errors.rating && <p className="error">{errors.rating}</p>}
-              </div>
-              <div className="form-group">
-                <input
-                  type="text"
-                  placeholder="Comments"
-                  value={inputs.comments}
-                  onChange={handleComments}
-                  onKeyPress={(e) => handleKeyPress(e, 'comments')}
-                  required
-                />
-                {errors.comments && <p className="error">{errors.comments}</p>}
-              </div>
-              <button type="submit" className="submit-btn">
-                Add Feedback
-              </button>
-              {errors.submit && <p className="error">{errors.submit}</p>}
-            </form>
-          </div>
-        )}
-{/*form off*/}
         <div className="search-bar">
           <input
             type="text"
-            placeholder="🔍 Search by Feedback ID, Customer ID, Order ID, Job ID, Rating, Comments..."
+            placeholder="🔍 Search by Feedback ID, Customer ID, Rating, Comments..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -497,11 +300,9 @@ function AllFeedback() {
             <thead>
               <tr>
                 <th>Feedback ID</th>
-                {Object.keys(defaultInputs).map((field) => (
-                  <th key={field}>
-                    {field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().replace(/\b\w/g, (l) => l.toUpperCase())}
-                  </th>
-                ))}
+                <th>Customer ID</th>
+                <th>Rating</th>
+                <th>Comments</th>
                 <th>Created At</th>
                 <th>Actions</th>
               </tr>
@@ -510,11 +311,9 @@ function AllFeedback() {
               {filteredFeedbacks.map((feedback) => (
                 <tr key={feedback._id}>
                   <td>{feedback.feedback_id || 'N/A'}</td>
-                  {Object.keys(defaultInputs).map((field) => (
-                    <td key={field}>
-                      {feedback[field] || 'N/A'}
-                    </td>
-                  ))}
+                  <td>{feedback.customer_id || 'N/A'}</td>
+                  <td>{feedback.rating || 'N/A'}</td>
+                  <td>{feedback.comments || 'N/A'}</td>
                   <td>{new Date(feedback.created_at).toLocaleDateString('en-GB')}</td>
                   <td className="actions-cell">
                     <button

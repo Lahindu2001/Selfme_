@@ -1,3 +1,4 @@
+// FrontEnd/src/Components/Auth/Login.jsx
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
@@ -22,16 +23,18 @@ const Login = () => {
         email,
         password,
       });
+
       // Store token and user data in localStorage
       setAuthToken(res.data.token);
-      localStorage.setItem(
-        "authUser",
-        JSON.stringify({
-          firstName: res.data.firstName,
-          lastName: res.data.lastName,
-          role: res.data.role,
-        })
-      );
+      const authUser = {
+        userId: res.data.userId, // MongoDB _id
+        userid: res.data.userid, // Custom userid (e.g., SELFMEID0001)
+        firstName: res.data.firstName,
+        lastName: res.data.lastName,
+        role: res.data.role,
+      };
+      localStorage.setItem("authUser", JSON.stringify(authUser));
+
       // Redirect based on role
       switch (res.data.role) {
         case "Admin":
@@ -47,7 +50,7 @@ const Login = () => {
           navigate("/assigned-tasks");
           break;
         case "Customer":
-          navigate("/");
+          navigate("/"); // Redirect to home
           break;
         default:
           setError("Unknown role");
@@ -64,19 +67,12 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      {/* Animated Solar Background Elements */}
       <div className="solar-panel-grid"></div>
-
       <div className="energy-wave energy-wave-1"></div>
       <div className="energy-wave energy-wave-2"></div>
       <div className="energy-wave energy-wave-3"></div>
-
-      {/* Solar Panel Pattern */}
       <div className="solar-pattern"></div>
-
-      {/* Gradient Overlay */}
       <div className="gradient-overlay"></div>
-
       <div className="login-content">
         <div className="login-header">
           <img src={logo} alt="Selfme.lk Solar Solutions" className="logo" />
@@ -85,10 +81,8 @@ const Login = () => {
             Powering Your Future with Solar Energy
           </p>
         </div>
-
         <form onSubmit={handleSubmit} className="login-form">
           <h2 className="form-title">Welcome Back</h2>
-
           <div className="input-group">
             <input
               type="email"
@@ -99,7 +93,6 @@ const Login = () => {
               className="form-input"
             />
           </div>
-
           <div className="input-group">
             <input
               type="password"
@@ -110,7 +103,6 @@ const Login = () => {
               className="form-input"
             />
           </div>
-
           <div className="form-options">
             <label className="remember-me">
               <input type="checkbox" />
@@ -120,7 +112,6 @@ const Login = () => {
               Forgot Password?
             </Link>
           </div>
-
           <button
             type="submit"
             className={`login-button ${isLoading ? "loading" : ""}`}
@@ -135,10 +126,8 @@ const Login = () => {
               "Sign In"
             )}
           </button>
-
           {error && <div className="error-message">{error}</div>}
         </form>
-
         <div className="signup-section">
           <p>
             Don't have an account?{" "}
