@@ -3,20 +3,11 @@ import "./RegisteredEmployees.css";
 import TechnicianLayout from "./TechnicianLayout";
 
 function RegisteredEmployees() {
-
-
   const [employees, setEmployees] = useState([]);
   const [editEmp, setEditEmp] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [editErrors, setEditErrors] = useState({});
   const [success, setSuccess] = useState(false);
-  const [showAssignModal, setShowAssignModal] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [selectedTask, setSelectedTask] = useState("");
-  const [assignSuccess, setAssignSuccess] = useState(false);
-
-  
-  
 
   useEffect(() => {
     fetchEmployees();
@@ -36,7 +27,7 @@ function RegisteredEmployees() {
     }
   };
 
-  // Validation helpers (reuse from RegisterEmployee)
+  // Validation helpers
   const getAge = (dob) => {
     if (!dob) return 0;
     const today = new Date();
@@ -51,13 +42,12 @@ function RegisteredEmployees() {
 
   const validate = (form) => {
     const newErrors = {};
-    if (!form.Employee_name.trim()) {
+    if (!form.Employee_name || !form.Employee_name.trim()) {
       newErrors.Employee_name = "Name is required";
+    } else if (!/^[A-Za-z\s]+$/.test(form.Employee_name)) {
+      newErrors.Employee_name = "Name must contain only letters and spaces";
     }
-    if (!/^[A-Za-z\s]+$/.test(form.Employee_name)) {
-      newErrors.Employee_name = "Name must contain only letters";
-    }
-    if (!form.Employee_Address.trim()) {
+    if (!form.Employee_Address || !form.Employee_Address.trim()) {
       newErrors.Employee_Address = "Address is required";
     }
     if (!form.Employee_Dob) {
@@ -73,10 +63,9 @@ function RegisteredEmployees() {
     if (!form.hire_date) {
       newErrors.hire_date = "Hire date is required";
     } else {
-      // Check if hire date is in the future
       const hireDate = new Date(form.hire_date);
       const today = new Date();
-      today.setHours(0, 0, 0, 0); // Set to start of day for fair comparison
+      today.setHours(0, 0, 0, 0);
       if (hireDate > today) {
         newErrors.hire_date = "Hire date cannot be in the future";
       }
@@ -92,6 +81,7 @@ function RegisteredEmployees() {
       Employee_Dob: emp.Employee_Dob?.slice(0, 10),
       contact_number: emp.contact_number,
       hire_date: emp.hire_date?.slice(0, 10),
+      isManager: emp.isManager, // Use the string value directly
     });
     setEditErrors({});
   };
@@ -114,23 +104,29 @@ function RegisteredEmployees() {
     setEditErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
-    await fetch(`http://localhost:5000/employees/${editEmp._id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(editForm),
-    });
-    setEditEmp(null);
-    setSuccess(true);
-    fetchEmployees();
-    setTimeout(() => setSuccess(false), 2000);
+    try {
+      const response = await fetch(`http://localhost:5000/employees/${editEmp._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update employee");
+      }
+      setEditEmp(null);
+      setSuccess(true);
+      fetchEmployees();
+      setTimeout(() => setSuccess(false), 2000);
+    } catch (err) {
+      setEditErrors({ general: err.message });
+    }
   };
-
 
   // Set max date for DOB to ensure 18+ only
   const today = new Date();
   const minDob = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate());
   const maxDob = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-  // Set max date for hire date (today)
   const maxHireDate = today.toISOString().split("T")[0];
 
   return (
@@ -138,6 +134,7 @@ function RegisteredEmployees() {
       <div id="registeredEmployeesDashboard">
         <h2>Registered Employees</h2>
         {success && <div className="success-msg">Employee updated successfully!</div>}
+        {editErrors.general && <div className="error-msg">{editErrors.general}</div>}
         <table className="orders-table">
           <thead>
             <tr>
@@ -147,6 +144,7 @@ function RegisteredEmployees() {
               <th>DOB</th>
               <th>Contact</th>
               <th>Hire Date</th>
+              <th>Role</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -159,11 +157,9 @@ function RegisteredEmployees() {
                 <td>{emp.Employee_Dob?.slice(0, 10)}</td>
                 <td>{emp.contact_number}</td>
                 <td>{emp.hire_date?.slice(0, 10)}</td>
+                <td>{emp.isManager}</td>
                 <td>
-                  <button
-                    className="cta-button"
-                    onClick={() => openEdit(emp)}
-                  >
+                  <button className="cta-button" onClick={() => openEdit(emp)}>
                     Edit
                   </button>
                   <button
@@ -173,7 +169,6 @@ function RegisteredEmployees() {
                   >
                     Delete
                   </button>
-                  
                 </td>
               </tr>
             ))}
@@ -257,6 +252,18 @@ function RegisteredEmployees() {
                     <div className="error-msg">{editErrors.hire_date}</div>
                   )}
                 </div>
+                <div>
+                  <label>Role:</label>
+                  <select
+                    name="isManager"
+                    value={editForm.isManager}
+                    onChange={handleEditInput}
+                    required
+                  >
+                    <option value="Team Manager">Team Manager</option>
+                    <option value="Employee">Employee</option>
+                  </select>
+                </div>
                 <button className="cta-button primary" type="submit">
                   Save
                 </button>
@@ -272,8 +279,6 @@ function RegisteredEmployees() {
             </div>
           </div>
         )}
-
-        
       </div>
     </TechnicianLayout>
   );
