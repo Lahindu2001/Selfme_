@@ -31,6 +31,8 @@ const getSupplyAllRoute = require("./Routes/AdminandSupplyRoutes/GetSupplyAllRou
 const employeeRouter = require("./Routes/TechRoute/employeeRoutes");
 //const assignmentRoutes = require("./Routes/TechRoute/assignmentRoutes");
 const getPaidPaymentRoute = require("./Routes/TechRoute/GetPaisPaymentRoute");
+const paidTaskRouter = require("./Routes/TechRoute/PaidRoute");
+
 
 
 //hasaranga
@@ -81,6 +83,7 @@ app.use("/all-productrequests", getSupplyAllRoute);
 app.use("/employees", employeeRouter);
 //app.use("/assignments", assignmentRoutes);
 app.use("/paid-payments", getPaidPaymentRoute);
+app.use("/api/tech/paidtasks", paidTaskRouter);
 //hasaranga
 app.use("/products", itemRoutes);
 app.use("/orders", orderRoutes);
@@ -91,11 +94,12 @@ app.use("/stockouts", stockOutRoutes);
 app.use("/api/finance/salary", salaryRouter);
 app.use("/api/finance/staff", staffRouter);
 app.use("/api/finance/job-assigning", jobAssigningRouter);
+app.use("/api/finance/jobassignings", jobAssigningRouter); // Updated to match frontend
 app.use("/api/finance/payments", paymentRouter);
 
 // ------------------- DATABASE -------------------
 mongoose
-  .connect("mongodb+srv://adminSelfme:P40YIFy04Am8rnDe@cluster0.4bp3tta.mongodb.net/selfmedbab")
+  .connect("mongodb+srv://adminSelfme:P40YIFy04Am8rnDe@cluster0.4bp3tta.mongodb.net/selfmedbabc")
   .then(() => console.log("✅ Connected to MongoDB"))
   .then(() => {
     app.listen(5000, () => console.log("🚀 Server running on port 5000"));

@@ -22,6 +22,7 @@ import RegisterEmployee from "./Components/TechnicianDashboard/RegisterEmployee"
 import RegisteredEmployees from "./Components/TechnicianDashboard/RegisteredEmployees";
 import AssignedTasks from "./Components/TechnicianDashboard/AssignedTasks";
 import CompletedTasks from "./Components/TechnicianDashboard/CompletedTasks";
+import PendingTasks from './Components/TechnicianDashboard/PendingTask';
 //hasas
 import InventoryManage from "./Components/InventoryMange/InventoryMange";
 import InventoryManagementHome from "./components/Inventory_Management/Inventory_Management_Home/Inventory_Management_Home";
@@ -171,6 +172,11 @@ function App() {
           path="/technicianDashboard"
           element={isAuthenticated() ? <TechnicianDashboard /> : <Navigate to="/login" />}
         />
+        <Route
+          path="/pending-tasks"
+          element={isAuthenticated() ? <PendingTasks /> : <Navigate to="/login" />}
+        />
+
         {/* dasunika */}
         <Route
           path="/"

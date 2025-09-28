@@ -35,16 +35,7 @@ function TechnicianLayout({ children }) {
           </button>
         </div>
         <ul className="sidebar-menu">
-          <li>
-            <NavLink
-              to="/technicianDashboard"
-              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-              title="Tasks"
-            >
-              <span className="text">Tasks</span>
-            </NavLink>
-          </li>
-          <li>
+           <li>
             <NavLink
               to="/register-employee"
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
@@ -53,7 +44,9 @@ function TechnicianLayout({ children }) {
               <span className="text">Register Employee</span>
             </NavLink>
           </li>
-          <li>
+
+
+            <li>
             <NavLink
               to="/employees"
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
@@ -62,24 +55,41 @@ function TechnicianLayout({ children }) {
               <span className="text">Registered Employees</span>
             </NavLink>
           </li>
-          <li>
+          
+                <li>
             <NavLink
-              to="#"
+              to="/assigned-tasks"
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-              title="Pending Tasks"
+              title="Approved Payments"
             >
-              <span className="text">Pending Tasks</span>
+              <span className="text">Approved Payments</span>
             </NavLink>
           </li>
+          
           <li>
             <NavLink
-              to="#"
+              to="/completed-tasks"
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-              title="Completed Tasks"
+              title="Not Yet Assign Tasks"
             >
-              <span className="text">Completed Tasks</span>
+              <span className="text">Not Yet Assign Tasks </span>
             </NavLink>
           </li>
+
+          <li>
+            <NavLink
+              to="/pending-tasks"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="pending"
+            >
+              <span className="text">pending task only</span>
+            </NavLink>
+          </li>
+
+         
+          
+    
+          
         </ul>
         <div className="sidebar-user-info">
           <span className="user-name">Welcome, {firstName}</span>
