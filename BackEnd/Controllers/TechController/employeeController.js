@@ -1,59 +1,51 @@
-const Employee = require("../../Model/TechModel/employeeModel");
+const Staff = require('../../Model/FinanceManager/staffModel');
+const Counter = require('../../Model/AdminandSupplyModel/counterModel');
 
-// Register new employee
+// Function to get the next sequence value for empId
+const getNextSequenceValue = async (sequenceName) => {
+  const counter = await Counter.findOneAndUpdate(
+    { _id: sequenceName },
+    { $inc: { sequence_value: 1 } },
+    { new: true, upsert: true }
+  );
+  return `${counter.prefix}${String(counter.sequence_value).padStart(3, '0')}`;
+};
+
+// Register a new employee
 exports.registerEmployee = async (req, res) => {
   try {
-    const employee = new Employee(req.body);
-    await employee.save();
-    res.status(201).json(employee);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
+    const { Employee_name, Employee_Address, Employee_Dob, contact_number, hire_date, isManager } = req.body;
 
-// Get all employees
-exports.getAllEmployees = async (req, res) => {
-  const employees = await Employee.find();
-  res.json(employees);
-};
-
-// Delete employee
-exports.deleteEmployee = async (req, res) => {
-  try {
-    await Employee.findByIdAndDelete(req.params.id);
-    res.json({ message: "Employee deleted successfully" });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
-
-// Update employee
-exports.updateEmployee = async (req, res) => {
-  try {
-    const { Employee_name, Employee_Address, Employee_Dob, contact_number, hire_date } = req.body;
-    if (!Employee_name || !/^[A-Za-z\s]+$/.test(Employee_name)) {
-      return res.status(400).json({ error: "Name must contain only letters and spaces" });
-    }
-    if (!Employee_Address) {
-      return res.status(400).json({ error: "Address is required" });
-    }
-    if (!Employee_Dob || (new Date().getFullYear() - new Date(Employee_Dob).getFullYear()) < 18) {
-      return res.status(400).json({ error: "Employee must be at least 18 years old" });
-    }
-    if (!contact_number || !/^\d{10}$/.test(contact_number)) {
-      return res.status(400).json({ error: "Contact number must be exactly 10 digits" });
-    }
-    if (!hire_date) {
-      return res.status(400).json({ error: "Hire date is required" });
+    // Validate required fields
+    if (!Employee_name || !Employee_Address || !Employee_Dob || !contact_number || !hire_date) {
+      return res.status(400).json({ error: 'All required fields must be provided' });
     }
 
-    const updated = await Employee.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    res.json(updated);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+    // Generate empId
+    const empId = await getNextSequenceValue('empId');
+
+    // Map dropdown value to boolean for isManager
+    const isManagerBoolean = isManager === 'Team Manager';
+
+    // Create new staff document
+    const newEmployee = new Staff({
+      empId,
+      name: Employee_name,
+      address: Employee_Address,
+      dob: new Date(Employee_Dob),
+      contactNumber: contact_number,
+      hireDate: new Date(hire_date),
+      isManager: isManagerBoolean
+    });
+
+    // Save employee to database
+    await newEmployee.save();
+
+    res.status(201).json({ message: 'Employee registered successfully', empId });
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'Employee ID already exists' });
+    }
+    res.status(500).json({ error: 'Server error', details: error.message });
   }
 };

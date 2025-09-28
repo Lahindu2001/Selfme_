@@ -25,7 +25,8 @@
 }
 
 #registerEmployeeDashboard .employee-form input[type="text"],
-#registerEmployeeDashboard .employee-form input[type="date"] {
+#registerEmployeeDashboard .employee-form input[type="date"],
+#registerEmployeeDashboard .employee-form select {
   width: 100%;
   padding: 10px;
   font-size: 1rem;
@@ -38,7 +39,8 @@
 }
 
 #registerEmployeeDashboard .employee-form input[type="text"]:focus,
-#registerEmployeeDashboard .employee-form input[type="date"]:focus {
+#registerEmployeeDashboard .employee-form input[type="date"]:focus,
+#registerEmployeeDashboard .employee-form select:focus {
   border-color: #007bff;
   background-color: #fff;
 }
@@ -80,11 +82,9 @@
   #registerEmployeeDashboard {
     padding: 10px;
   }
-
   #registerEmployeeDashboard .employee-form {
     padding: 15px;
   }
-
   #registerEmployeeDashboard .cta-button.primary {
     font-size: 1rem;
   }

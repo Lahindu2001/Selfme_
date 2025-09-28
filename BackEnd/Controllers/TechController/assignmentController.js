@@ -1,5 +1,5 @@
 const PurchaseOrder = require("../../Model/TechModel/purchaseOrderModel");
-const Employee = require("../../Model/TechModel/employeeModel");
+const Employee = require("../../Model/FinanceManager/staffModel");
 
 // Assign a purchase order to an employee
 exports.assignTask = async (req, res) => {

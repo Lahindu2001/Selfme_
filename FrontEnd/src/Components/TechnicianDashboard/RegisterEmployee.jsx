@@ -9,8 +9,8 @@ function RegisterEmployee() {
     Employee_Dob: "",
     contact_number: "",
     hire_date: "",
+    isManager: "Employee" // Default dropdown value
   });
-
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -40,9 +40,14 @@ function RegisterEmployee() {
     setForm({ ...form, contact_number: value });
   };
 
-  // Restrict input for address (no validation here, but you can add if needed)
+  // Restrict input for address
   const handleAddressInput = (e) => {
     setForm({ ...form, Employee_Address: e.target.value });
+  };
+
+  // Handle dropdown for isManager
+  const handleManagerInput = (e) => {
+    setForm({ ...form, isManager: e.target.value });
   };
 
   // Restrict input for hire date and dob
@@ -55,8 +60,7 @@ function RegisterEmployee() {
     const newErrors = {};
     if (!form.Employee_name.trim()) {
       newErrors.Employee_name = "Name is required";
-    }
-    if (!/^[A-Za-z\s]+$/.test(form.Employee_name)) {
+    } else if (!/^[A-Za-z\s]+$/.test(form.Employee_name)) {
       newErrors.Employee_name = "Name must contain only letters";
     }
     if (!form.Employee_Address.trim()) {
@@ -75,44 +79,56 @@ function RegisterEmployee() {
     if (!form.hire_date) {
       newErrors.hire_date = "Hire date is required";
     } else {
-      // Check if hire date is in the future
       const hireDate = new Date(form.hire_date);
       const today = new Date();
-      today.setHours(0, 0, 0, 0); // Set to start of day for fair comparison
-
+      today.setHours(0, 0, 0, 0);
       if (hireDate > today) {
         newErrors.hire_date = "Hire date cannot be in the future";
       }
+    }
+    if (!form.isManager) {
+      newErrors.isManager = "Please select a role";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // Handle form submission
   const handleRegister = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    await fetch("http://localhost:5000/employees/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    setForm({
-      Employee_name: "",
-      Employee_Address: "",
-      Employee_Dob: "",
-      contact_number: "",
-      hire_date: "",
-    });
-    setSuccess(true);
-    setTimeout(() => setSuccess(false), 2000);
+
+    try {
+      const response = await fetch("http://localhost:5000/employees/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to register employee');
+      }
+
+      setForm({
+        Employee_name: "",
+        Employee_Address: "",
+        Employee_Dob: "",
+        contact_number: "",
+        hire_date: "",
+        isManager: "Employee"
+      });
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 2000);
+    } catch (error) {
+      setErrors({ general: error.message });
+    }
   };
 
-  // Set max date for DOB to ensure 18+ only
+  // Set date constraints
   const today = new Date();
   const minDob = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate());
   const maxDob = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-
-  // Set max date for hire date (today)
   const maxHireDate = today.toISOString().split("T")[0];
 
   return (
@@ -194,12 +210,30 @@ function RegisterEmployee() {
               <div className="error-msg">{errors.hire_date}</div>
             )}
           </div>
+          <div>
+            <label>Role:</label>
+            <select
+              name="isManager"
+              value={form.isManager}
+              onChange={handleManagerInput}
+              required
+            >
+              <option value="Employee">Employee</option>
+              <option value="Team Manager">Team Manager</option>
+            </select>
+            {errors.isManager && (
+              <div className="error-msg">{errors.isManager}</div>
+            )}
+          </div>
           <button className="cta-button primary" type="submit">
             Register
           </button>
         </form>
         {success && (
           <div className="success-msg">Employee registered successfully!</div>
+        )}
+        {errors.general && (
+          <div className="error-msg">{errors.general}</div>
         )}
       </div>
     </TechnicianLayout>
