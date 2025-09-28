@@ -3,6 +3,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { removeAuthToken } from "../../utils/auth";
 import "./Home.css";
+import "./Service.css";
+import "./About.css";
+import "./Contact.css";
 import Navbar from "../Nav/Navbar";
 import Footer from "../Footer/Footer";
 import Cart from "../UserManager/cart";
@@ -112,21 +115,12 @@ function Home() {
   if (view === "feedback") {
     return <SubmitFeedback />;
   }
-  if (view === "products") {
-    return (
-      <div className="home-container" style={{ textAlign: "center", margin: "50px" }}>
-        <Navbar />
-        <h2>Products Page</h2>
-        <p>Explore our range of solar products.</p>
-        <Footer />
-      </div>
-    );
-  }
+  
   if (view === "packages") {
     return (
       <div className="home-container packages-page" style={{ margin: "50px" }}>
         <Navbar />
-        <h2>Our Solar Packages</h2>
+        <h2>Our Product</h2>
         {loading && <p>Loading packages...</p>}
         {error && <p style={{ color: "red" }}>{error}</p>}
         {Array.isArray(items) && items.length > 0 ? (
@@ -203,7 +197,7 @@ function Home() {
             </table>
           </div>
         ) : (
-          !loading && <p>No packages available at the moment.</p>
+          !loading && <p>No Product available at the moment.</p>
         )}
         <Footer />
       </div>
@@ -211,30 +205,182 @@ function Home() {
   }
   if (view === "service") {
     return (
-      <div className="home-container" style={{ textAlign: "center", margin: "50px" }}>
+      <div className="home-container" id="service-page">
         <Navbar />
-        <h2>Service Page</h2>
-        <p>Learn about our installation and maintenance services.</p>
+        <div id="service-hero">
+          <h1>Solara ERP System: Enterprise-Grade Solar Management</h1>
+          <p>Elevate your solar energy operations with our cutting-edge ERP solution, tailored for efficiency, scalability, and compliance.</p>
+        </div>
+        <div id="service-content">
+          <section id="erp-overview">
+            <h2>Transform Your Solar Operations with Solara ERP</h2>
+            <p>
+              The Solara ERP System is a comprehensive enterprise resource planning platform engineered to optimize solar energy management for residential, commercial, and industrial clients across Sri Lanka. Built with advanced technology, Solara ERP integrates seamlessly with existing solar infrastructure, offering real-time insights, automated workflows, and robust analytics to drive operational excellence. Our platform ensures compliance with Ceylon Electricity Board (CEB) regulations and supports hybrid solar setups, delivering unparalleled reliability and performance.
+            </p>
+            <img src={BannerImg3} alt="Solara ERP System Dashboard" id="erp-image" onError={(e) => { e.target.src = kw5Solar; }} />
+          </section>
+          <section id="erp-features">
+            <h2>Advanced Features for Solar Excellence</h2>
+            <div id="features-grid">
+              <div className="feature-item" id="feature-monitoring">
+                <h3>Real-Time Energy Monitoring</h3>
+                <p>Access live data dashboards to monitor energy production, consumption, and grid interaction, enabling data-driven decisions to maximize efficiency.</p>
+              </div>
+              <div className="feature-item" id="feature-analytics">
+                <h3>AI-Powered Predictive Analytics</h3>
+                <p>Utilize machine learning algorithms to forecast energy trends, optimize usage patterns, and predict maintenance requirements, reducing operational costs.</p>
+              </div>
+              <div className="feature-item" id="feature-maintenance">
+                <h3>Automated Maintenance Scheduling</h3>
+                <p>Streamline maintenance with automated scheduling, real-time alerts, and integrated technician coordination, minimizing downtime and ensuring system longevity.</p>
+              </div>
+              <div className="feature-item" id="feature-integration">
+                <h3>Seamless Grid and System Integration</h3>
+                <p>Integrate with CEB grid systems and third-party solar hardware, supporting hybrid setups for uninterrupted power and compliance with local regulations.</p>
+              </div>
+              <div className="feature-item" id="feature-security">
+                <h3>Enterprise-Grade Security</h3>
+                <p>Protect your data with robust encryption, secure APIs, and compliance with international cybersecurity standards, ensuring peace of mind for your operations.</p>
+              </div>
+              <div className="feature-item" id="feature-scalability">
+                <h3>Scalable Architecture</h3>
+                <p>Designed for scalability, Solara ERP supports businesses of all sizes, from small residential setups to large-scale industrial solar farms.</p>
+              </div>
+            </div>
+          </section>
+          <section id="erp-benefits">
+            <h2>Why Solara ERP is the Industry Leader</h2>
+            <ul>
+              <li><strong>Enhanced Efficiency:</strong> Achieve up to 35% improvement in energy utilization through intelligent optimization and real-time insights.</li>
+              <li><strong>Cost Savings:</strong> Reduce operational and maintenance costs with predictive analytics and automated workflows.</li>
+              <li><strong>Regulatory Compliance:</strong> Ensure full compliance with CEB and international energy standards, minimizing regulatory risks.</li>
+              <li><strong>Scalable Solutions:</strong> Adaptable to growing energy needs, supporting both small and large-scale solar deployments.</li>
+              <li><strong>24/7 Expert Support:</strong> Access our dedicated support team and certified technicians for round-the-clock assistance.</li>
+              <li><strong>Actionable Insights:</strong> Generate detailed reports on energy savings, ROI, and system performance to inform strategic decisions.</li>
+            </ul>
+          </section>
+          <section id="erp-cta">
+            <h2>Partner with Us for Solar Innovation</h2>
+            <p>
+              Unlock the full potential of your solar energy systems with Solara ERP. Our team of experts is ready to provide tailored solutions, from initial consultation to full implementation.
+            </p>
+          </section>
+        </div>
         <Footer />
       </div>
     );
   }
   if (view === "about") {
     return (
-      <div className="home-container" style={{ textAlign: "center", margin: "50px" }}>
+      <div className="home-container" id="about-page">
         <Navbar />
-        <h2>About Us Page</h2>
-        <p>Discover more about Selfme.lk.</p>
+        <div id="about-hero">
+          <h1>About Selfme.lk</h1>
+          <p>Your Trusted Partner in Sustainable Solar Energy Solutions</p>
+        </div>
+        <div id="about-content">
+          <section id="about-overview">
+            <h2>Who We Are</h2>
+            <div id="about-overview-content">
+              <div id="about-image-container">
+                <img src={Aboutus_banner} alt="Selfme.lk Solar Solutions" onError={(e) => { e.target.src = kw5Solar; }} id="about-overview-image" />
+              </div>
+              <div id="about-text-container">
+                <p>
+                  Selfme.lk is a premier provider of solar energy solutions in Sri Lanka, dedicated to driving the transition to sustainable and renewable energy. Established in 2015, we have grown to become a trusted name in the industry, delivering cutting-edge solar panel installations, advanced energy storage systems, and enterprise-grade solar management solutions. Our mission is to empower homes, businesses, and industries with clean, cost-effective, and reliable energy.
+                </p>
+                <p>
+                  With a team of certified engineers and energy experts, we pride ourselves on delivering high-quality installations that meet international standards. Our strategic partnerships with industry leaders, such as Kelani Cables and the Ceylon Electricity Board (CEB), ensure seamless integration and compliance with local regulations, providing our clients with peace of mind and exceptional performance.
+                </p>
+              </div>
+            </div>
+          </section>
+          <section id="about-mission-vision">
+            <h2>Our Mission & Vision</h2>
+            <div id="mission-vision-grid">
+              <div id="mission">
+                <h3>Mission</h3>
+                <p>
+                  To deliver innovative, sustainable, and affordable solar energy solutions that reduce carbon footprints and empower communities across Sri Lanka to embrace renewable energy.
+                </p>
+              </div>
+              <div id="vision">
+                <h3>Vision</h3>
+                <p>
+                  To lead the renewable energy revolution in Sri Lanka, creating a future where clean, reliable, and accessible energy powers every home, business, and industry.
+                </p>
+              </div>
+            </div>
+          </section>
+          <section id="about-values">
+            <h2>Our Core Values</h2>
+            <div id="values-grid">
+              <div id="value-sustainability" className="value-item">
+                <h3>Sustainability</h3>
+                <p>Committed to reducing environmental impact through renewable energy solutions.</p>
+              </div>
+              <div id="value-quality" className="value-item">
+                <h3>Quality</h3>
+                <p>Using premium materials and adhering to the highest industry standards.</p>
+              </div>
+              <div id="value-innovation" className="value-item">
+                <h3>Innovation</h3>
+                <p>Leveraging cutting-edge technology to enhance energy efficiency and performance.</p>
+              </div>
+              <div id="value-customer" className="value-item">
+                <h3>Customer-Centricity</h3>
+                <p>Providing exceptional service and support to ensure customer satisfaction.</p>
+              </div>
+            </div>
+          </section>
+          <section id="about-team">
+            <h2>Our Expert Team</h2>
+            <p>
+              Our team comprises certified solar engineers, energy consultants, and customer support specialists with over 50 years of combined experience in the renewable energy sector. We are passionate about delivering tailored solutions that meet the unique needs of our clients, backed by 24/7 support and comprehensive warranties.
+            </p>
+          </section>
+          <section id="about-cta">
+            <h2>Join Our Journey</h2>
+            <p>
+              Discover how Selfme.lk can transform your energy future with our innovative solar solutions.
+            </p>
+          </section>
+        </div>
         <Footer />
       </div>
     );
   }
-  if (view === "contact") {
+   if (view === "contact") {
     return (
-      <div className="home-container" style={{ textAlign: "center", margin: "50px" }}>
+      <div className="home-container" id="contact-page">
         <Navbar />
-        <h2>Contact Page</h2>
-        <p>Get in touch with our team.</p>
+        <div id="contact-hero">
+          <h1>Contact Selfme.lk</h1>
+          <p>We're here to help you power your future with sustainable solar solutions.</p>
+        </div>
+        <div id="contact-content">
+          <section id="contact-overview">
+            <h2>Get in Touch</h2>
+            <p>
+              Whether you have questions about our solar products, need assistance with your installation, or want to explore our Solara ERP system, our dedicated team is ready to assist you. Reach out to us using the contact details below.
+            </p>
+          </section>
+          <section id="contact-form-section">
+            <h2>Contact Information</h2>
+            <div id="contact-info">
+              <p><strong>Address:</strong> No/346, Madalanda, Dompe, Colombo, Sri Lanka</p>
+              <p><strong>Phone:</strong> +94 717 882 883</p>
+              <p><strong>Email:</strong> Selfmepvtltd@gmail.com </p>
+              <p><strong>Business Hours:</strong> Monday - Friday, 9:00 AM - 5:00 PM</p>
+            </div>
+          </section>
+          <section id="contact-cta">
+            <h2>Ready to Start Your Solar Journey?</h2>
+            <p>
+              Contact our team today to schedule a consultation or request a customized solar solution tailored to your needs.
+            </p>
+          </section>
+        </div>
         <Footer />
       </div>
     );

@@ -35,11 +35,8 @@ const Navbar = () => {
       <a href="/" id="selfmeNavHome" onClick={(e) => handleNavClick(e, '/')}>
         Home
       </a>
-      <a href="/products" id="selfmeNavProducts" onClick={(e) => handleNavClick(e, '/?view=products')}>
-        Products
-      </a>
       <a href="/packages" id="selfmeNavPackages" onClick={(e) => handleNavClick(e, '/?view=packages')}>
-        Packages
+        Product
       </a>
       <a href="/service" id="selfmeNavService" onClick={(e) => handleNavClick(e, '/?view=service')}>
         Service
