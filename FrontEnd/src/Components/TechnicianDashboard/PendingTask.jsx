@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import TechnicianLayout from './TechnicianLayout';
-import './CompletedTasks.css';
+import './PendingTasks.css';
 
 function PendingTasks() {
   const navigate = useNavigate();
@@ -10,6 +10,7 @@ function PendingTasks() {
   const firstName = authUser.firstName || 'Technician';
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [statusUpdates, setStatusUpdates] = useState({}); // Store dropdown values for each task
 
   // Fetch pending tasks on component mount
   useEffect(() => {
@@ -31,12 +32,52 @@ function PendingTasks() {
       });
       const taskData = Array.isArray(res.data) ? res.data : [];
       setTasks(taskData);
+      // Initialize statusUpdates with current statusofmy values
+      const initialStatusUpdates = taskData.reduce((acc, task) => ({
+        ...acc,
+        [task.paymentId]: task.statusofmy || 'pending',
+      }), {});
+      setStatusUpdates(initialStatusUpdates);
       console.log('✅ Pending tasks fetched:', taskData.length, taskData);
     } catch (err) {
       console.error('💥 Pending tasks fetch error:', err.response?.data, err.message);
     } finally {
       setIsLoading(false);
       console.log('Fetch pending tasks complete, isLoading:', false);
+    }
+  };
+
+  const handleStatusChange = (paymentId, value) => {
+    setStatusUpdates((prev) => ({
+      ...prev,
+      [paymentId]: value,
+    }));
+  };
+
+  const handleUpdateStatus = async (paymentId) => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.warn('⚠️ No token found for updating statusofmy');
+        return;
+      }
+      const statusofmy = statusUpdates[paymentId];
+      await axios.put(
+        `http://localhost:5000/api/tech/paidtasks/${paymentId}/statusofmy`,
+        { statusofmy },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          timeout: 10000,
+        }
+      );
+      console.log(`✅ Updated statusofmy to ${statusofmy} for paymentId: ${paymentId}`);
+      // Refresh tasks to remove updated tasks (e.g., if changed to Completed)
+      await fetchPendingTasks();
+    } catch (err) {
+      console.error('❌ Error updating statusofmy:', err.response?.data, err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -68,6 +109,7 @@ function PendingTasks() {
                   <th style={{ padding: '10px', border: '1px solid #ddd' }}>Payment Date</th>
                   <th style={{ padding: '10px', border: '1px solid #ddd' }}>Status</th>
                   <th style={{ padding: '10px', border: '1px solid #ddd' }}>Status of My</th>
+                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>Update</th>
                 </tr>
               </thead>
               <tbody>
@@ -89,7 +131,47 @@ function PendingTasks() {
                       {task.paymentDate ? new Date(task.paymentDate).toLocaleDateString() : 'N/A'}
                     </td>
                     <td style={{ padding: '10px', border: '1px solid #ddd' }}>{task.status || 'N/A'}</td>
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{task.statusofmy || 'pending'}</td>
+                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
+                      <select
+                        value={statusUpdates[task.paymentId] || task.statusofmy || 'pending'}
+                        onChange={(e) => handleStatusChange(task.paymentId, e.target.value)}
+                        style={{
+                          padding: '5px',
+                          borderRadius: '4px',
+                          border: '1px solid #ddd',
+                          fontSize: '14px',
+                        }}
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                      </select>
+                    </td>
+                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
+                      <button
+                        onClick={() => handleUpdateStatus(task.paymentId)}
+                        disabled={isLoading || statusUpdates[task.paymentId] === task.statusofmy}
+                        style={{
+                          padding: '5px 10px',
+                          backgroundColor: isLoading || statusUpdates[task.paymentId] === task.statusofmy ? '#6c757d' : '#28a745',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: isLoading || statusUpdates[task.paymentId] === task.statusofmy ? 'not-allowed' : 'pointer',
+                          fontSize: '14px',
+                          transition: 'background-color 0.2s',
+                        }}
+                        onMouseOver={(e) =>
+                          !(isLoading || statusUpdates[task.paymentId] === task.statusofmy) &&
+                          (e.target.style.backgroundColor = '#218838')
+                        }
+                        onMouseOut={(e) =>
+                          !(isLoading || statusUpdates[task.paymentId] === task.statusofmy) &&
+                          (e.target.style.backgroundColor = '#28a745')
+                        }
+                      >
+                        Update
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

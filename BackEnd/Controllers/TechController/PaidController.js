@@ -64,10 +64,25 @@ exports.getNotYetTasks = async (req, res) => {
   }
 };
 
+exports.getCompletedTasks = async (req, res) => {
+  try {
+    const completedTasks = await MyPaidTask.find({ statusofmy: 'Completed' });
+    res.json(completedTasks);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 exports.updateStatusOfMy = async (req, res) => {
   try {
     const { paymentId } = req.params;
     const { statusofmy } = req.body;
+
+    // Validate statusofmy
+    const validStatuses = ['notyet', 'pending', 'Completed'];
+    if (!validStatuses.includes(statusofmy)) {
+      return res.status(400).json({ message: 'Invalid statusofmy value. Must be one of: notyet, pending, Completed' });
+    }
 
     const updatedTask = await MyPaidTask.findOneAndUpdate(
       { paymentId },

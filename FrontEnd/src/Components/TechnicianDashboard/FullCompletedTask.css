@@ -1,0 +1,26 @@
+.loading {
+  text-align: center;
+  font-style: italic;
+  color: #666;
+}
+
+.completed-tasks-list table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+.completed-tasks-list th,
+.completed-tasks-list td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.completed-tasks-list th {
+  background-color: #28a745;
+  color: white;
+}
+
+.completed-tasks-list tr {
+  background-color: white;
+}

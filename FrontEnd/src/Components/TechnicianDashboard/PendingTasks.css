@@ -1,0 +1,54 @@
+.loading {
+  text-align: center;
+  font-style: italic;
+  color: #666;
+}
+
+.pending-tasks-list table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+.pending-tasks-list th,
+.pending-tasks-list td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.pending-tasks-list th {
+  background-color: #28a745;
+  color: white;
+}
+
+.pending-tasks-list tr {
+  background-color: white;
+}
+
+.pending-tasks-list select {
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.pending-tasks-list button {
+  padding: 5px 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.pending-tasks-list button:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.pending-tasks-list button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
