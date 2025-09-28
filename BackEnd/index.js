@@ -7,32 +7,40 @@ const cartRoutes = require("./Routes/UserRoutes/CartRoute");
 const paymentRoutes = require("./Routes/UserRoutes/PaymentRoutes");
 const itemRoute = require("./Routes/UserRoutes/itemCartRoutes");
 const submitFeedbackRoute = require("./Routes/UserRoutes/SubmitFeedbackRoute"); // New route
+
 // Import models to ensure they are registered
 const Product = require("./Model/inventory_models/itemModel");
 const Cart = require("./Model/UserModel/CartModel");
 const Payment = require("./Model/UserModel/PaymentModel");
 const SubmitFeedback = require("./Model/UserModel/SubmitFeedbackModel"); // New model
+
 //linuka
 const salaryRouter = require("./Routes/FinanceManager/salaryRoutes");
 const staffRouter = require("./Routes/FinanceManager/staffRoutes");
 const jobAssigningRouter = require("./Routes/FinanceManager/jobAssigningRoutes");
 const paymentRouter = require("./Routes/FinanceManager/PaymentRoutes");
+
 //lahindu
 const userRouter = require("./Routes/AdminandSupplyRoutes/userRoutes");
 const allFeedbackRouter = require("./Routes/AdminandSupplyRoutes/AllFeedbackRoutes");
 const allEmployeeRouter = require("./Routes/AdminandSupplyRoutes/AllEmployeeRoutes");
 const viewSupplyAllRoute = require("./Routes/AdminandSupplyRoutes/ViewSupplyAllRoute");
 const getSupplyAllRoute = require("./Routes/AdminandSupplyRoutes/GetSupplyAllRoute");
+
 //sulakshi
 const employeeRouter = require("./Routes/TechRoute/employeeRoutes");
 const assignmentRoutes = require("./Routes/TechRoute/assignmentRoutes");
 const getPaidPaymentRoute = require("./Routes/TechRoute/GetPaisPaymentRoute");
+
+
 //hasaranga
 const itemRoutes = require("./Routes/item_routes/ItemRoutes");
 const productRequestRoutes = require("./Routes/item_routes/productRequestRoutes");
 const supplierRouter = require("./Routes/item_routes/supplierRoutes");
 const orderRoutes = require("./Routes/item_routes/orderRoutes");
 const stockOutRoutes = require("./Routes/item_routes/stockOutRoutes");
+
+
 const path = require("path");
 const fs = require("fs");
 const cors = require("cors");
@@ -66,7 +74,7 @@ app.use("/auth", authRouter);
 //lahindu
 app.use("/all-users", userRouter);
 app.use("/all-feedback", allFeedbackRouter);
-//app.use("/all-employees", allEmployeeRouter);
+app.use("/all-employees", allEmployeeRouter);
 app.use("/all-suppliers", viewSupplyAllRoute);
 app.use("/all-productrequests", getSupplyAllRoute);
 //sulakshi

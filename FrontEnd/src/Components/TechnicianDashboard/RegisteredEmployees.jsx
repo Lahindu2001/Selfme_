@@ -61,21 +61,31 @@ function RegisteredEmployees() {
     fetchEmployees();
   }, []);
 
-  const fetchEmployees = () => {
-    fetch("http://localhost:5000/employees")
-      .then((res) => res.json())
-      .then((data) => setEmployees(data))
-      .catch(() => setEmployees([]));
+  const fetchEmployees = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/employees");
+      if (!res.ok) throw new Error('Failed to fetch employees');
+      const data = await res.json();
+      setEmployees(data);
+    } catch (err) {
+      setEmployees([]);
+      setEditErrors({ general: err.message });
+    }
   };
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
-      await fetch(`http://localhost:5000/employees/${id}`, { method: "DELETE" });
-      fetchEmployees();
+      try {
+        const res = await fetch(`http://localhost:5000/employees/${id}`, { method: "DELETE" });
+        if (!res.ok) throw new Error('Failed to delete employee');
+        fetchEmployees();
+      } catch (err) {
+        setEditErrors({ general: err.message });
+      }
     }
   };
 
-  // Validation helpers (reuse from RegisterEmployee)
+  // Validation helpers
   const getAge = (dob) => {
     if (!dob) return 0;
     const today = new Date();
@@ -90,13 +100,12 @@ function RegisteredEmployees() {
 
   const validate = (form) => {
     const newErrors = {};
-    if (!form.Employee_name.trim()) {
+    if (!form.Employee_name || !form.Employee_name.trim()) {
       newErrors.Employee_name = "Name is required";
+    } else if (!/^[A-Za-z\s]+$/.test(form.Employee_name)) {
+      newErrors.Employee_name = "Name must contain only letters and spaces";
     }
-    if (!/^[A-Za-z\s]+$/.test(form.Employee_name)) {
-      newErrors.Employee_name = "Name must contain only letters";
-    }
-    if (!form.Employee_Address.trim()) {
+    if (!form.Employee_Address || !form.Employee_Address.trim()) {
       newErrors.Employee_Address = "Address is required";
     }
     if (!form.Employee_Dob) {
@@ -112,13 +121,15 @@ function RegisteredEmployees() {
     if (!form.hire_date) {
       newErrors.hire_date = "Hire date is required";
     } else {
-      // Check if hire date is in the future
       const hireDate = new Date(form.hire_date);
       const today = new Date();
-      today.setHours(0, 0, 0, 0); // Set to start of day for fair comparison
+      today.setHours(0, 0, 0, 0);
       if (hireDate > today) {
         newErrors.hire_date = "Hire date cannot be in the future";
       }
+    }
+    if (!form.isManager) {
+      newErrors.isManager = "Please select a role";
     }
     return newErrors;
   };
@@ -128,9 +139,10 @@ function RegisteredEmployees() {
     setEditForm({
       Employee_name: emp.Employee_name,
       Employee_Address: emp.Employee_Address,
-      Employee_Dob: emp.Employee_Dob?.slice(0, 10),
+      Employee_Dob: emp.Employee_Dob ? emp.Employee_Dob.slice(0, 10) : '',
       contact_number: emp.contact_number,
-      hire_date: emp.hire_date?.slice(0, 10),
+      hire_date: emp.hire_date ? emp.hire_date.slice(0, 10) : '',
+      isManager: emp.isManager || 'Employee'
     });
     setEditErrors({});
   };
@@ -153,15 +165,23 @@ function RegisteredEmployees() {
     setEditErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
-    await fetch(`http://localhost:5000/employees/${editEmp._id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(editForm),
-    });
-    setEditEmp(null);
-    setSuccess(true);
-    fetchEmployees();
-    setTimeout(() => setSuccess(false), 2000);
+    try {
+      const res = await fetch(`http://localhost:5000/employees/${editEmp._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to update employee');
+      }
+      setEditEmp(null);
+      setSuccess(true);
+      fetchEmployees();
+      setTimeout(() => setSuccess(false), 2000);
+    } catch (err) {
+      setEditErrors({ general: err.message });
+    }
   };
 
   const openAssignModal = (emp) => {
@@ -172,31 +192,36 @@ function RegisteredEmployees() {
   };
 
   const handleAssignTask = async () => {
-    if (!selectedTask) return;
-    const taskObj = demoTasks.find((t) => t.id === selectedTask);
-    const res = await fetch("http://localhost:5000/assignments/assign", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        employeeId: selectedEmployee._id,
-        order: taskObj,
-      }),
-    });
-    if (res.ok) {
+    if (!selectedTask) {
+      setEditErrors({ general: "Please select a task" });
+      return;
+    }
+    try {
+      const taskObj = demoTasks.find((t) => t.id === selectedTask);
+      const res = await fetch("http://localhost:5000/assignments/assign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          employeeId: selectedEmployee._id,
+          order: taskObj,
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to assign task');
       setAssignSuccess(true);
-      fetchEmployees(); // Refresh employees to update any assigned tasks if displayed
+      fetchEmployees();
       setTimeout(() => {
         setShowAssignModal(false);
         setAssignSuccess(false);
       }, 2000);
+    } catch (err) {
+      setEditErrors({ general: err.message });
     }
   };
 
-  // Set max date for DOB to ensure 18+ only
+  // Set date constraints
   const today = new Date();
   const minDob = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate());
   const maxDob = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-  // Set max date for hire date (today)
   const maxHireDate = today.toISOString().split("T")[0];
 
   return (
@@ -204,11 +229,13 @@ function RegisteredEmployees() {
       <div id="registeredEmployeesDashboard">
         <h2>Registered Employees</h2>
         {success && <div className="success-msg">Employee updated successfully!</div>}
+        {editErrors.general && <div className="error-msg">{editErrors.general}</div>}
         <table className="orders-table">
           <thead>
             <tr>
               <th>ID</th>
               <th>Name</th>
+              <th>Role</th>
               <th>Address</th>
               <th>DOB</th>
               <th>Contact</th>
@@ -219,22 +246,20 @@ function RegisteredEmployees() {
           <tbody>
             {employees.map((emp) => (
               <tr key={emp._id}>
-                <td>{emp.employee_id || emp._id}</td>
+                <td>{emp.employee_id}</td>
                 <td>{emp.Employee_name}</td>
+                <td>{emp.isManager}</td>
                 <td>{emp.Employee_Address}</td>
                 <td>{emp.Employee_Dob?.slice(0, 10)}</td>
                 <td>{emp.contact_number}</td>
                 <td>{emp.hire_date?.slice(0, 10)}</td>
                 <td>
-                  <button
-                    className="cta-button"
-                    onClick={() => openEdit(emp)}
-                  >
+                  <button className="cta-button" onClick={() => openEdit(emp)}>
                     Edit
                   </button>
                   <button
                     className="cta-button"
-                    style={{ background: "#dc3545", color: "#fff" }}
+                    style={{ background: "#dc3545", color: "#fff", marginLeft: "10px" }}
                     onClick={() => handleDelete(emp._id)}
                   >
                     Delete
@@ -251,7 +276,6 @@ function RegisteredEmployees() {
             ))}
           </tbody>
         </table>
-
         {/* Edit Modal */}
         {editEmp && (
           <div className="modal-overlay">
@@ -269,6 +293,21 @@ function RegisteredEmployees() {
                   />
                   {editErrors.Employee_name && (
                     <div className="error-msg">{editErrors.Employee_name}</div>
+                  )}
+                </div>
+                <div>
+                  <label>Role:</label>
+                  <select
+                    name="isManager"
+                    value={editForm.isManager}
+                    onChange={handleEditInput}
+                    required
+                  >
+                    <option value="Employee">Employee</option>
+                    <option value="Team Manager">Team Manager</option>
+                  </select>
+                  {editErrors.isManager && (
+                    <div className="error-msg">{editErrors.isManager}</div>
                   )}
                 </div>
                 <div>
@@ -344,7 +383,6 @@ function RegisteredEmployees() {
             </div>
           </div>
         )}
-
         {/* Assign Task Modal */}
         {showAssignModal && (
           <div className="modal-overlay">
@@ -361,6 +399,9 @@ function RegisteredEmployees() {
                   </option>
                 ))}
               </select>
+              {editErrors.general && (
+                <div className="error-msg">{editErrors.general}</div>
+              )}
               <div style={{ marginTop: "15px" }}>
                 <button
                   className="cta-button primary"

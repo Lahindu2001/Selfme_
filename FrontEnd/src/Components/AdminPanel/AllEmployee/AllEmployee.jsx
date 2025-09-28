@@ -3,30 +3,34 @@ import { useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../../utils/auth';
 import axios from 'axios';
 import jsPDF from 'jspdf';
-import Nav from '../../Nav/Nav'; // Adjust path based on your folder structure
+import Nav from '../../Nav/Nav';
 import './AllEmployee.css';
+
 const URL = 'http://localhost:5000/all-employees';
+
 function AllEmployee() {
   const navigate = useNavigate();
   const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
   const firstName = authUser.firstName || 'Admin';
+
   const handleLogout = () => {
     removeAuthToken();
     localStorage.removeItem('authUser');
     navigate('/login');
   };
+
   // ------------------- STATES -------------------
   const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFields, setSelectedFields] = useState({
-    Employee_name: true,
-    Employee_Address: true,
-    Employee_Dob: true,
-    contact_number: true,
-    hire_date: true,
-    assigned_tasks: true,
+    name: true,
+    address: true,
+    dob: true,
+    contactNumber: true,
+    hireDate: true,
     createdAt: true,
   });
+
   // ------------------- COMPANY INFORMATION -------------------
   const companyInfo = {
     name: 'SelfMe',
@@ -36,19 +40,31 @@ function AllEmployee() {
     email: 'Selfmepvtltd@gmail.com',
     website: 'www.selfme.com',
   };
+
   // ------------------- FETCH EMPLOYEES -------------------
   const fetchEmployees = async () => {
     try {
       const res = await axios.get(URL);
-      setEmployees(res.data.employees || []);
+      const mappedEmployees = res.data.employees.map((emp) => ({
+        ...emp,
+        employee_id: emp.empId,
+        Employee_name: emp.name,
+        Employee_Address: emp.address,
+        Employee_Dob: emp.dob,
+        contact_number: emp.contactNumber,
+        hire_date: emp.hireDate,
+      }));
+      setEmployees(mappedEmployees);
     } catch (err) {
       console.error('Error fetching employees:', err);
       setEmployees([]);
     }
   };
+
   useEffect(() => {
     fetchEmployees();
   }, []);
+
   // ------------------- LOGO CONVERSION -------------------
   const getLogoAsBase64 = () => {
     return new Promise((resolve, reject) => {
@@ -69,6 +85,7 @@ function AllEmployee() {
       img.src = '/newLogo.png';
     });
   };
+
   // ------------------- OFFICIAL PDF GENERATION -------------------
   const generatePDF = async (data, title) => {
     if (!data.length) return alert('No employees to download!');
@@ -77,6 +94,7 @@ function AllEmployee() {
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
+
       const addLetterhead = () => {
         if (logoBase64) {
           doc.addImage(logoBase64, 'PNG', 15, 10, 20, 20);
@@ -93,6 +111,7 @@ function AllEmployee() {
         doc.setDrawColor(0, 0, 0);
         doc.line(15, 40, pageWidth - 15, 40);
       };
+
       const addFooter = (pageNum, totalPages, lastRecordIdx) => {
         doc.setFont('times', 'normal');
         doc.setFontSize(8);
@@ -108,16 +127,19 @@ function AllEmployee() {
         const genTime = new Date().toLocaleTimeString('en-GB', { hour12: false });
         doc.text(`Generated on ${genDate} at ${genTime}`, 15, pageHeight - 10);
       };
+
       const addSignatureField = () => {
         doc.setFont('times', 'normal');
         doc.setFontSize(10);
         doc.setTextColor(0, 0, 0);
         doc.text('Authorized Signature: __________________', pageWidth - 85, pageHeight - 30);
       };
+
       let totalPages = 1;
       let tempY = 50;
       let lastRecordIdxPerPage = [];
       let currentPageRecords = [];
+
       data.forEach((_, idx) => {
         let fieldsCount = Object.keys(selectedFields).filter((field) => selectedFields[field]).length;
         let itemHeight = fieldsCount * 10 + 20;
@@ -131,6 +153,7 @@ function AllEmployee() {
         tempY += itemHeight;
       });
       lastRecordIdxPerPage.push(currentPageRecords[currentPageRecords.length - 1] || -1);
+
       let currentPage = 1;
       let y = 50;
       addLetterhead();
@@ -138,6 +161,7 @@ function AllEmployee() {
       doc.setFontSize(14);
       doc.setTextColor(0, 0, 0);
       doc.text(title, pageWidth / 2, 45, { align: 'center' });
+
       data.forEach((employee, idx) => {
         let fieldsCount = Object.keys(selectedFields).filter((field) => selectedFields[field]).length;
         let itemHeight = fieldsCount * 10 + 20;
@@ -163,13 +187,10 @@ function AllEmployee() {
         y += 5;
         Object.keys(selectedFields).forEach((field) => {
           if (selectedFields[field]) {
-            let label = field.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+            let label = field.replace(/([A-Z])/g, ' $1').trim().replace(/\b\w/g, (l) => l.toUpperCase());
             let value = employee[field] || 'N/A';
-            if (field === 'Employee_Dob' || field === 'hire_date' || field === 'createdAt') {
+            if (field === 'dob' || field === 'hireDate' || field === 'createdAt') {
               value = value ? new Date(value).toLocaleDateString('en-GB') : 'N/A';
-            }
-            if (field === 'assigned_tasks') {
-              value = Array.isArray(value) ? value.join(', ') : 'N/A';
             }
             if (typeof value === 'string' && value.length > 50) {
               value = value.substring(0, 47) + '...';
@@ -200,9 +221,11 @@ function AllEmployee() {
       alert('Error generating PDF. Please try again.');
     }
   };
+
   // ------------------- DOWNLOAD FUNCTIONS -------------------
   const handleDownloadAll = () => generatePDF(employees, 'Employee Directory Report');
   const handleDownloadSingle = (employee) => generatePDF([employee], `Employee Report - ${employee.Employee_name || 'Unnamed'}`);
+
   // ------------------- FILTERED EMPLOYEES -------------------
   const filteredEmployees = employees.filter(
     (employee) =>
@@ -211,16 +234,17 @@ function AllEmployee() {
       (employee.contact_number?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
       (String(employee.employee_id) || '').includes(searchTerm)
   );
+
   // ------------------- RENDER -------------------
   return (
-    <div className="all-employee-container">
+    <div id="all-employee-container">
       <Nav firstName={firstName} handleLogout={handleLogout} />
-      <div className="all-employee-section">
-        <div className="title-container">
-          <h2 className="Title">Employee Management System</h2>
-          <p className="subtitle">{companyInfo.name} - {companyInfo.tagline}</p>
+      <div id="all-employee-section">
+        <div id="title-container">
+          <h2 id="title">Employee Management System</h2>
+          <p id="subtitle">{companyInfo.name} - {companyInfo.tagline}</p>
         </div>
-        <div className="search-bar">
+        <div id="search-bar">
           <input
             type="text"
             placeholder="Search by Employee Name, Address, Contact or ID..."
@@ -228,43 +252,40 @@ function AllEmployee() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="download-options professional-section">
-          <h3>Official Report Generation</h3>
-          <p>Select the fields to include in your official report:</p>
-          <div className="field-checkboxes">
+        <div id="download-options">
+          <h3 id="download-options-title">Official Report Generation</h3>
+          <p id="download-options-text">Select the fields to include in your official report:</p>
+          <div id="field-checkboxes">
             {Object.keys(selectedFields).map((field) => (
               <label key={field} className="checkbox-label">
                 <input
                   type="checkbox"
                   checked={selectedFields[field]}
-                  onChange={() =>
-                    setSelectedFields((prev) => ({ ...prev, [field]: !prev[field] }))
-                  }
+                  onChange={() => setSelectedFields((prev) => ({ ...prev, [field]: !prev[field] }))}
                 />
                 <span>
-                  {field.replace('_', ' ').replace(/([A-Z])/g, ' $1').trim().replace(/\b\w/g, (l) => l.toUpperCase())}
+                  {field.replace(/([A-Z])/g, ' $1').trim().replace(/\b\w/g, (l) => l.toUpperCase())}
                 </span>
               </label>
             ))}
           </div>
-          <div className="download-buttons">
-            <button className="download-all-btn" onClick={handleDownloadAll}>
+          <div id="download-buttons">
+            <button id="download-all-btn" onClick={handleDownloadAll}>
               Download Directory ({employees.length} employees)
             </button>
-            <p className="download-note">
+            <p id="download-note">
               Reports include official letterhead with {companyInfo.name} branding and contact details.
             </p>
           </div>
-       
         </div>
-        <div className="users-table-container">
-          <div className="table-header">
-            <span className="table-user-count"> Total Employees: {employees.length}</span>
-            <span className="filtered-count">
+        <div id="users-table-container">
+          <div id="table-header">
+            <span id="table-user-count">Total Employees: {employees.length}</span>
+            <span id="filtered-count">
               {searchTerm && `(Showing ${filteredEmployees.length} filtered results)`}
             </span>
           </div>
-          <table className="users-table">
+          <table id="users-table">
             <thead>
               <tr>
                 <th>Employee ID</th>
@@ -273,7 +294,6 @@ function AllEmployee() {
                 <th>Employee DOB</th>
                 <th>Contact Number</th>
                 <th>Hire Date</th>
-                <th>Assigned Tasks</th>
                 <th>Created At</th>
                 <th>Actions</th>
               </tr>
@@ -287,8 +307,7 @@ function AllEmployee() {
                   <td>{employee.Employee_Dob ? new Date(employee.Employee_Dob).toLocaleDateString('en-GB') : 'N/A'}</td>
                   <td>{employee.contact_number || 'N/A'}</td>
                   <td>{employee.hire_date ? new Date(employee.hire_date).toLocaleDateString('en-GB') : 'N/A'}</td>
-                  <td>{employee.assigned_tasks?.join(', ') || 'N/A'}</td>
-                  <td>{new Date(employee.createdAt).toLocaleDateString('en-GB')}</td>
+                  <td>{employee.createdAt ? new Date(employee.createdAt).toLocaleDateString('en-GB') : 'N/A'}</td>
                   <td className="actions-cell">
                     <button
                       className="action-btn download-btn"
@@ -303,10 +322,10 @@ function AllEmployee() {
             </tbody>
           </table>
           {filteredEmployees.length === 0 && (
-            <div className="no-users-message">
-              <p> No employees found matching your search criteria.</p>
+            <div id="no-users-message">
+              <p>No employees found matching your search criteria.</p>
               {searchTerm && (
-                <button className="clear-search-btn" onClick={() => setSearchTerm('')}>
+                <button id="clear-search-btn" onClick={() => setSearchTerm('')}>
                   Clear Search
                 </button>
               )}
@@ -317,4 +336,5 @@ function AllEmployee() {
     </div>
   );
 }
+
 export default AllEmployee;
