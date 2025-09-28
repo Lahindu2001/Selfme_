@@ -14,11 +14,13 @@ const Cart = require("./Model/UserModel/CartModel");
 const Payment = require("./Model/UserModel/PaymentModel");
 const SubmitFeedback = require("./Model/UserModel/SubmitFeedbackModel"); 
 
+
 //linuka
 const salaryRouter = require("./Routes/FinanceManager/salaryRoutes");
 const staffRouter = require("./Routes/FinanceManager/staffRoutes");
 const jobAssigningRouter = require("./Routes/FinanceManager/jobAssigningRoutes");
 const paymentRouter = require("./Routes/FinanceManager/PaymentRoutes");
+
 
 //lahindu
 const userRouter = require("./Routes/AdminandSupplyRoutes/userRoutes");
@@ -26,6 +28,7 @@ const allFeedbackRouter = require("./Routes/AdminandSupplyRoutes/AllFeedbackRout
 const allEmployeeRouter = require("./Routes/AdminandSupplyRoutes/AllEmployeeRoutes");
 const viewSupplyAllRoute = require("./Routes/AdminandSupplyRoutes/ViewSupplyAllRoute");
 const getSupplyAllRoute = require("./Routes/AdminandSupplyRoutes/GetSupplyAllRoute");
+
 
 //sulakshi
 const employeeRouter = require("./Routes/TechRoute/employeeRoutes");
@@ -36,6 +39,8 @@ const paidTaskRouter = require("./Routes/TechRoute/PaidRoute");
 
 
 //hasaranga
+const inventoryInvoiceRoutes = require("./Routes/item_routes/inventoryInvoiceRoutes");
+const invoiceOrderRoutes = require("./Routes/item_routes/invoiceOrderRoutes");
 const itemRoutes = require("./Routes/item_routes/ItemRoutes");
 const productRequestRoutes = require("./Routes/item_routes/productRequestRoutes");
 const supplierRouter = require("./Routes/item_routes/supplierRoutes");
@@ -79,17 +84,23 @@ app.use("/all-feedback", allFeedbackRouter);
 app.use("/all-employees", allEmployeeRouter);
 app.use("/all-suppliers", viewSupplyAllRoute);
 app.use("/all-productrequests", getSupplyAllRoute);
+
 //sulakshi
 app.use("/employees", employeeRouter);
 //app.use("/assignments", assignmentRoutes);
 app.use("/paid-payments", getPaidPaymentRoute);
 app.use("/api/tech/paidtasks", paidTaskRouter);
+
+
 //hasaranga
+app.use("/api/inventory-invoices", inventoryInvoiceRoutes); // ✅ fixed route
+app.use("/api/invoice-orders", invoiceOrderRoutes);
 app.use("/products", itemRoutes);
 app.use("/orders", orderRoutes);
 app.use("/productRequests", productRequestRoutes);
 app.use("/suppliers", supplierRouter);
 app.use("/stockouts", stockOutRoutes);
+
 //linuka
 app.use("/api/finance/salary", salaryRouter);
 app.use("/api/finance/staff", staffRouter);

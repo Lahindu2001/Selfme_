@@ -66,7 +66,6 @@ const Stock_Outs_History = () => {
       minimumFractionDigits: 2,
     })}`;
 
-  // ---------------- PDF GENERATION ----------------
   const handlePrintPDF = () => {
     if (!orders.length) return alert("No orders to export.");
 
@@ -220,19 +219,24 @@ const Stock_Outs_History = () => {
   };
 
   return (
-    <div className="stockouts-history-page">
+    <div id="stockouts-history-page">
       <InventoryManagementNav />
-      <div className="stockouts-container">
-        <div className="dashboard-header">
+      <div id="stockouts-container">
+        <div id="stockouts-dashboard-header">
           <h1>Stock Out History</h1>
           <p>
             Track confirmed stock out orders for customers and technical teams
           </p>
-          <div className="header-actions">
-            <button onClick={handlePrintPDF} className="view-btn">
+          <div id="stockouts-header-actions">
+            <button
+              id="stockouts-generate-pdf-btn"
+              onClick={handlePrintPDF}
+              className="view-btn"
+            >
               Generate PDF
             </button>
             <button
+              id="stockouts-refresh-btn"
               onClick={fetchOrders}
               className="view-btn"
               style={{ marginLeft: "10px", background: "#6b7280" }}
@@ -242,7 +246,7 @@ const Stock_Outs_History = () => {
           </div>
         </div>
 
-        <div className="stats-cards">
+        <div id="stockouts-stats-cards">
           <div className="stat-card">
             <div className="stat-number">{stats.totalOrders}</div>
             <div className="stat-label">Total Orders</div>
@@ -261,18 +265,18 @@ const Stock_Outs_History = () => {
           </div>
         </div>
 
-        <div className="orders-section">
+        <div id="stockouts-orders-section">
           <div className="section-header">
             <h2>Confirmed Orders</h2>
           </div>
 
           {loading ? (
-            <p className="loading-text">Loading orders...</p>
+            <p id="stockouts-loading-text">Loading orders...</p>
           ) : orders.length === 0 ? (
-            <p className="empty-text">No confirmed orders available.</p>
+            <p id="stockouts-empty-text">No confirmed orders available.</p>
           ) : (
-            <div className="table-wrapper">
-              <table className="orders-table">
+            <div id="stockouts-table-wrapper">
+              <table id="stockouts-orders-table">
                 <thead>
                   <tr>
                     <th>#</th>
@@ -345,15 +349,19 @@ const Stock_Outs_History = () => {
         </div>
 
         {selected && (
-          <div className="modal-overlay">
-            <div className="modal">
-              <div className="modal-header">
+          <div id="stockouts-modal-overlay">
+            <div id="stockouts-modal">
+              <div id="stockouts-modal-header">
                 <h3>Order Details</h3>
-                <button onClick={closeDetails} className="modal-close">
+                <button
+                  id="stockouts-modal-close"
+                  onClick={closeDetails}
+                  className="modal-close"
+                >
                   ×
                 </button>
               </div>
-              <div className="modal-content">
+              <div id="stockouts-modal-content">
                 <div className="modal-info">
                   <p>
                     <strong>Stock Out ID:</strong>{" "}
@@ -392,9 +400,9 @@ const Stock_Outs_History = () => {
                     <span className="status-badge confirmed">Confirmed</span>
                   </p>
                 </div>
-                <div className="modal-items">
+                <div id="stockouts-modal-items">
                   <h4>Order Items</h4>
-                  <table className="modal-items-table">
+                  <table id="stockouts-modal-items-table">
                     <thead>
                       <tr>
                         <th>Item Name</th>
@@ -407,22 +415,18 @@ const Stock_Outs_History = () => {
                       {(selected.items || []).map((it, idx) => (
                         <tr key={idx}>
                           <td>{displayItemName(it)}</td>
-                          <td className="text-center">{it.quantity}</td>
-                          <td className="text-right">
-                            {formatPrice(it.price)}
-                          </td>
-                          <td className="text-right">
-                            {formatPrice(it.price * it.quantity)}
-                          </td>
+                          <td>{it.quantity}</td>
+                          <td>{formatPrice(it.price)}</td>
+                          <td>{formatPrice(it.price * it.quantity)}</td>
                         </tr>
                       ))}
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td colSpan="3" className="text-right">
+                        <td colSpan="3">
                           <strong>Grand Total:</strong>
                         </td>
-                        <td className="text-right">
+                        <td>
                           <strong>{formatPrice(selected.total)}</strong>
                         </td>
                       </tr>
@@ -430,8 +434,12 @@ const Stock_Outs_History = () => {
                   </table>
                 </div>
               </div>
-              <div className="modal-footer">
-                <button onClick={closeDetails} className="modal-close-btn">
+              <div id="stockouts-modal-footer">
+                <button
+                  id="stockouts-modal-close-btn"
+                  onClick={closeDetails}
+                  className="modal-close-btn"
+                >
                   Close
                 </button>
               </div>

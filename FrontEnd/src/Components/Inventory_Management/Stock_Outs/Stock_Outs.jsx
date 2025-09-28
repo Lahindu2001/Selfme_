@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import InventoryManagementNav from "../Inventory_Management_Nav/Inventory_Management_Nav";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 import "./Stock_Outs.css";
 
 const API = "http://localhost:5000";
@@ -15,10 +17,17 @@ function Stock_Outs() {
   const [loading, setLoading] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState("");
   const [generatedStockOutId, setGeneratedStockOutId] = useState("");
+  const [pendingOrders, setPendingOrders] = useState([]);
+  const [processedOrders, setProcessedOrders] = useState([]);
+  const [activeTab, setActiveTab] = useState("create");
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   useEffect(() => {
     fetchItems();
     fetchRecentOrders();
+    fetchPendingOrders();
+    fetchProcessedOrders();
+    generateNewStockOutId();
   }, []);
 
   const fetchItems = async () => {
@@ -46,18 +55,44 @@ function Stock_Outs() {
     }
   };
 
-  // Generate a preview stock out ID
-  const generatePreviewStockOutId = () => {
-    const year = new Date().getFullYear();
-    const latestOrder = recentOrders[0];
-    let sequence = 1;
-    
-    if (latestOrder && latestOrder.stock_out_id) {
-      const lastSequence = parseInt(latestOrder.stock_out_id.split('-')[2]) || 0;
-      sequence = lastSequence + 1;
+  const fetchPendingOrders = async () => {
+    try {
+      const res = await axios.get(`${API}/api/invoice-orders/pending`);
+      setPendingOrders(res.data || []);
+    } catch (err) {
+      console.error(err);
     }
-    
-    return `SO-${year}-${sequence.toString().padStart(4, '0')}`;
+  };
+
+  const fetchProcessedOrders = async () => {
+    try {
+      const res = await axios.get(`${API}/api/invoice-orders/processed`);
+      setProcessedOrders(res.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const generateNewStockOutId = async () => {
+    try {
+      const year = new Date().getFullYear();
+      const sequence = Math.floor(Math.random() * 1000) + 1;
+      setGeneratedStockOutId(
+        `SO-${year}-${sequence.toString().padStart(4, "0")}`
+      );
+    } catch (err) {
+      console.error("Failed to generate stock out ID:", err);
+    }
+  };
+
+  // Get product name from populated data
+  const getProductName = (item) => {
+    return item.itemId?.item_name || `Product (${item.itemId?._id?.slice(-8) || 'Unknown'})`;
+  };
+
+  // Get product serial number from populated data
+  const getProductSerial = (item) => {
+    return item.itemId?.serial_number || "N/A";
   };
 
   const addItemToOrder = (itemId) => {
@@ -68,7 +103,9 @@ function Stock_Outs() {
       const exist = prev.find((p) => p.product_id === item._id);
       if (exist) {
         if (exist.quantity >= item.quantity_in_stock) {
-          setMessage(`Cannot add more. Only ${item.quantity_in_stock} available.`);
+          setMessage(
+            `Cannot add more. Only ${item.quantity_in_stock} available.`
+          );
           return prev;
         }
         return prev.map((p) =>
@@ -79,6 +116,7 @@ function Stock_Outs() {
         ...prev,
         {
           product_id: item._id,
+          product_serial: item.serial_number,
           item_name: item.item_name,
           price: Number(item.selling_price) || 0,
           quantity: 1,
@@ -89,11 +127,6 @@ function Stock_Outs() {
 
     setSelectedItemId("");
     setMessage("");
-    
-    // Update preview stock out ID when items are added
-    if (orderItems.length === 0) {
-      setGeneratedStockOutId(generatePreviewStockOutId());
-    }
   };
 
   const updateQuantity = (productId, qty) => {
@@ -113,11 +146,6 @@ function Stock_Outs() {
   const removeFromOrder = (productId) => {
     setOrderItems((prev) => prev.filter((i) => i.product_id !== productId));
     setMessage("");
-    
-    // Update preview stock out ID when all items are removed
-    if (orderItems.length === 1) {
-      setGeneratedStockOutId("");
-    }
   };
 
   const total = orderItems.reduce(
@@ -125,27 +153,27 @@ function Stock_Outs() {
     0
   );
 
-  // Place and Confirm Order
-  const placeAndConfirmOrder = async () => {
-    if (!type) return setMessage("Please select an order type first.");
-    if (type === "customer" && !customerId.trim())
-      return setMessage("Please enter Customer ID.");
-    if (orderItems.length === 0) return setMessage("Please add at least one item.");
+  // Create Technical Team Order
+  const createTechnicalOrder = async () => {
+    if (orderItems.length === 0)
+      return setMessage("Please add at least one item.");
 
     setLoading(true);
     try {
       const payloadItems = orderItems.map((i) => ({
         product_id: i.product_id,
+        product_serial: i.product_serial,
         item_name: i.item_name,
         quantity: i.quantity,
         price: i.price,
       }));
 
       const orderPayload = {
-        customer_id: type === "customer" ? customerId : "Technical Team",
-        type: type,
+        customer_id: "Technical Team",
+        type: "technical",
         items: payloadItems,
         total: total,
+        stock_out_id: generatedStockOutId,
       };
 
       const res = await axios.post(`${API}/stockouts`, orderPayload);
@@ -154,14 +182,16 @@ function Stock_Outs() {
       // Confirm order immediately
       await axios.put(`${API}/stockouts/${createdOrder._id}/confirm`);
 
-      setMessage(`Order ${createdOrder.stock_out_id} successfully placed and confirmed!`);
+      setMessage(
+        `Technical Order ${createdOrder.stock_out_id} successfully placed and confirmed! Stock has been updated.`
+      );
       setOrderItems([]);
-      setCustomerId("");
-      setType("");
       setSelectedItemId("");
-      setGeneratedStockOutId("");
+      setType("");
+      await generateNewStockOutId();
       fetchItems();
       fetchRecentOrders();
+      fetchProcessedOrders();
     } catch (err) {
       console.error(err.response?.data || err.message);
       setMessage(
@@ -172,241 +202,677 @@ function Stock_Outs() {
     }
   };
 
-  // Confirm Existing Order
-  const confirmExistingOrder = async (orderId) => {
+  // Confirm Pending Order (from Customer Orders)
+  const confirmPendingOrder = async (orderId) => {
     try {
-      await axios.put(`${API}/stockouts/${orderId}/confirm`);
-      setMessage("Order confirmed successfully!");
-      fetchItems();
-      fetchRecentOrders();
+      const response = await axios.put(`${API}/api/invoice-orders/${orderId}/confirm`);
+      
+      if (response.data.success) {
+        setMessage("Order confirmed successfully! Stock has been updated.");
+        fetchPendingOrders();
+        fetchProcessedOrders();
+        fetchItems();
+        fetchRecentOrders();
+      }
     } catch (err) {
       console.error(err);
-      setMessage(err.response?.data?.message || "Failed to confirm order. Try again.");
+      setMessage(
+        err.response?.data?.message || "Failed to confirm order. Try again."
+      );
     }
   };
 
   const clearOrder = () => {
     setOrderItems([]);
     setCustomerId("");
-    setType("");
     setSelectedItemId("");
-    setGeneratedStockOutId("");
+    setType("");
     setMessage("");
   };
 
+  // Dashboard Statistics
+  const calculateStats = () => {
+    const totalTechnicalOrders = recentOrders.filter(order => order.type === 'technical').length;
+    const totalCustomerOrders = processedOrders.length;
+    const totalPendingOrders = pendingOrders.length;
+    
+    const totalTechnicalValue = recentOrders
+      .filter(order => order.type === 'technical')
+      .reduce((sum, order) => sum + (order.total || 0), 0);
+    
+    const totalCustomerValue = processedOrders
+      .reduce((sum, order) => sum + (order.grandTotal || 0), 0);
+
+    return {
+      totalTechnicalOrders,
+      totalCustomerOrders,
+      totalPendingOrders,
+      totalTechnicalValue,
+      totalCustomerValue
+    };
+  };
+
+  const stats = calculateStats();
+
+  // PDF Generation Function
+  const generatePDF = (orders, reportType) => {
+    setPdfLoading(true);
+    try {
+      const doc = new jsPDF("p", "mm", "a4");
+      const margin = 15;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const date = new Date();
+      const formattedDate = date.toLocaleDateString();
+      const formattedTime = date.toLocaleTimeString();
+
+      // Header
+      doc.setFontSize(16);
+      doc.setTextColor(33, 37, 41);
+      doc.text("SelfMe Pvt Ltd", margin, 15);
+
+      doc.setFontSize(9);
+      doc.setTextColor(100, 100, 100);
+      doc.text("No/346, Madalanda, Dompe, Colombo, Sri Lanka", margin, 21);
+      doc.text("Phone: +94 717 882 883 | Email: Selfmepvtltd@gmail.com", margin, 26);
+
+      // Header line
+      doc.setDrawColor(200, 200, 200);
+      doc.setLineWidth(0.5);
+      doc.line(margin, 32, pageWidth - margin, 32);
+
+      // Report Title
+      doc.setFontSize(14);
+      doc.setTextColor(0, 53, 128);
+      const title = reportType === 'technical' 
+        ? "Technical Team Orders Report" 
+        : "Processed Customer Orders Report";
+      doc.text(title, pageWidth / 2, 45, { align: "center" });
+
+      // Report Details
+      doc.setFontSize(10);
+      doc.setTextColor(80, 80, 80);
+      doc.text(`Generated on: ${formattedDate} at ${formattedTime}`, margin, 55);
+      doc.text(`Total Orders: ${orders.length}`, margin, 62);
+
+      // Table Columns
+      const tableColumns = [
+        { header: "#", dataKey: "index" },
+        { header: "Stock Out ID", dataKey: "stockOutId" },
+        { header: "Order Type", dataKey: "type" },
+        { header: "Customer/Team", dataKey: "customer" },
+        { header: "Item Name", dataKey: "itemName" },
+        { header: "Qty", dataKey: "quantity" },
+        { header: "Unit Price", dataKey: "unitPrice" },
+        { header: "Subtotal", dataKey: "subtotal" },
+        { header: "Total Amount", dataKey: "total" },
+        { header: "Order Date", dataKey: "date" }
+      ];
+
+      let tableData = [];
+
+      orders.forEach((order, i) => {
+        const orderDate = new Date(order.createdAt || order.processed_at || order.created_at);
+        const dateStr = orderDate.toLocaleDateString();
+        
+        const items = order.items || [];
+        const stockOutId = order.stock_out_id || `SO-${orderDate.getFullYear()}-${(i + 1).toString().padStart(4, "0")}`;
+
+        if (items.length > 0) {
+          items.forEach((item, idx) => {
+            tableData.push({
+              index: i + 1,
+              stockOutId,
+              type: order.type === "technical" ? "Technical" : "Customer",
+              customer: order.customer_id || order.userid || "Technical Team",
+              itemName: getProductName(item),
+              quantity: item.quantity,
+              unitPrice: `Rs. ${(item.unit_price || item.price || 0).toLocaleString()}`,
+              subtotal: `Rs. ${(item.subtotal || (item.quantity * (item.unit_price || item.price) || 0)).toLocaleString()}`,
+              total: idx === 0 ? `Rs. ${(order.total || order.grandTotal || 0).toLocaleString()}` : "",
+              date: idx === 0 ? dateStr : ""
+            });
+          });
+        } else {
+          tableData.push({
+            index: i + 1,
+            stockOutId,
+            type: order.type === "technical" ? "Technical" : "Customer",
+            customer: order.customer_id || order.userid || "Technical Team",
+            itemName: "N/A",
+            quantity: "-",
+            unitPrice: "-",
+            subtotal: "-",
+            total: `Rs. ${(order.total || order.grandTotal || 0).toLocaleString()}`,
+            date: dateStr
+          });
+        }
+      });
+
+      // Generate table
+      doc.autoTable({
+        columns: tableColumns,
+        body: tableData,
+        startY: 75,
+        theme: "grid",
+        margin: { left: margin, right: margin },
+        styles: { fontSize: 8, cellPadding: 2 },
+        headStyles: {
+          fillColor: [0, 53, 128],
+          textColor: 255,
+          fontStyle: "bold",
+          halign: "center",
+        },
+        columnStyles: {
+          index: { halign: "center" },
+          stockOutId: { halign: "center", fontStyle: "bold" },
+          type: { halign: "center" },
+          quantity: { halign: "center" },
+          unitPrice: { halign: "right" },
+          subtotal: { halign: "right" },
+          total: { halign: "right" },
+          date: { halign: "center" }
+        },
+        didDrawPage: (data) => {
+          const pageCount = doc.internal.getNumberOfPages();
+          doc.setFontSize(8);
+          doc.setTextColor(150, 150, 150);
+          doc.text(
+            `SelfMe Inventory Management System - Page ${data.pageNumber} of ${pageCount}`,
+            pageWidth / 2,
+            doc.internal.pageSize.height - 10,
+            { align: "center" }
+          );
+        },
+      });
+
+      const fileName = `${reportType}_orders_${formattedDate.replace(/\//g, "-")}.pdf`;
+      doc.save(fileName);
+
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      alert("Error generating PDF.");
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
+  const handleTechnicalPDF = () => {
+    const technicalOrders = recentOrders.filter(order => order.type === 'technical');
+    if (technicalOrders.length === 0) {
+      alert("No technical team orders available.");
+      return;
+    }
+    generatePDF(technicalOrders, 'technical');
+  };
+
+  const handleCustomerPDF = () => {
+    if (processedOrders.length === 0) {
+      alert("No processed customer orders available.");
+      return;
+    }
+    generatePDF(processedOrders, 'customer');
+  };
+
   return (
-    <div className="stockouts-page">
+    <div id="stock-outs-page-wrapper">
       <InventoryManagementNav />
 
-      <div className="stockouts-container">
-        <div className="page-header">
-          <h1>Stock Out & Order Management</h1>
-          <p>Create and process stock out orders</p>
+      <div id="stock-outs-container">
+        <div id="stock-outs-page-header">
+          <h1 id="stock-outs-main-title">Stock Out & Order Management</h1>
+          <p id="stock-outs-subtitle">Create orders and manage order fulfillment</p>
         </div>
 
         {message && (
-          <div className={`message-alert ${message.includes("successfully") ? "success" : "error"}`}>
+          <div
+            id="stock-outs-message-alert"
+            className={
+              message.includes("successfully") ? "success" : "error"
+            }
+          >
             {message}
           </div>
         )}
 
-        <div className="main-content">
-          {/* Form + Order Items */}
-          <div className="order-creation-card">
-            <div className="order-card-content">
-              <div className="form-section">
-                <h3>Create New Order</h3>
-
-                {/* Stock Out ID Preview */}
-                {generatedStockOutId && (
-                  <div className="stock-out-id-preview">
-                    <label>Stock Out ID</label>
-                    <div className="stock-out-id-display">
-                      {generatedStockOutId}
-                      <span className="id-note">(Auto-generated)</span>
-                    </div>
-                  </div>
-                )}
-
-                <label>Order Type *</label>
-                <select value={type} onChange={(e) => setType(e.target.value)}>
-                  <option value="">Select Order Type</option>
-                  <option value="customer">Customer Order</option>
-                  <option value="technical">Technical Team Order</option>
-                </select>
-
-                {type === "customer" && (
-                  <>
-                    <label>Customer ID *</label>
-                    <input
-                      type="text"
-                      placeholder="Enter Customer ID"
-                      value={customerId}
-                      onChange={(e) => setCustomerId(e.target.value)}
-                    />
-                  </>
-                )}
-
-                {type && (
-                  <>
-                    <label>Add Item</label>
-                    <select
-                      value={selectedItemId}
-                      onChange={(e) => {
-                        if (e.target.value) addItemToOrder(e.target.value);
-                      }}
-                    >
-                      <option value="">Select Item</option>
-                      {items
-                        .filter((item) => item.quantity_in_stock > 0)
-                        .map((item) => (
-                          <option key={item._id} value={item._id}>
-                            {item.item_name} - LKR {item.selling_price} (Stock:{" "}
-                            {item.quantity_in_stock})
-                          </option>
-                        ))}
-                    </select>
-                  </>
-                )}
-              </div>
-
-              {orderItems.length > 0 && (
-                <div className="order-items-section">
-                  <h3>
-                    Order Items ({orderItems.length}){" "}
-                    <button className="clear-order-btn" onClick={clearOrder}>
-                      Clear Order
-                    </button>
-                  </h3>
-
-                  <table className="order-table">
-                    <thead>
-                      <tr>
-                        <th>Item Name</th>
-                        <th>Quantity</th>
-                        <th>Unit Price (LKR)</th>
-                        <th>Subtotal (LKR)</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {orderItems.map((item) => (
-                        <tr key={item.product_id}>
-                          <td>{item.item_name}</td>
-                          <td>
-                            <input
-                              type="number"
-                              min="1"
-                              max={item.available_stock}
-                              value={item.quantity}
-                              onChange={(e) =>
-                                updateQuantity(item.product_id, e.target.value)
-                              }
-                              className="quantity-input"
-                            />
-                            <span className="stock-info">/ {item.available_stock} available</span>
-                          </td>
-                          <td>{item.price.toLocaleString()}</td>
-                          <td>{(item.price * item.quantity).toLocaleString()}</td>
-                          <td>
-                            <button
-                              className="remove-item-btn"
-                              onClick={() => removeFromOrder(item.product_id)}
-                            >
-                              Remove
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-
-                  <div className="order-summary">
-                    <div className="order-total">
-                      <strong>Total Amount: LKR {total.toLocaleString()}</strong>
-                    </div>
-                    {/* <div className="order-meta">
-                      <span>Stock Out ID: {generatedStockOutId}</span>
-                      <span>Type: {type === 'customer' ? 'Customer Order' : 'Technical Team Order'}</span>
-                      <span>Date: {new Date().toLocaleDateString()}</span>
-                    </div> */}
-                  </div>
-
-                  <button
-                    className="place-order-btn"
-                    onClick={placeAndConfirmOrder}
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <>
-                        <span className="loading-spinner"></span>
-                        Processing Order...
-                      </>
-                    ) : (
-                      `Place & Confirm Order (${generatedStockOutId})`
-                    )}
-                  </button>
-                </div>
-              )}
+        {/* Dashboard Section */}
+        <div id="stock-outs-dashboard">
+          <div id="stock-outs-dashboard-stats">
+            <div className="stock-outs-stat-card">
+              <div className="stock-outs-stat-value">{stats.totalTechnicalOrders}</div>
+              <div className="stock-outs-stat-label">Technical Team Orders</div>
+            </div>
+            <div className="stock-outs-stat-card">
+              <div className="stock-outs-stat-value">{stats.totalCustomerOrders}</div>
+              <div className="stock-outs-stat-label">Processed Customer Orders</div>
+            </div>
+            <div className="stock-outs-stat-card">
+              <div className="stock-outs-stat-value">{stats.totalPendingOrders}</div>
+              <div className="stock-outs-stat-label">Pending Confirmation</div>
+            </div>
+            <div className="stock-outs-stat-card">
+              <div className="stock-outs-stat-value">Rs. {stats.totalTechnicalValue.toLocaleString()}</div>
+              <div className="stock-outs-stat-label">Technical Orders Value</div>
+            </div>
+            <div className="stock-outs-stat-card">
+              <div className="stock-outs-stat-value">Rs. {stats.totalCustomerValue.toLocaleString()}</div>
+              <div className="stock-outs-stat-label">Customer Orders Value</div>
             </div>
           </div>
 
-          {/* Recent Orders */}
-          <div className="orders-history-card">
-            <h3>Recent Stock Out Orders</h3>
-            {recentOrders.length === 0 ? (
-              <p>No orders yet.</p>
-            ) : (
-              <table className="history-table">
-                <thead>
-                  <tr>
-                    <th>Stock Out ID</th>
-                    <th>Type</th>
-                    <th>Customer/Team</th>
-                    <th>Items</th>
-                    <th>Total (LKR)</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentOrders.slice(0, 10).map((order) => {
-                    const orderDate = new Date(order.createdAt || order.orderDate);
-                    return (
-                      <tr key={order._id} className={order.status === "Confirmed" ? "confirmed" : "pending"}>
-                        <td className="stock-out-id">
+          <div id="stock-outs-pdf-controls">
+            <button 
+              id="stock-outs-pdf-technical-btn" 
+              onClick={handleTechnicalPDF}
+              disabled={pdfLoading || stats.totalTechnicalOrders === 0}
+            >
+              {pdfLoading ? "Generating..." : "Download Technical Orders PDF"}
+            </button>
+            <button 
+              id="stock-outs-pdf-customer-btn" 
+              onClick={handleCustomerPDF}
+              disabled={pdfLoading || stats.totalCustomerOrders === 0}
+            >
+              {pdfLoading ? "Generating..." : "Download Customer Orders PDF"}
+            </button>
+          </div>
+        </div>
+
+        <div id="stock-outs-tabs-section">
+          <button
+            id="stock-outs-tab-button"
+            className={activeTab === "create" ? "active" : ""}
+            onClick={() => setActiveTab("create")}
+          >
+            Create New Order
+          </button>
+          <button
+            id="stock-outs-tab-button"
+            className={activeTab === "pending" ? "active" : ""}
+            onClick={() => setActiveTab("pending")}
+          >
+            Pending Confirmation ({pendingOrders.length})
+          </button>
+          <button
+            id="stock-outs-tab-button"
+            className={activeTab === "processed" ? "active" : ""}
+            onClick={() => setActiveTab("processed")}
+          >
+            Processed Customer Orders ({processedOrders.length})
+          </button>
+          <button
+            id="stock-outs-tab-button"
+            className={activeTab === "history" ? "active" : ""}
+            onClick={() => setActiveTab("history")}
+          >
+            Technical Team Proceed Orders
+          </button>
+        </div>
+
+        <div id="stock-outs-main-content">
+          {activeTab === "create" && (
+            <div id="stock-outs-order-creation-card">
+              <div id="stock-outs-order-card-content">
+                <div id="stock-outs-form-section">
+                  <h3>Create New Order</h3>
+
+                  <div id="stock-outs-order-type-section">
+                    <label>Order Type</label>
+                    <div id="stock-outs-order-type-buttons">
+                      <button
+                        id="stock-outs-type-btn"
+                        className={type === "technical" ? "active" : ""}
+                        onClick={() => setType("technical")}
+                      >
+                        🛠️ Technical Team Order
+                      </button>
+                    </div>
+                  </div>
+
+                  {type && (
+                    <div id="stock-outs-stock-out-id-preview">
+                      <label>Stock Out ID</label>
+                      <div id="stock-outs-stock-out-id-display">
+                        {generatedStockOutId}
+                      </div>
+                    </div>
+                  )}
+
+                  {type && (
+                    <div id="stock-outs-add-item-section">
+                      <label>Add Item</label>
+                      <select
+                        value={selectedItemId}
+                        onChange={(e) => {
+                          if (e.target.value) addItemToOrder(e.target.value);
+                        }}
+                      >
+                        <option value="">Select Item</option>
+                        {items
+                          .filter((item) => item.quantity_in_stock > 0)
+                          .map((item) => (
+                            <option key={item._id} value={item._id}>
+                              {item.item_name} - Rs. {item.selling_price}{" "}
+                              (Stock: {item.quantity_in_stock})
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+
+                {orderItems.length > 0 && (
+                  <div id="stock-outs-order-items-section">
+                    <h3>
+                      Order Items ({orderItems.length}){" "}
+                      <button id="stock-outs-clear-order-btn" onClick={clearOrder}>
+                        Clear Order
+                      </button>
+                    </h3>
+
+                    <table id="stock-outs-order-table">
+                      <thead>
+                        <tr>
+                          <th>Item Name</th>
+                          <th>Quantity</th>
+                          <th>Unit Price (Rs.)</th>
+                          <th>Subtotal (Rs.)</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orderItems.map((item) => (
+                          <tr key={item.product_id}>
+                            <td>{item.item_name}</td>
+                            <td>
+                              <input
+                                id="stock-outs-quantity-input"
+                                type="number"
+                                min="1"
+                                max={item.available_stock}
+                                value={item.quantity}
+                                onChange={(e) =>
+                                  updateQuantity(
+                                    item.product_id,
+                                    e.target.value
+                                  )
+                                }
+                              />
+                              <span id="stock-outs-stock-info">
+                                / {item.available_stock} available
+                              </span>
+                            </td>
+                            <td>{item.price.toLocaleString()}</td>
+                            <td>
+                              {(item.price * item.quantity).toLocaleString()}
+                            </td>
+                            <td>
+                              <button
+                                id="stock-outs-remove-item-btn"
+                                onClick={() => removeFromOrder(item.product_id)}
+                              >
+                                Remove
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+
+                    <div id="stock-outs-order-summary">
+                      <div id="stock-outs-order-total">
+                        <strong>
+                          Total Amount: Rs. {total.toLocaleString()}
+                        </strong>
+                      </div>
+                    </div>
+
+                    <div id="stock-outs-order-actions">
+                      {type === "technical" && (
+                        <button
+                          id="stock-outs-place-order-btn"
+                          className="technical"
+                          onClick={createTechnicalOrder}
+                          disabled={loading}
+                        >
+                          {loading ? (
+                            <>
+                              <span id="stock-outs-loading-spinner"></span>
+                              Creating Technical Order...
+                            </>
+                          ) : (
+                            `Create Technical Order (${generatedStockOutId})`
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === "pending" && (
+            <div id="stock-outs-pending-orders-card">
+              <h3>Orders Pending Confirmation</h3>
+              <p id="stock-outs-tab-description">
+                Orders moved from Customer Orders page awaiting final confirmation and stock reduction.
+              </p>
+              
+              {pendingOrders.length === 0 ? (
+                <div id="stock-outs-no-orders">
+                  <div id="stock-outs-no-orders-icon">✅</div>
+                  <h4>No Pending Orders</h4>
+                  <p>All orders have been processed and confirmed.</p>
+                </div>
+              ) : (
+                <table id="stock-outs-pending-table">
+                  <thead>
+                    <tr>
+                      <th>Stock Out ID</th>
+                      <th>Customer ID</th>
+                      <th>Items</th>
+                      <th>Total Amount</th>
+                      <th>Order Date</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pendingOrders.map((order) => (
+                      <tr key={order._id}>
+                        <td id="stock-outs-stock-out-id">
                           <strong>{order.stock_out_id}</strong>
                         </td>
-                        <td>{order.type === "technical" ? "Technical" : "Customer"}</td>
-                        <td>{order.customer_id}</td>
-                        <td>{order.items.length} items</td>
-                        <td>{Number(order.total || 0).toLocaleString()}</td>
-                        <td>{orderDate.toLocaleDateString()}</td>
+                        <td>{order.userid}</td>
                         <td>
-                          <span className={`status-badge ${order.status.toLowerCase()}`}>
+                          <div id="stock-outs-items-count">
+                            {order.items.length} items
+                          </div>
+                          <div id="stock-outs-items-preview">
+                            {order.items.slice(0, 3).map((item, idx) => (
+                              <div key={idx} id="stock-outs-item-preview">
+                                <span id="stock-outs-item-name">
+                                  {getProductName(item)}
+                                </span>
+                                <span id="stock-outs-item-quantity">(x{item.quantity})</span>
+                                <span id="stock-outs-item-serial">SN: {getProductSerial(item)}</span>
+                              </div>
+                            ))}
+                            {order.items.length > 3 && (
+                              <div id="stock-outs-more-items">
+                                +{order.items.length - 3} more
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                        <td>Rs. {order.grandTotal?.toLocaleString()}</td>
+                        <td>
+                          {new Date(order.created_at).toLocaleDateString()}
+                        </td>
+                        <td>
+                          <button
+                            id="stock-outs-confirm-order-btn"
+                            onClick={() => confirmPendingOrder(order._id)}
+                          >
+                            Confirm & Reduce Stock
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          )}
+
+          {activeTab === "processed" && (
+            <div id="stock-outs-processed-orders-card">
+              <h3>Processed Orders</h3>
+              <p id="stock-outs-tab-description">
+                Orders that have been confirmed and stock has been reduced.
+              </p>
+              
+              {processedOrders.length === 0 ? (
+                <div id="stock-outs-no-orders">
+                  <div id="stock-outs-no-orders-icon">📦</div>
+                  <h4>No Processed Orders</h4>
+                  <p>No orders have been processed yet.</p>
+                </div>
+              ) : (
+                <table id="stock-outs-processed-table">
+                  <thead>
+                    <tr>
+                      <th>Stock Out ID</th>
+                      <th>Customer ID</th>
+                      <th>Items</th>
+                      <th>Total Amount</th>
+                      <th>Processed Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {processedOrders.map((order) => (
+                      <tr key={order._id}>
+                        <td id="stock-outs-stock-out-id">
+                          <strong>{order.stock_out_id}</strong>
+                        </td>
+                        <td>{order.userid}</td>
+                        <td>
+                          <div id="stock-outs-items-count">
+                            {order.items.length} items
+                          </div>
+                          <div id="stock-outs-items-preview">
+                            {order.items.slice(0, 2).map((item, idx) => (
+                              <div key={idx} id="stock-outs-item-preview">
+                                <span id="stock-outs-item-name">
+                                  {getProductName(item)}
+                                </span>
+                                <span id="stock-outs-item-quantity">(x{item.quantity})</span>
+                                <span id="stock-outs-item-serial">SN: {getProductSerial(item)}</span>
+                              </div>
+                            ))}
+                            {order.items.length > 2 && (
+                              <div id="stock-outs-more-items">
+                                +{order.items.length - 2} more
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                        <td>Rs. {order.grandTotal?.toLocaleString()}</td>
+                        <td>
+                          {new Date(order.processed_at).toLocaleDateString()}
+                        </td>
+                        <td>
+                          <span id="stock-outs-status-badge" className={order.status}>
                             {order.status}
                           </span>
                         </td>
-                        <td>
-                          {order.status !== "Confirmed" ? (
-                            <button
-                              className="confirm-btn"
-                              onClick={() => confirmExistingOrder(order._id)}
-                            >
-                              Confirm
-                            </button>
-                          ) : (
-                            <span className="confirmed-text">Confirmed</span>
-                          )}
-                        </td>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
-          </div>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          )}
+
+          {activeTab === "history" && (
+            <div id="stock-outs-orders-history-card">
+              <h3>Technical Team Proceed Orders</h3>
+              {recentOrders.length === 0 ? (
+                <div id="stock-outs-no-orders">
+                  <div id="stock-outs-no-orders-icon">📊</div>
+                  <h4>No Order History</h4>
+                  <p>No orders have been created yet.</p>
+                </div>
+              ) : (
+                <table id="stock-outs-history-table">
+                  <thead>
+                    <tr>
+                      <th>Stock Out ID</th>
+                      <th>Type</th>
+                      <th>Customer/Team</th>
+                      <th>Items</th>
+                      <th>Total (Rs.)</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentOrders.slice(0, 10).map((order) => {
+                      const orderDate = new Date(
+                        order.createdAt || order.orderDate
+                      );
+                      return (
+                        <tr
+                          key={order._id}
+                        >
+                          <td id="stock-outs-stock-out-id">
+                            <strong>{order.stock_out_id}</strong>
+                        </td>
+                          <td>
+                            {order.type === "technical"
+                              ? "Technical"
+                              : "Customer"}
+                          </td>
+                          <td>{order.customer_id}</td>
+                          <td>
+                            <div id="stock-outs-items-count">
+                              {order.items.length} items
+                            </div>
+                            <div id="stock-outs-items-preview">
+                              {order.items.slice(0, 2).map((item, idx) => (
+                                <div key={idx} id="stock-outs-item-preview">
+                                  <span id="stock-outs-item-name">
+                                    {item.item_name || getProductName(item)}
+                                  </span>
+                                  <span id="stock-outs-item-quantity">(x{item.quantity})</span>
+                                  <span id="stock-outs-item-serial">SN: {item.product_serial || getProductSerial(item)}</span>
+                                </div>
+                              ))}
+                              {order.items.length > 2 && (
+                                <div id="stock-outs-more-items">
+                                  +{order.items.length - 2} more
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td>{Number(order.total || 0).toLocaleString()}</td>
+                          <td>{orderDate.toLocaleDateString()}</td>
+                          <td>
+                            <span
+                              id="stock-outs-status-badge"
+                              className={order.status.toLowerCase()}
+                            >
+                              {order.status}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

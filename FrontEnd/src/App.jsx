@@ -26,6 +26,8 @@ import AssignedTasks from "./Components/TechnicianDashboard/AssignedTasks";
 import CompletedTasks from "./Components/TechnicianDashboard/CompletedTasks";
 import PendingTasks from './Components/TechnicianDashboard/PendingTask';
 import FullCompletedTask from './Components/TechnicianDashboard/FullCompletedTask';
+
+
 //hasas
 import InventoryManage from "./Components/InventoryMange/InventoryMange";
 import InventoryManagementHome from "./components/Inventory_Management/Inventory_Management_Home/Inventory_Management_Home";
@@ -42,7 +44,7 @@ import View_Suppliers from "./components/Inventory_Management/View_Suppliers/Vie
 
 import Stock_Outs from "./components/Inventory_Management/Stock_Outs/Stock_Outs";
 import Stock_Outs_History from "./components/Inventory_Management/Stock_Out_History/Stock_Out_History";
-import Customer_Orders from "./components/Inventory_Management/Customer_Orders/Customer_Orders";
+import Customer_Orders from "./Components/Inventory_Management/Customer_Orders/Customer_Orders";
 
 import { isAuthenticated } from "./utils/auth";
 

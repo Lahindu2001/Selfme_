@@ -6,7 +6,7 @@
 .view-items-container {
   max-width: 1200px;
   /* margin: 20px auto; */
-  margin-left: 270px;
+  margin-left: 300px;
   padding: 25px;
   background: #f8fafc;
   border-radius: 16px;
@@ -208,7 +208,7 @@
 /* image container is full width of card and keeps a 1:1 aspect ratio */
 .item-image-container {
   position: relative;
-  width: 100%;
+  /* width: 100%; */
   aspect-ratio: 1 / 1; /* keeps container square regardless of width */
   overflow: hidden;
   display: block;

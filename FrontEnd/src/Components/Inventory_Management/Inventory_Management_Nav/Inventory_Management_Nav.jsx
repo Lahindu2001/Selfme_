@@ -1,22 +1,20 @@
 import React, { useState } from "react";
-import { Link, useLocation , NavLink, useNavigate } from "react-router-dom";
+import { Link, useLocation, NavLink, useNavigate } from "react-router-dom";
 import "./Inventory_Management_Nav.css";
 import logo from "./logo selfme.png"; // Corrected import path
-import { removeAuthToken } from '../../../utils/auth';
+import { removeAuthToken } from "../../../utils/auth";
 
 const InventoryManagementNav = () => {
-
-const navigate = useNavigate();
+  const navigate = useNavigate();
   // Retrieve user data from localStorage
-  const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
-  const firstName = authUser.firstName || 'Inventory'; // Use firstName, default to 'Inventory'
+  const authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
+  const firstName = authUser.firstName || "Inventory"; // Use firstName, default to 'Inventory'
 
   const handleLogout = () => {
     removeAuthToken();
-    localStorage.removeItem('authUser'); // Clear user data
-    navigate('/login');
+    localStorage.removeItem("authUser"); // Clear user data
+    navigate("/login");
   };
-
 
   const location = useLocation(); // for active link highlighting
 
@@ -165,8 +163,28 @@ const navigate = useNavigate();
 
       {/* Footer */}
       <div className="inv-nav__footer">
-       <span className="user-name">Welcome, {firstName}</span>
-        <button className="nav__signout-btn" onClick={handleLogout}>Logout</button>
+        {/* <span className="user-name">Welcome, {firstName}</span> */}
+        <button
+          style={{
+            backgroundColor: "#ef4444",
+            color: "#ffffff",
+            padding: "0.5rem 1rem",
+            border: "none",
+            borderRadius: "0.375rem",
+            fontSize: "0.875rem",
+            fontWeight: "500",
+            cursor: "pointer",
+            width: "100%",
+            textAlign: "center",
+            transition: "background-color 0.2s ease",
+            ":hover": {
+              backgroundColor: "#dc2626",
+            },
+          }}
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
       </div>
     </aside>
   );

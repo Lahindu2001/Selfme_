@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const stockOutController = require("../../Controllers/inventory_controllers/StockOutController")
+const stockOutController = require("../../Controllers/inventory_controllers/StockOutController");
 
 // Create order
 router.post("/", stockOutController.createStockOut);

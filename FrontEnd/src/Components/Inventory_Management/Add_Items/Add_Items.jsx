@@ -131,14 +131,6 @@ const Add_Items = () => {
     setIsSerialGenerated(true);
   };
 
-  const handleSerialNumberChange = (e) => {
-    if (!isSerialGenerated) {
-      const value = e.target.value.slice(0, 50);
-      setFormData((prev) => ({ ...prev, serial_number: value }));
-      setErrors((prev) => ({ ...prev, serial_number: "" }));
-    }
-  };
-
   const formatPrice = (price) => {
     if (price === "" || price === null || price === undefined) return "";
     const num = parseFloat(price);
@@ -263,10 +255,9 @@ const Add_Items = () => {
                   <input
                     type="text"
                     name="serial_number"
-                    placeholder="SN12345"
+                    placeholder="SN-1758999984335-411"
                     value={formData.serial_number}
-                    onChange={handleSerialNumberChange}
-                    readOnly={isSerialGenerated}
+                    readOnly
                     required
                   />
                   <button
