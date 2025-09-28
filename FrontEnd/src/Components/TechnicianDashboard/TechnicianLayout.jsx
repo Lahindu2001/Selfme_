@@ -64,7 +64,7 @@ function TechnicianLayout({ children }) {
           </li>
           <li>
             <NavLink
-              to="/assigned-tasks"
+              to="#"
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
               title="Pending Tasks"
             >
@@ -73,7 +73,7 @@ function TechnicianLayout({ children }) {
           </li>
           <li>
             <NavLink
-              to="/completed-tasks"
+              to="#"
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
               title="Completed Tasks"
             >

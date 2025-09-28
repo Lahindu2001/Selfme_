@@ -29,7 +29,7 @@ const getSupplyAllRoute = require("./Routes/AdminandSupplyRoutes/GetSupplyAllRou
 
 //sulakshi
 const employeeRouter = require("./Routes/TechRoute/employeeRoutes");
-const assignmentRoutes = require("./Routes/TechRoute/assignmentRoutes");
+//const assignmentRoutes = require("./Routes/TechRoute/assignmentRoutes");
 const getPaidPaymentRoute = require("./Routes/TechRoute/GetPaisPaymentRoute");
 
 
@@ -79,7 +79,7 @@ app.use("/all-suppliers", viewSupplyAllRoute);
 app.use("/all-productrequests", getSupplyAllRoute);
 //sulakshi
 app.use("/employees", employeeRouter);
-app.use("/assignments", assignmentRoutes);
+//app.use("/assignments", assignmentRoutes);
 app.use("/paid-payments", getPaidPaymentRoute);
 //hasaranga
 app.use("/products", itemRoutes);

@@ -35,7 +35,7 @@
 }
 
 #registeredEmployeesDashboard .orders-table tr:hover {
-  background-color: #e8f5e9;
+  background-color: #e8f5e9; /* Light green tint for hover */
 }
 
 /* Button styles */
@@ -58,7 +58,7 @@
 }
 
 #registeredEmployeesDashboard .cta-button:hover:not(.primary) {
-  background-color: #90EE90;
+  background-color: #90EE90; /* Light green for non-primary buttons on hover */
 }
 
 /* Success message styles */
@@ -69,17 +69,6 @@
   margin-top: 15px;
   padding: 10px;
   background-color: #e9f5ea;
-  border-radius: 4px;
-}
-
-/* Error message styles */
-#registeredEmployeesDashboard .error-msg {
-  font-size: 1rem;
-  color: #dc3545;
-  text-align: center;
-  margin-top: 15px;
-  padding: 10px;
-  background-color: #f8d7da;
   border-radius: 4px;
 }
 
@@ -127,8 +116,7 @@
 }
 
 #registeredEmployeesDashboard .employee-form input[type="text"],
-#registeredEmployeesDashboard .employee-form input[type="date"],
-#registeredEmployeesDashboard .employee-form select {
+#registeredEmployeesDashboard .employee-form input[type="date"] {
   width: 100%;
   padding: 10px;
   font-size: 1rem;
@@ -141,8 +129,7 @@
 }
 
 #registeredEmployeesDashboard .employee-form input[type="text"]:focus,
-#registeredEmployeesDashboard .employee-form input[type="date"]:focus,
-#registeredEmployeesDashboard .employee-form select:focus {
+#registeredEmployeesDashboard .employee-form input[type="date"]:focus {
   border-color: #007bff;
   background-color: #fff;
 }
@@ -165,16 +152,25 @@
   background-color: #fff;
 }
 
+/* Error message styles */
+#registeredEmployeesDashboard .error-msg {
+  font-size: 0.9rem;
+  color: #dc3545;
+  margin-top: 5px;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   #registeredEmployeesDashboard {
     padding: 10px;
   }
+
   #registeredEmployeesDashboard .orders-table th,
   #registeredEmployeesDashboard .orders-table td {
     padding: 8px;
     font-size: 0.85rem;
   }
+
   #registeredEmployeesDashboard .modal-content {
     width: 90%;
     max-height: 90vh;
@@ -187,6 +183,7 @@
     overflow-x: auto;
     white-space: nowrap;
   }
+
   #registeredEmployeesDashboard .cta-button {
     font-size: 0.85rem;
     padding: 6px 10px;
