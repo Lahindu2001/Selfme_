@@ -145,18 +145,36 @@ const View_All_Items = () => {
         processedValue = value.slice(0, 500);
         break;
 
-      case "quantity_in_stock":
+      case "quantity_in_stock": {
+        if (value === "") {
+          processedValue = "";
+        } else {
+          const numValue = parseInt(value);
+          if (!isNaN(numValue) && numValue >= 0 && numValue <= 10000) {
+            processedValue = numValue.toString();
+          } else if (numValue > 10000) {
+            processedValue = "10000";
+          } else if (numValue < 0) {
+            processedValue = "0";
+          }
+        }
+        break;
+      }
+
       case "re_order_level": {
         if (value === "") {
           processedValue = "";
         } else {
           const numValue = parseInt(value);
-          if (!isNaN(numValue) && numValue > 0 && numValue <= 500) {
+          const currentQuantity =
+            parseInt(editModal.formData.quantity_in_stock) || 0;
+
+          if (!isNaN(numValue) && numValue >= 1 && numValue <= 10000) {
             processedValue = numValue.toString();
-          } else if (numValue > 500) {
-            processedValue = "500";
-          } else if (numValue <= 0) {
-            processedValue = "";
+          } else if (numValue > 10000) {
+            processedValue = "10000";
+          } else if (numValue < 1) {
+            processedValue = "1";
           }
         }
         break;
@@ -199,6 +217,7 @@ const View_All_Items = () => {
       errors: { ...prev.errors, [name]: "" },
     }));
 
+    // Validate re-order level whenever quantity or re-order level changes
     if (name === "quantity_in_stock" || name === "re_order_level") {
       validateReorderLevel();
     }
@@ -214,12 +233,21 @@ const View_All_Items = () => {
     }));
   };
 
-  // Validate that re-order level is less than quantity
+  // Validate that re-order level is less than or equal to quantity and not 0
   const validateReorderLevel = () => {
     const quantity = parseInt(editModal.formData.quantity_in_stock) || 0;
     const reorderLevel = parseInt(editModal.formData.re_order_level) || 0;
 
-    if (reorderLevel > quantity) {
+    if (reorderLevel === 0) {
+      setEditModal((prev) => ({
+        ...prev,
+        errors: {
+          ...prev.errors,
+          re_order_level: "Re-order level must be at least 1",
+        },
+      }));
+      return false;
+    } else if (reorderLevel > quantity) {
       setEditModal((prev) => ({
         ...prev,
         errors: {
@@ -228,11 +256,13 @@ const View_All_Items = () => {
             "Re-order level cannot be greater than quantity in stock",
         },
       }));
+      return false;
     } else {
       setEditModal((prev) => ({
         ...prev,
         errors: { ...prev.errors, re_order_level: "" },
       }));
+      return true;
     }
   };
 
@@ -329,25 +359,30 @@ const View_All_Items = () => {
       newErrors.description = "Description cannot exceed 500 characters";
     }
 
-    if (!formData.quantity_in_stock || formData.quantity_in_stock === "") {
-      newErrors.quantity_in_stock = "Quantity must be greater than 0";
+    // Quantity validation - can be 0
+    if (
+      formData.quantity_in_stock === "" ||
+      formData.quantity_in_stock === null
+    ) {
+      newErrors.quantity_in_stock = "Quantity is required";
     } else {
       const quantity = parseInt(formData.quantity_in_stock);
-      if (isNaN(quantity) || quantity < 1) {
-        newErrors.quantity_in_stock = "Quantity must be greater than 0";
-      } else if (quantity > 500) {
-        newErrors.quantity_in_stock = "Quantity cannot exceed 500";
+      if (isNaN(quantity) || quantity < 0) {
+        newErrors.quantity_in_stock = "Quantity cannot be negative";
+      } else if (quantity > 10000) {
+        newErrors.quantity_in_stock = "Quantity cannot exceed 10,000";
       }
     }
 
-    if (!formData.re_order_level || formData.re_order_level === "") {
-      newErrors.re_order_level = "Re-order level must be greater than 0";
+    // Re-order level validation - cannot be 0
+    if (formData.re_order_level === "" || formData.re_order_level === null) {
+      newErrors.re_order_level = "Re-order level is required";
     } else {
       const reorderLevel = parseInt(formData.re_order_level);
       if (isNaN(reorderLevel) || reorderLevel < 1) {
-        newErrors.re_order_level = "Re-order level must be greater than 0";
-      } else if (reorderLevel > 500) {
-        newErrors.re_order_level = "Re-order level cannot exceed 500";
+        newErrors.re_order_level = "Re-order level must be at least 1";
+      } else if (reorderLevel > 10000) {
+        newErrors.re_order_level = "Re-order level cannot exceed 10,000";
       } else if (reorderLevel > parseInt(formData.quantity_in_stock || 0)) {
         newErrors.re_order_level =
           "Re-order level cannot be greater than quantity in stock";
@@ -406,6 +441,12 @@ const View_All_Items = () => {
   const handleUpdateConfirm = async () => {
     if (!editModal.item) return;
 
+    // First validate re-order level specifically
+    if (!validateReorderLevel()) {
+      return;
+    }
+
+    // Then validate the entire form
     if (!validateEditForm()) return;
 
     try {
@@ -892,8 +933,8 @@ const View_All_Items = () => {
                         name="quantity_in_stock"
                         value={editModal.formData.quantity_in_stock}
                         onChange={handleInputChange}
-                        min="1"
-                        max="500"
+                        min="0"
+                        max="10000"
                         required
                       />
                       {editModal.errors.quantity_in_stock && (
@@ -901,6 +942,11 @@ const View_All_Items = () => {
                           {editModal.errors.quantity_in_stock}
                         </span>
                       )}
+                      <div className="field-hint">
+                        <p style={{ fontSize: "12px" }}>
+                          *Set Quantity 0 to make Out of stock
+                        </p>
+                      </div>
                     </div>
 
                     <div className="form-group">
@@ -911,7 +957,7 @@ const View_All_Items = () => {
                         value={editModal.formData.re_order_level}
                         onChange={handleInputChange}
                         min="1"
-                        max="500"
+                        max="10000"
                         required
                       />
                       {editModal.errors.re_order_level && (
@@ -919,6 +965,7 @@ const View_All_Items = () => {
                           {editModal.errors.re_order_level}
                         </span>
                       )}
+                      
                     </div>
                   </div>
 

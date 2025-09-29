@@ -64,6 +64,10 @@ const FinancialOverview = () => {
   const currentYear = today.getFullYear();
   const yearOptions = Array.from({ length: 6 }, (_, i) => currentYear - i);
 
+  // Get first and last day of current month for date validation
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split("T")[0];
+  const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split("T")[0];
+
   // Initialize selectedYear and selectedMonth
   useEffect(() => {
     const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
@@ -162,26 +166,41 @@ const FinancialOverview = () => {
   // Handle form input changes
   const handleExpenseInputChange = (e) => {
     const { name, value } = e.target;
-    if (editingExpense) {
-      setEditingExpense({ ...editingExpense, [name]: value });
+    if (name === "amount") {
+      // Only allow numbers and ensure positive value
+      if (value === "" || (/^\d*\.?\d*$/.test(value) && parseFloat(value) >= 0)) {
+        if (editingExpense) {
+          setEditingExpense({ ...editingExpense, [name]: value });
+        } else {
+          setNewExpense({ ...newExpense, [name]: value });
+        }
+      }
     } else {
-      setNewExpense({ ...newExpense, [name]: value });
+      if (editingExpense) {
+        setEditingExpense({ ...editingExpense, [name]: value });
+      } else {
+        setNewExpense({ ...newExpense, [name]: value });
+      }
     }
   };
 
   // Submit new expense
   const handleAddExpense = async (e) => {
     e.preventDefault();
-    if (!newExpense.type || !newExpense.amount || !newExpense.date) {
-      alert("Please fill in all required fields (Type, Amount, Date).");
+    if (!newExpense.type) {
+      alert("Please select an expense type.");
       return;
     }
-    if (parseFloat(newExpense.amount) <= 0) {
-      alert("Amount must be greater than zero.");
+    if (!newExpense.amount || parseFloat(newExpense.amount) <= 0) {
+      alert("Please enter a positive amount.");
       return;
     }
-    if (new Date(newExpense.date) > today) {
-      alert("Expense date cannot be in the future.");
+    if (!newExpense.date) {
+      alert("Please select a date.");
+      return;
+    }
+    if (new Date(newExpense.date) < new Date(firstDayOfMonth) || new Date(newExpense.date) > new Date(lastDayOfMonth)) {
+      alert("Date must be within the current month and not in the future.");
       return;
     }
     try {
@@ -207,16 +226,20 @@ const FinancialOverview = () => {
   // Update expense
   const handleUpdateExpense = async (e) => {
     e.preventDefault();
-    if (!editingExpense.type || !editingExpense.amount || !editingExpense.date) {
-      alert("Please fill in all required fields (Type, Amount, Date).");
+    if (!editingExpense.type) {
+      alert("Please select an expense type.");
       return;
     }
-    if (parseFloat(editingExpense.amount) <= 0) {
-      alert("Amount must be greater than zero.");
+    if (!editingExpense.amount || parseFloat(editingExpense.amount) <= 0) {
+      alert("Please enter a positive amount.");
       return;
     }
-    if (new Date(editingExpense.date) > today) {
-      alert("Expense date cannot be in the future.");
+    if (!editingExpense.date) {
+      alert("Please select a date.");
+      return;
+    }
+    if (new Date(editingExpense.date) < new Date(firstDayOfMonth) || new Date(editingExpense.date) > new Date(lastDayOfMonth)) {
+      alert("Date must be within the current month and not in the future.");
       return;
     }
     try {
@@ -360,7 +383,7 @@ const FinancialOverview = () => {
       const doc = new jsPDF();
       autoTable(doc, {}); // Apply jspdf-autotable plugin
       const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
+      const pageHeight = doc.internal.pageSize.getWidth();
 
       // Letterhead function
       const addLetterhead = () => {
@@ -506,7 +529,6 @@ const FinancialOverview = () => {
       }
 
       // Apply time-based filtering and other logic continues...
-      // (The rest of the downloadReport function would continue here)
       
     } catch (err) {
       console.error("❌ Report generation error:", err.message);
@@ -751,8 +773,9 @@ const FinancialOverview = () => {
               className="financial-overview-form-select"
               value={editingExpense ? editingExpense.type : newExpense.type}
               onChange={handleExpenseInputChange}
+              required
             >
-              <option value="">Select Type</option>
+              <option value="" disabled>Select Type</option>
               {expenseTypes.map((type) => (
                 <option key={type} value={type}>{type}</option>
               ))}
@@ -761,12 +784,14 @@ const FinancialOverview = () => {
           <div className="financial-overview-form-field">
             <label className="financial-overview-form-label">Amount:</label>
             <input
-              type="number"
+              type="text"
               name="amount"
               className="financial-overview-form-input"
               value={editingExpense ? editingExpense.amount : newExpense.amount}
               onChange={handleExpenseInputChange}
               placeholder="Enter amount"
+              pattern="^\d*\.?\d*$"
+              required
             />
           </div>
           <div className="financial-overview-form-field">
@@ -777,7 +802,9 @@ const FinancialOverview = () => {
               className="financial-overview-form-input"
               value={editingExpense ? editingExpense.date.split("T")[0] : newExpense.date}
               onChange={handleExpenseInputChange}
-              max={today.toISOString().split("T")[0]}
+              min={firstDayOfMonth}
+              max={lastDayOfMonth}
+              required
             />
           </div>
           <div className="financial-overview-form-field">
@@ -893,3 +920,4 @@ const FinancialOverview = () => {
 };
 
 export default FinancialOverview;
+

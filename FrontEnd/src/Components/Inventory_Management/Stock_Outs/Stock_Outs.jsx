@@ -413,6 +413,9 @@ function Stock_Outs() {
     generatePDF(processedOrders, 'customer');
   };
 
+  // Calculate technical orders count for display
+  const technicalOrdersCount = recentOrders.filter(order => order.type === 'technical').length;
+
   return (
     <div id="stock-outs-page-wrapper">
       <InventoryManagementNav />
@@ -445,9 +448,12 @@ function Stock_Outs() {
               <div className="stock-outs-stat-value">{stats.totalCustomerOrders}</div>
               <div className="stock-outs-stat-label">Processed Customer Orders</div>
             </div>
-            <div className="stock-outs-stat-card">
+            <div className={`stock-outs-stat-card ${stats.totalPendingOrders > 0 ? 'pending-alert' : ''}`}>
               <div className="stock-outs-stat-value">{stats.totalPendingOrders}</div>
               <div className="stock-outs-stat-label">Pending Confirmation</div>
+              {stats.totalPendingOrders > 0 && (
+                <div className="pending-badge">Attention Required</div>
+              )}
             </div>
             <div className="stock-outs-stat-card">
               <div className="stock-outs-stat-value">Rs. {stats.totalTechnicalValue.toLocaleString()}</div>
@@ -487,10 +493,12 @@ function Stock_Outs() {
           </button>
           <button
             id="stock-outs-tab-button"
-            className={activeTab === "pending" ? "active" : ""}
+            className={`${activeTab === "pending" ? "active" : ""} ${pendingOrders.length > 0 ? 'pending-notification' : ''}`}
             onClick={() => setActiveTab("pending")}
           >
+            {pendingOrders.length > 0 && <span className="notification-dot"></span>}
             Pending Confirmation ({pendingOrders.length})
+            {pendingOrders.length > 0 && <span className="urgent-badge">URGENT</span>}
           </button>
           <button
             id="stock-outs-tab-button"
@@ -504,7 +512,7 @@ function Stock_Outs() {
             className={activeTab === "history" ? "active" : ""}
             onClick={() => setActiveTab("history")}
           >
-            Technical Team Proceed Orders
+            Technical Team Proceed Orders ({technicalOrdersCount})
           </button>
         </div>
 
@@ -653,7 +661,17 @@ function Stock_Outs() {
 
           {activeTab === "pending" && (
             <div id="stock-outs-pending-orders-card">
-              <h3>Orders Pending Confirmation</h3>
+              <div className="tab-header-with-alert">
+                <h3>Orders Pending Confirmation</h3>
+                {pendingOrders.length > 0 && (
+                  <div className="pending-alert-banner">
+                    <span className="alert-icon">⚠️</span>
+                    <span className="alert-text">
+                      {pendingOrders.length} order(s) require immediate attention
+                    </span>
+                  </div>
+                )}
+              </div>
               <p id="stock-outs-tab-description">
                 Orders moved from Customer Orders page awaiting final confirmation and stock reduction.
               </p>
@@ -665,61 +683,67 @@ function Stock_Outs() {
                   <p>All orders have been processed and confirmed.</p>
                 </div>
               ) : (
-                <table id="stock-outs-pending-table">
-                  <thead>
-                    <tr>
-                      <th>Stock Out ID</th>
-                      <th>Customer ID</th>
-                      <th>Items</th>
-                      <th>Total Amount</th>
-                      <th>Order Date</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pendingOrders.map((order) => (
-                      <tr key={order._id}>
-                        <td id="stock-outs-stock-out-id">
-                          <strong>{order.stock_out_id}</strong>
-                        </td>
-                        <td>{order.userid}</td>
-                        <td>
-                          <div id="stock-outs-items-count">
-                            {order.items.length} items
-                          </div>
-                          <div id="stock-outs-items-preview">
-                            {order.items.slice(0, 3).map((item, idx) => (
-                              <div key={idx} id="stock-outs-item-preview">
-                                <span id="stock-outs-item-name">
-                                  {getProductName(item)}
-                                </span>
-                                <span id="stock-outs-item-quantity">(x{item.quantity})</span>
-                                <span id="stock-outs-item-serial">SN: {getProductSerial(item)}</span>
-                              </div>
-                            ))}
-                            {order.items.length > 3 && (
-                              <div id="stock-outs-more-items">
-                                +{order.items.length - 3} more
-                              </div>
-                            )}
-                          </div>
-                        </td>
-                        <td>Rs. {order.grandTotal?.toLocaleString()}</td>
-                        <td>
-                          {new Date(order.created_at).toLocaleDateString()}
-                        </td>
-                        <td>
-                          <button
-                            id="stock-outs-confirm-order-btn"
-                            onClick={() => confirmPendingOrder(order._id)}
-                          >
-                            Confirm & Reduce Stock
-                          </button>
-                        </td>
+                <div className="pending-orders-container">
+                  <div className="pending-orders-header">
+                    <span className="pending-count">{pendingOrders.length} Orders Pending</span>
+                    <span className="action-required">Action Required: Confirm each order to reduce stock</span>
+                  </div>
+                  <table id="stock-outs-pending-table">
+                    <thead>
+                      <tr>
+                        <th>Stock Out ID</th>
+                        <th>Customer ID</th>
+                        <th>Items</th>
+                        <th>Total Amount</th>
+                        <th>Order Date</th>
+                        <th>Action</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {pendingOrders.map((order) => (
+                        <tr key={order._id} className="pending-order-row">
+                          <td id="stock-outs-stock-out-id">
+                            <strong>{order.stock_out_id}</strong>
+                          </td>
+                          <td>{order.userid}</td>
+                          <td>
+                            <div id="stock-outs-items-count">
+                              {order.items.length} items
+                            </div>
+                            <div id="stock-outs-items-preview">
+                              {order.items.slice(0, 3).map((item, idx) => (
+                                <div key={idx} id="stock-outs-item-preview">
+                                  <span id="stock-outs-item-name">
+                                    {getProductName(item)}
+                                  </span>
+                                  <span id="stock-outs-item-quantity">(x{item.quantity})</span>
+                                  <span id="stock-outs-item-serial">SN: {getProductSerial(item)}</span>
+                                </div>
+                              ))}
+                              {order.items.length > 3 && (
+                                <div id="stock-outs-more-items">
+                                  +{order.items.length - 3} more
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td>Rs. {order.grandTotal?.toLocaleString()}</td>
+                          <td>
+                            {new Date(order.created_at).toLocaleDateString()}
+                          </td>
+                          <td>
+                            <button
+                              id="stock-outs-confirm-order-btn"
+                              onClick={() => confirmPendingOrder(order._id)}
+                            >
+                              Confirm & Reduce Stock
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
           )}
@@ -796,7 +820,7 @@ function Stock_Outs() {
 
           {activeTab === "history" && (
             <div id="stock-outs-orders-history-card">
-              <h3>Technical Team Proceed Orders</h3>
+              <h3>Technical Team Proceed Orders ({technicalOrdersCount})</h3>
               {recentOrders.length === 0 ? (
                 <div id="stock-outs-no-orders">
                   <div id="stock-outs-no-orders-icon">📊</div>

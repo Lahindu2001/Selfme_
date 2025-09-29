@@ -249,7 +249,7 @@
 /* Add/Edit Expense Form Container */
 #financial-overview-expense-form-container {
   background: linear-gradient(135deg, #ffffff 0%, #f8fbfa 100%);
-  border: 2px solid #dc3545;
+  border: 2px solid #422226;
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;
@@ -260,7 +260,7 @@
 #financial-overview-expense-form-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #dc3545;
+  color: #422226;
   margin-bottom: 1.5rem;
   border-bottom: 2px solid #e5e7eb;
   padding-bottom: 0.75rem;
@@ -283,7 +283,7 @@
 /* Form Labels */
 .financial-overview-form-label {
   font-weight: 600;
-  color: #dc3545;
+  color: #422226;
   font-size: 0.95rem;
 }
 
@@ -291,12 +291,12 @@
 .financial-overview-form-input,
 .financial-overview-form-select,
 .financial-overview-form-textarea {
-  border: 2px solid #dc3545;
+  border: 2px solid #422226;
   border-radius: 6px;
   padding: 0.6rem 0.8rem;
   font-size: 0.95rem;
   font-weight: 500;
-  color: #dc3545;
+  color: #422226;
   background: white;
   transition: all 0.3s ease;
   width: 200px;
@@ -311,7 +311,7 @@
 .financial-overview-form-select:focus,
 .financial-overview-form-textarea:focus {
   outline: none;
-  border-color: #c82333;
+  border-color: #422226;
   box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
 }
 
@@ -319,7 +319,7 @@
 .financial-overview-form-select:hover,
 .financial-overview-form-textarea:hover {
   background: #fef2f2;
-  border-color: #c82333;
+  border-color: #422226;
 }
 
 /* Form Action Buttons Container */
@@ -595,7 +595,7 @@
 }
 
 .financial-overview-negative {
-  color: #dc2626;
+  color: #291313;
   font-weight: 600;
 }
 

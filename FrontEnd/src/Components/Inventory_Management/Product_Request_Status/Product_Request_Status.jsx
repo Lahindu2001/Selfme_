@@ -46,6 +46,20 @@ function Product_Request_Status() {
     }
   };
 
+  // Function to get today's date in YYYY-MM-DD format
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
+
+  // Function to get maximum date (1 month from today)
+  const getMaxDate = () => {
+    const today = new Date();
+    const maxDate = new Date(today);
+    maxDate.setMonth(today.getMonth() + 1);
+    return maxDate.toISOString().split("T")[0];
+  };
+
   const formatPrice = (price) => {
     if (price === "" || price === null || price === undefined) return "";
     const num = parseFloat(price);
@@ -94,6 +108,33 @@ function Product_Request_Status() {
           }
         }
         break;
+      case "need_date":
+        processedValue = value;
+        // Validate date immediately when changed
+        if (value) {
+          const selectedDate = new Date(value);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0); // Set to beginning of day for accurate comparison
+
+          const maxDate = new Date();
+          maxDate.setMonth(maxDate.getMonth() + 1);
+          maxDate.setHours(23, 59, 59, 999); // Set to end of day
+
+          if (selectedDate < today) {
+            setErrors((prev) => ({
+              ...prev,
+              need_date: "Need date cannot be in the past",
+            }));
+          } else if (selectedDate > maxDate) {
+            setErrors((prev) => ({
+              ...prev,
+              need_date: "Need date cannot be more than 1 month ahead",
+            }));
+          } else {
+            setErrors((prev) => ({ ...prev, need_date: "" }));
+          }
+        }
+        break;
       case "unit_price":
         if (value === "") {
           processedValue = "";
@@ -125,7 +166,10 @@ function Product_Request_Status() {
       [name]: processedValue,
     }));
 
-    setErrors((prev) => ({ ...prev, [name]: "" }));
+    // Clear other errors except need_date which we handle above
+    if (name !== "need_date") {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
 
     if (name === "quantity" || name === "unit_price") {
       const quantity =
@@ -178,8 +222,23 @@ function Product_Request_Status() {
       }
     }
 
+    // Enhanced date validation
     if (!updateFormData.need_date) {
       newErrors.need_date = "Need date is required";
+    } else {
+      const selectedDate = new Date(updateFormData.need_date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Set to beginning of day
+
+      const maxDate = new Date();
+      maxDate.setMonth(maxDate.getMonth() + 1);
+      maxDate.setHours(23, 59, 59, 999); // Set to end of day
+
+      if (selectedDate < today) {
+        newErrors.need_date = "Need date cannot be in the past";
+      } else if (selectedDate > maxDate) {
+        newErrors.need_date = "Need date cannot be more than 1 month ahead";
+      }
     }
 
     if (!updateFormData.unit_price || updateFormData.unit_price === "") {
@@ -718,6 +777,8 @@ function Product_Request_Status() {
                       name="need_date"
                       value={updateFormData.need_date}
                       onChange={handleUpdateChange}
+                      min={getTodayDate()}
+                      max={getMaxDate()}
                       required
                     />
                     {errors.need_date && (

@@ -159,13 +159,7 @@ function Admin() {
                 <p>Manage all product requests and statuses.</p>
               </NavLink>
             </div>
-            <div className="card">
-              <NavLink to="#" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
-                <h2>test</h2>
-                <p>Streamline supply orders, track requests, and manage inventory efficiently.</p>
-              </NavLink>
-            </div>
-           
+            
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
-/* Stock_Outs.css */
+
+/* Stock_Outs.css - Additional Styles for Pending Orders Visibility */
 
 #stock-outs-page-wrapper {
   min-height: 100vh;
@@ -30,7 +31,7 @@
   font-size: 16px;
 }
 
-/* Dashboard Section */
+/* Dashboard Section - Pending Alert */
 #stock-outs-dashboard {
   background: #f8f9fa;
   border-radius: 8px;
@@ -52,6 +53,28 @@
   border-radius: 6px;
   border: 1px solid #e0e0e0;
   text-align: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.stock-outs-stat-card.pending-alert {
+  border: 2px solid #ff6b6b;
+  background: #fff5f5;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.2);
+  animation: pulse 2s infinite;
+}
+
+.pending-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ff6b6b;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 .stock-outs-stat-value {
@@ -61,10 +84,24 @@
   margin-bottom: 8px;
 }
 
+.stock-outs-stat-card.pending-alert .stock-outs-stat-value {
+  color: #d63031;
+}
+
 .stock-outs-stat-label {
   font-size: 13px;
   color: #666;
   font-weight: 500;
+}
+
+.stock-outs-stat-card.pending-alert .stock-outs-stat-label {
+  color: #e17055;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
 }
 
 #stock-outs-pdf-controls {
@@ -117,12 +154,14 @@
   color: #c53030;
 }
 
+/* Tabs Section - Enhanced Pending Notification */
 #stock-outs-tabs-section {
   display: flex;
   gap: 8px;
   margin-bottom: 25px;
   border-bottom: 1px solid #e0e0e0;
   padding-bottom: 8px;
+  position: relative;
 }
 
 #stock-outs-tab-button {
@@ -135,6 +174,7 @@
   font-weight: 500;
   color: #666;
   transition: all 0.2s ease;
+  position: relative;
 }
 
 #stock-outs-tab-button:hover {
@@ -145,6 +185,55 @@
 #stock-outs-tab-button.active {
   background: #1a1a1a;
   color: white;
+}
+
+/* Pending Notification Styles */
+#stock-outs-tab-button.pending-notification {
+  background: #fff5f5;
+  border: 1px solid #ff6b6b;
+  color: #d63031;
+  font-weight: 600;
+  position: relative;
+  overflow: visible;
+}
+
+#stock-outs-tab-button.pending-notification:hover {
+  background: #ffeaea;
+  border-color: #ff4757;
+}
+
+#stock-outs-tab-button.pending-notification.active {
+  background: #d63031;
+  color: white;
+  border-color: #d63031;
+}
+
+.notification-dot {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 12px;
+  height: 12px;
+  background: #ff4757;
+  border-radius: 50%;
+  border: 2px solid white;
+  animation: blink 2s infinite;
+}
+
+.urgent-badge {
+  background: #ff4757;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 6px;
+  text-transform: uppercase;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
 }
 
 #stock-outs-main-content {
@@ -397,17 +486,53 @@
   animation: spin 1s linear infinite;
 }
 
-/* Pending Orders */
+/* Pending Orders - Enhanced Styles */
 #stock-outs-pending-orders-card,
 #stock-outs-processed-orders-card,
 #stock-outs-orders-history-card {
   padding: 30px;
 }
 
+.tab-header-with-alert {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pending-alert-banner {
+  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: shake 2s ease-in-out infinite;
+}
+
+.alert-icon {
+  font-size: 16px;
+}
+
+.alert-text {
+  font-weight: 600;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
 #stock-outs-pending-orders-card h3,
 #stock-outs-processed-orders-card h3,
 #stock-outs-orders-history-card h3 {
-  margin: 0 0 8px 0;
+  margin: 0;
   color: #1a1a1a;
   font-size: 20px;
   font-weight: 600;
@@ -440,6 +565,43 @@
 #stock-outs-no-orders p {
   margin: 0;
   font-size: 14px;
+}
+
+/* Pending Orders Container */
+.pending-orders-container {
+  border: 2px solid #ff6b6b;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.pending-orders-header {
+  background: #fff5f5;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ff6b6b;
+}
+
+.pending-count {
+  font-weight: 600;
+  color: #d63031;
+  font-size: 14px;
+}
+
+.action-required {
+  font-size: 12px;
+  color: #e17055;
+  font-weight: 500;
+}
+
+.pending-order-row {
+  background: #fffafa;
+  transition: background-color 0.2s ease;
+}
+
+.pending-order-row:hover {
+  background: #fff0f0;
 }
 
 /* Tables */
@@ -522,6 +684,12 @@
   cursor: pointer;
   font-size: 12px;
   font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+#stock-outs-confirm-order-btn:hover {
+  background: #218838;
+  transform: translateY(-1px);
 }
 
 #stock-outs-status-badge {
@@ -530,7 +698,6 @@
   font-size: 11px;
   font-weight: 500;
   text-transform: uppercase;
-  background-color: #D4EDDA;
 }
 
 #stock-outs-status-badge.confirmed {
@@ -547,5 +714,3 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
-d4edda
