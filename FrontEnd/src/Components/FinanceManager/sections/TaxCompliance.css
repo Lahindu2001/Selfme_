@@ -1,0 +1,474 @@
+/* TaxCompliance.css */
+
+/* Main Container */
+#tax-compliance-main-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f0f8f7 0%, #e8f5f3 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Page Title */
+#tax-compliance-page-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #004953;
+  margin-bottom: 2rem;
+  text-align: center;
+  background: linear-gradient(45deg, #004953, #006b7d);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Filters Section */
+#tax-compliance-filters-section {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbfa 100%);
+  border: 2px solid #004953;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 8px 25px rgba(0, 73, 83, 0.15);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Filter Containers */
+#year-filter-container,
+#month-filter-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+#year-filter-label,
+#month-filter-label {
+  font-weight: 600;
+  color: #004953;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+#year-filter-input,
+#month-filter-select {
+  border: 2px solid #004953;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #004953;
+  background: white;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+#year-filter-input:focus,
+#month-filter-select:focus {
+  outline: none;
+  border-color: #006b7d;
+  box-shadow: 0 0 0 3px rgba(0, 73, 83, 0.1);
+}
+
+#year-filter-input {
+  min-width: 110px;
+}
+
+/* Action Buttons */
+#tax-compliance-refresh-btn,
+#tax-compliance-reset-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: none;
+}
+
+#tax-compliance-refresh-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+}
+
+#tax-compliance-refresh-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+#tax-compliance-refresh-btn:disabled {
+  background: #6c757d !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+#tax-compliance-reset-btn {
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+  color: white;
+}
+
+#tax-compliance-reset-btn:hover {
+  background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+}
+
+/* Loading State */
+#tax-compliance-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbfa 100%);
+  border-radius: 16px;
+  border: 2px solid #004953;
+  box-shadow: 0 8px 25px rgba(0, 73, 83, 0.15);
+}
+
+#tax-compliance-loading-text {
+  font-size: 1.2rem;
+  color: #004953;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Error State */
+#tax-compliance-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border: 2px solid #dc2626;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.15);
+}
+
+#tax-compliance-error-text {
+  color: #dc2626;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+}
+
+/* Content Section */
+#tax-compliance-content {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 73, 83, 0.15);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+/* Table Wrapper */
+#tax-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Data Table */
+#tax-compliance-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+/* Table Head */
+#tax-table-head {
+  background: linear-gradient(135deg, #004953 0%, #006b7d 100%);
+}
+
+#tax-table-header-row {
+  background: transparent;
+}
+
+#payment-id-header,
+#customer-header,
+#total-amount-header,
+#tax-amount-header,
+#payment-date-header {
+  padding: 1rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: white;
+}
+
+/* Table Body */
+#tax-table-body {
+  background: white;
+}
+
+/* Table Rows */
+#tax-row-0, #tax-row-1, #tax-row-2, #tax-row-3, #tax-row-4,
+#tax-row-5, #tax-row-6, #tax-row-7, #tax-row-8, #tax-row-9,
+#tax-row-10, #tax-row-11, #tax-row-12, #tax-row-13, #tax-row-14,
+#tax-row-15, #tax-row-16, #tax-row-17, #tax-row-18, #tax-row-19 {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+}
+
+#tax-row-0:hover, #tax-row-1:hover, #tax-row-2:hover, #tax-row-3:hover, #tax-row-4:hover,
+#tax-row-5:hover, #tax-row-6:hover, #tax-row-7:hover, #tax-row-8:hover, #tax-row-9:hover,
+#tax-row-10:hover, #tax-row-11:hover, #tax-row-12:hover, #tax-row-13:hover, #tax-row-14:hover,
+#tax-row-15:hover, #tax-row-16:hover, #tax-row-17:hover, #tax-row-18:hover, #tax-row-19:hover {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 20%);
+  transform: scale(1.002);
+}
+
+/* Table Cells */
+#payment-id-0, #payment-id-1, #payment-id-2, #payment-id-3, #payment-id-4,
+#payment-id-5, #payment-id-6, #payment-id-7, #payment-id-8, #payment-id-9,
+#payment-id-10, #payment-id-11, #payment-id-12, #payment-id-13, #payment-id-14,
+#payment-id-15, #payment-id-16, #payment-id-17, #payment-id-18, #payment-id-19,
+#customer-0, #customer-1, #customer-2, #customer-3, #customer-4,
+#customer-5, #customer-6, #customer-7, #customer-8, #customer-9,
+#customer-10, #customer-11, #customer-12, #customer-13, #customer-14,
+#customer-15, #customer-16, #customer-17, #customer-18, #customer-19,
+#total-amount-0, #total-amount-1, #total-amount-2, #total-amount-3, #total-amount-4,
+#total-amount-5, #total-amount-6, #total-amount-7, #total-amount-8, #total-amount-9,
+#total-amount-10, #total-amount-11, #total-amount-12, #total-amount-13, #total-amount-14,
+#total-amount-15, #total-amount-16, #total-amount-17, #total-amount-18, #total-amount-19,
+#tax-amount-0, #tax-amount-1, #tax-amount-2, #tax-amount-3, #tax-amount-4,
+#tax-amount-5, #tax-amount-6, #tax-amount-7, #tax-amount-8, #tax-amount-9,
+#tax-amount-10, #tax-amount-11, #tax-amount-12, #tax-amount-13, #tax-amount-14,
+#tax-amount-15, #tax-amount-16, #tax-amount-17, #tax-amount-18, #tax-amount-19 {
+  font-weight: 700;
+  color: #d97706;
+  font-family: 'Courier New', monospace;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%);
+}
+
+/* Date Cells */
+#payment-date-0, #payment-date-1, #payment-date-2, #payment-date-3, #payment-date-4,
+#payment-date-5, #payment-date-6, #payment-date-7, #payment-date-8, #payment-date-9,
+#payment-date-10, #payment-date-11, #payment-date-12, #payment-date-13, #payment-date-14,
+#payment-date-15, #payment-date-16, #payment-date-17, #payment-date-18, #payment-date-19 {
+  font-weight: 600;
+  color: #6b7280;
+}
+
+/* No Data Cell */
+#no-tax-data-row {
+  background: #f9fafb;
+}
+
+#no-tax-data-cell {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border: none;
+}
+
+/* Summary Section */
+#tax-summary-section {
+  padding: 2rem;
+  background: linear-gradient(135deg, #f0f8f7 0%, #e8f5f3 100%);
+  border-top: 2px solid #e5e7eb;
+}
+
+#total-tax-summary {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #004953;
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+  background: linear-gradient(45deg, #004953, #006b7d);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Download Button */
+#download-tax-report-btn {
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: block;
+  margin: 0 auto;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+#download-tax-report-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+#download-tax-report-btn:disabled {
+  background: #6c757d !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  #tax-compliance-main-container {
+    padding: 1.5rem;
+  }
+  
+  #tax-compliance-filters-section {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  #tax-compliance-main-container {
+    padding: 1rem;
+  }
+  
+  #tax-compliance-page-title {
+    font-size: 1.75rem;
+  }
+  
+  #tax-compliance-filters-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  #year-filter-container,
+  #month-filter-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  #year-filter-input,
+  #month-filter-select {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  #tax-compliance-refresh-btn,
+  #tax-compliance-reset-btn {
+    width: 100%;
+  }
+  
+  #tax-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  #tax-compliance-table {
+    min-width: 700px;
+    font-size: 0.8rem;
+  }
+  
+  #payment-id-header, #customer-header, #total-amount-header, #tax-amount-header, #payment-date-header,
+  #payment-id-0, #payment-id-1, #payment-id-2, #payment-id-3, #payment-id-4,
+  #payment-id-5, #payment-id-6, #payment-id-7, #payment-id-8, #payment-id-9,
+  #payment-id-10, #payment-id-11, #payment-id-12, #payment-id-13, #payment-id-14,
+  #payment-id-15, #payment-id-16, #payment-id-17, #payment-id-18, #payment-id-19,
+  #customer-0, #customer-1, #customer-2, #customer-3, #customer-4,
+  #customer-5, #customer-6, #customer-7, #customer-8, #customer-9,
+  #customer-10, #customer-11, #customer-12, #customer-13, #customer-14,
+  #customer-15, #customer-16, #customer-17, #customer-18, #customer-19,
+  #total-amount-0, #total-amount-1, #total-amount-2, #total-amount-3, #total-amount-4,
+  #total-amount-5, #total-amount-6, #total-amount-7, #total-amount-8, #total-amount-9,
+  #total-amount-10, #total-amount-11, #total-amount-12, #total-amount-13, #total-amount-14,
+  #total-amount-15, #total-amount-16, #total-amount-17, #total-amount-18, #total-amount-19,
+  #tax-amount-0, #tax-amount-1, #tax-amount-2, #tax-amount-3, #tax-amount-4,
+  #tax-amount-5, #tax-amount-6, #tax-amount-7, #tax-amount-8, #tax-amount-9,
+  #tax-amount-10, #tax-amount-11, #tax-amount-12, #tax-amount-13, #tax-amount-14,
+  #tax-amount-15, #tax-amount-16, #tax-amount-17, #tax-amount-18, #tax-amount-19,
+  #payment-date-0, #payment-date-1, #payment-date-2, #payment-date-3, #payment-date-4,
+  #payment-date-5, #payment-date-6, #payment-date-7, #payment-date-8, #payment-date-9,
+  #payment-date-10, #payment-date-11, #payment-date-12, #payment-date-13, #payment-date-14,
+  #payment-date-15, #payment-date-16, #payment-date-17, #payment-date-18, #payment-date-19 {
+    padding: 0.5rem 0.4rem;
+    font-size: 0.75rem;
+  }
+  
+  #tax-summary-section {
+    padding: 1.5rem;
+  }
+  
+  #total-tax-summary {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 640px) {
+  #tax-compliance-page-title {
+    font-size: 1.5rem;
+  }
+  
+  #tax-compliance-table {
+    min-width: 600px;
+    font-size: 0.7rem;
+  }
+  
+  #tax-summary-section {
+    padding: 1rem;
+  }
+  
+  #total-tax-summary {
+    font-size: 1.1rem;
+  }
+}
+
+/* Custom Scrollbar */
+#tax-table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+#tax-table-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+#tax-table-wrapper::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #004953 0%, #006b7d 100%);
+  border-radius: 4px;
+}
+
+#tax-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #006b7d 0%, #004953 100%);
+}
+#tax-amount-5, #tax-amount-6, #tax-amount-7, #tax-amount-8, #tax-amount-9,
+#tax-amount-10, #tax-amount-11, #tax-amount-12, #tax-amount-13, #tax-amount-14,
+#tax-amount-15, #tax-amount-16, #tax-amount-17, #tax-amount-18, #tax-amount-19,
+#payment-date-0, #payment-date-1, #payment-date-2, #payment-date-3, #payment-date-4,
+#payment-date-5, #payment-date-6, #payment-date-7, #payment-date-8, #payment-date-9,
+#payment-date-10, #payment-date-11, #payment-date-12, #payment-date-13, #payment-date-14,
+#payment-date-15, #payment-date-16, #payment-date-17, #payment-date-18, #payment-date-19 {
+  padding: 1rem 0.75rem;
+  color: #374151;
+  font-size: 0.9rem;
+  font-weight: 500;
+  vertical-align: middle;
+  border-bottom: 1px solid #e5e7eb;
+  border-right: 1px solid #f3f4f6;
+}
+
+/* Amount and Tax Cells Special Styling */
+#total-amount-0, #total-amount-1, #total-amount-2, #total-amount-3, #total-amount-4,
+#total-amount-5, #total-amount-6, #total-amount-7, #total-amount-8, #total-amount-9,
+#total-amount-10, #total-amount-11, #total-amount-12, #total-amount-13, #total-amount-14,
+#total-amount-15, #total-amount-16, #total-amount-17, #total-amount-18, #total-amount-19 {
+  font-weight: 700;
+  color: #059669;
+  font-family: 'Courier New', monospace;
+}
+

@@ -20,22 +20,35 @@ const menuItems = [
 
 const Sidebar = ({ activeSection, setActiveSection }) => {
   return (
-    <div className="sidebar">
-      <div className="sidebar-header">
-        <h2>Finance Management</h2>
+    <div id="finance-sidebar" className="sidebar">
+      <div id="sidebar-header" className="sidebar-header">
+        <div id="sidebar-logo">
+          <h2>FinancePro</h2>
+          <p>Management System</p>
+        </div>
       </div>
-      <nav className="sidebar-nav">
-        {menuItems.map((item) => (
+      <nav id="sidebar-navigation" className="sidebar-nav">
+        {menuItems.map((item, index) => (
           <button
             key={item.id}
+            id={`nav-item-${item.id}`}
             className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
             onClick={() => setActiveSection(item.id)}
           >
-            <span className="nav-icon">{item.icon}</span>
-            <span className="nav-label">{item.label}</span>
+            <span id={`nav-icon-${item.id}`} className="nav-icon">{item.icon}</span>
+            <span id={`nav-label-${item.id}`} className="nav-label">{item.label}</span>
+            <div id={`nav-indicator-${item.id}`} className="nav-indicator"></div>
           </button>
         ))}
       </nav>
+      <div id="sidebar-footer">
+        <div id="user-profile">
+          
+          <div id="user-info">
+            
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

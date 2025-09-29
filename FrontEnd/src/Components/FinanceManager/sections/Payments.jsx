@@ -1,7 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
+import './Payments.css';
+
+// Static company info (replace with your actual company details)
+const companyInfo = {
+  name: 'Your Company',
+  address: ['123 Business St', 'City, Country'],
+  phone: '+1234567890',
+  email: 'info@company.com',
+  website: 'www.company.com',
+};
+
+// Convert logo to base64
+const getLogoAsBase64 = () => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      const base64 = canvas.toDataURL('image/png');
+      resolve(base64);
+    };
+    img.onerror = () => {
+      console.warn('Could not load logo, proceeding without it');
+      resolve(null);
+    };
+    img.src = '/newLogo.png'; // Update path if needed
+  });
+};
 
 const Payments = () => {
   const [payments, setPayments] = useState([]);
@@ -9,10 +40,18 @@ const Payments = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [reportType, setReportType] = useState('Monthly');
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
 
   useEffect(() => {
     console.log('Component mounted, fetching payments...');
     fetchPayments();
+    // Set default month and year to current
+    const today = new Date();
+    setSelectedMonth(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`);
+    setSelectedYear(today.getFullYear().toString());
   }, []);
 
   const fetchPayments = async () => {
@@ -46,7 +85,16 @@ const Payments = () => {
     setSelectedPayment(payment);
     setError('');
     setSuccessMessage('');
+    setIsModalOpen(true);
     console.log('Selected payment:', payment?.payment_id, payment);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedPayment(null);
+    setError('');
+    setSuccessMessage('');
+    console.log('Modal closed, selectedPayment cleared');
   };
 
   const handleUpdateStatus = async (status) => {
@@ -78,9 +126,9 @@ const Payments = () => {
       if (res.data.payment && res.data.payment.payment_id) {
         const updatedPayment = {
           ...res.data.payment,
-          customer_id: res.data.payment.customer_id || { firstName: 'Unknown', lastName: '', email: '', userid: '' }
+          customer_id: res.data.payment.customer_id || { firstName: 'Unknown', lastName: '', email: '', userid: '' },
         };
-        setPayments(payments.map(p =>
+        setPayments(payments.map((p) =>
           p.payment_id === selectedPayment.payment_id ? updatedPayment : p
         ));
         setSelectedPayment(updatedPayment);
@@ -132,135 +180,580 @@ const Payments = () => {
     }
   };
 
-  console.log('Rendering Payments component, payments:', payments.length, 'selectedPayment:', selectedPayment?.payment_id);
+  const generateReportPDF = async (statusFilter) => {
+    try {
+      // Validate inputs
+      if (!payments || !Array.isArray(payments)) {
+        setError('No payment data available.');
+        console.warn('⚠️ Payments array is invalid:', payments);
+        alert('No payments to download!');
+        return;
+      }
+      if (reportType === 'Monthly' && (!selectedMonth || !/^\d{4}-\d{2}$/.test(selectedMonth))) {
+        setError('Please select a valid month for the report.');
+        console.warn('⚠️ Invalid or no month selected for Monthly report:', selectedMonth);
+        alert('Please select a valid month for the report.');
+        return;
+      }
+      if (reportType === 'Yearly' && (!selectedYear || isNaN(selectedYear) || selectedYear < 2000 || selectedYear > 2025)) {
+        setError('Please select a valid year (2000-2025) for the report.');
+        console.warn('⚠️ Invalid or no year selected for Yearly report:', selectedYear);
+        alert('Please select a valid year (2000-2025) for the report.');
+        return;
+      }
+
+      const logoBase64 = await getLogoAsBase64();
+      const doc = new jsPDF();
+      autoTable(doc, {}); // Apply jspdf-autotable plugin
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+
+      // Letterhead function
+      const addLetterhead = () => {
+        if (logoBase64) {
+          doc.addImage(logoBase64, 'PNG', 15, 10, 20, 20);
+        }
+        doc.setFont('times', 'bold');
+        doc.setFontSize(16);
+        doc.setTextColor(0, 0, 0);
+        doc.text(companyInfo.name, pageWidth / 2, 20, { align: 'center' });
+        doc.setFont('times', 'normal');
+        doc.setFontSize(10);
+        doc.text(companyInfo.address.join(', '), pageWidth / 2, 28, { align: 'center' });
+        doc.text(
+          `Phone: ${companyInfo.phone} | Email: ${companyInfo.email} | Website: ${companyInfo.website}`,
+          pageWidth / 2,
+          34,
+          { align: 'center' }
+        );
+        doc.setLineWidth(0.5);
+        doc.setDrawColor(0, 0, 0);
+        doc.line(15, 40, pageWidth - 15, 40);
+      };
+
+      // Footer function
+      const addFooter = (pageNum, totalPages, lastRecordIdx) => {
+        doc.setFont('times', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(50, 50, 50);
+        doc.setLineWidth(0.3);
+        doc.setDrawColor(150, 150, 150);
+        doc.line(15, pageHeight - 20, pageWidth - 15, pageHeight - 20);
+        const footerText = `Generated by ${companyInfo.name} Payment Management System`;
+        doc.text(footerText, pageWidth / 2, pageHeight - 15, { align: 'center' });
+        const recordText = lastRecordIdx >= 0 ? `Payment #${String(lastRecordIdx + 1).padStart(3, '0')}` : '';
+        doc.text(`Page ${pageNum} of ${totalPages} | ${recordText}`, pageWidth - 15, pageHeight - 10, { align: 'right' });
+        const genDate = new Date().toLocaleDateString('en-GB');
+        const genTime = new Date().toLocaleTimeString('en-GB', { hour12: false });
+        doc.text(`Generated on ${genDate} at ${genTime}`, 15, pageHeight - 10);
+      };
+
+      // Signature field function
+      const addSignatureField = () => {
+        doc.setFont('times', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        doc.text('Authorized Signature: __________________', pageWidth - 85, pageHeight - 30);
+      };
+
+      let filteredPayments = payments;
+      let reportTitle = '';
+
+      // Apply status filter
+      if (statusFilter === 'Pending') {
+        filteredPayments = payments.filter((payment) => payment?.status === 'Pending');
+        reportTitle = 'Pending Payments Report';
+      } else if (statusFilter === 'Approved') {
+        filteredPayments = payments.filter((payment) => payment?.status === 'Paid');
+        reportTitle = 'Approved Payments Report';
+      } else {
+        reportTitle = 'All Payments Report';
+      }
+
+      // Apply time-based filtering
+      if (reportType === 'Monthly' && selectedMonth) {
+        const [year, month] = selectedMonth.split('-').map(Number);
+        filteredPayments = filteredPayments.filter((payment, index) => {
+          if (!payment || !payment.payment_date) {
+            console.warn(`⚠️ Missing payment or payment_date at index ${index}:`, payment);
+            return false;
+          }
+          try {
+            const paymentDate = new Date(payment.payment_date);
+            if (isNaN(paymentDate.getTime())) {
+              console.warn(`⚠️ Invalid date format for payment_id ${payment.payment_id || 'unknown'}:`, payment.payment_date);
+              return false;
+            }
+            return paymentDate.getFullYear() === year && paymentDate.getMonth() + 1 === month;
+          } catch (err) {
+            console.warn(`⚠️ Error parsing payment_date for payment_id ${payment.payment_id || 'unknown'}:`, err.message);
+            return false;
+          }
+        });
+        reportTitle += ` - ${new Date(year, month - 1).toLocaleString('default', { month: 'long', year: 'numeric' })}`;
+      } else if (reportType === 'Yearly' && selectedYear) {
+        const year = Number(selectedYear);
+        filteredPayments = filteredPayments.filter((payment, index) => {
+          if (!payment || !payment.payment_date) {
+            console.warn(`⚠️ Missing payment or payment_date at index ${index}:`, payment);
+            return false;
+          }
+          try {
+            const paymentDate = new Date(payment.payment_date);
+            if (isNaN(paymentDate.getTime())) {
+              console.warn(`⚠️ Invalid date format for payment_id ${payment.payment_id || 'unknown'}:`, payment.payment_date);
+              return false;
+            }
+            return paymentDate.getFullYear() === year;
+          } catch (err) {
+            console.warn(`⚠️ Error parsing payment_date for payment_id ${payment.payment_id || 'unknown'}:`, err.message);
+            return false;
+          }
+        });
+        reportTitle += ` - ${year}`;
+      }
+
+      // Check if filtered payments are empty
+      if (filteredPayments.length === 0) {
+        setError(`No ${statusFilter || 'All'} payments found for the selected ${reportType.toLowerCase()} period.`);
+        console.warn(`⚠️ No payments found for ${statusFilter || 'All'} in ${reportType}:`, selectedMonth || selectedYear);
+        addLetterhead();
+        doc.setFontSize(18);
+        doc.text(reportTitle, pageWidth / 2, 45, { align: 'center' });
+        doc.setFontSize(12);
+        doc.text('No payments found for the selected criteria.', 15, 60);
+        addSignatureField();
+        addFooter(1, 1, -1);
+        const timestamp = new Date().toISOString().split('T')[0];
+        const fileName = `${companyInfo.name}_${statusFilter || 'All'}_Payments_Report_${reportType === 'Monthly' ? selectedMonth : selectedYear}_${timestamp}.pdf`;
+        doc.save(fileName);
+        setSuccessMessage(`Report for ${statusFilter || 'All'} payments generated (no data found).`);
+        alert(`Official report "${fileName}" downloaded successfully!`);
+        return;
+      }
+
+      // Calculate pagination
+      const tableRowHeight = 10; // Approximate height per row
+      const rowsPerPage = Math.floor((pageHeight - 80) / tableRowHeight); // Account for letterhead, footer, signature
+      let totalPages = Math.ceil(filteredPayments.length / rowsPerPage);
+      let lastRecordIdxPerPage = [];
+      let currentPageRecords = [];
+      let currentPage = 1;
+      let startIndex = 0;
+
+      filteredPayments.forEach((_, idx) => {
+        if (currentPageRecords.length >= rowsPerPage) {
+          lastRecordIdxPerPage.push(startIndex + currentPageRecords.length - 1);
+          currentPageRecords = [];
+          currentPage++;
+        }
+        currentPageRecords.push(idx);
+      });
+      lastRecordIdxPerPage.push(startIndex + currentPageRecords.length - 1);
+
+      // Generate PDF
+      addLetterhead();
+      doc.setFont('times', 'bold');
+      doc.setFontSize(14);
+      doc.setTextColor(0, 0, 0);
+      doc.text(reportTitle, pageWidth / 2, 45, { align: 'center' });
+
+      // Define table columns
+      const columns = [
+        { header: 'Payment ID', dataKey: 'payment_id' },
+        { header: 'User ID', dataKey: 'userid' },
+        { header: 'Customer', dataKey: 'customer' },
+        { header: 'Amount', dataKey: 'amount' },
+        { header: 'Status', dataKey: 'status' },
+        { header: 'Payment Date', dataKey: 'payment_date' },
+      ];
+
+      // Split payments into pages
+      currentPage = 1;
+      for (let i = 0; i < filteredPayments.length; i += rowsPerPage) {
+        if (i > 0) {
+          addSignatureField();
+          addFooter(currentPage, totalPages, lastRecordIdxPerPage[currentPage - 1]);
+          doc.addPage();
+          currentPage++;
+          addLetterhead();
+        }
+
+        // Prepare table data for current page
+        const data = filteredPayments.slice(i, i + rowsPerPage).map((payment, index) => {
+          if (!payment) {
+            console.warn(`⚠️ Null or undefined payment at index ${i + index}`);
+            return {
+              payment_id: 'N/A',
+              userid: 'N/A',
+              customer: 'Unknown',
+              amount: 'Rs. 0',
+              status: 'N/A',
+              payment_date: 'N/A',
+            };
+          }
+          return {
+            payment_id: payment.payment_id || 'N/A',
+            userid: payment.customer_id?.userid || 'N/A',
+            customer: `${payment.customer_id?.firstName || 'Unknown'} ${payment.customer_id?.lastName || ''}`,
+            amount: `Rs. ${typeof payment.amount === 'number' ? payment.amount.toLocaleString() : '0'}`,
+            status: payment.status || 'N/A',
+            payment_date: payment.payment_date ? (new Date(payment.payment_date).toLocaleDateString('en-GB') || 'N/A') : 'N/A',
+          };
+        });
+
+        // Generate table
+        autoTable(doc, {
+          columns,
+          body: data,
+          startY: 50,
+          theme: 'striped',
+          headStyles: {
+            fillColor: statusFilter === 'Pending' ? [255, 193, 7] : statusFilter === 'Approved' ? [40, 167, 69] : [0, 123, 255],
+            textColor: statusFilter === 'Pending' ? [0, 0, 0] : [255, 255, 255],
+          },
+          styles: { fontSize: 10, cellPadding: 3 },
+        });
+      }
+
+      // Add final signature and footer
+      addSignatureField();
+      addFooter(currentPage, totalPages, lastRecordIdxPerPage[currentPage - 1]);
+
+      // Save PDF
+      const timestamp = new Date().toISOString().split('T')[0];
+      const fileName = `${companyInfo.name}_${statusFilter || 'All'}_Payments_Report_${reportType === 'Monthly' ? selectedMonth : selectedYear}_${timestamp}.pdf`;
+      doc.save(fileName);
+      setSuccessMessage(`Report for ${statusFilter || 'All'} payments generated and downloaded.`);
+      alert(`Official report "${fileName}" downloaded successfully!`);
+      console.log(`✅ Report generated: ${fileName}`);
+    } catch (err) {
+      console.error('❌ Report generation error:', {
+        message: err.message,
+        stack: err.stack,
+        statusFilter,
+        reportType,
+        selectedMonth,
+        selectedYear,
+        paymentsCount: payments.length,
+        paymentsSample: payments.slice(0, 3),
+      });
+      setError('Failed to generate report. Please check the console for details.');
+      alert('Error generating PDF. Please try again.');
+    }
+  };
+
+  // Filter payments by status for tables
+  const pendingPayments = payments.filter((payment) => payment?.status === 'Pending');
+  const approvedPayments = payments.filter((payment) => payment?.status === 'Paid');
+
+  console.log(
+    'Rendering Payments component, payments:', payments.length,
+    'pendingPayments:', pendingPayments.length,
+    'approvedPayments:', approvedPayments.length,
+    'selectedPayment:', selectedPayment?.payment_id,
+    'isModalOpen:', isModalOpen,
+    'reportType:', reportType,
+    'selectedMonth:', selectedMonth,
+    'selectedYear:', selectedYear
+  );
+
+  // Dynamic max attributes for date pickers
+  const today = new Date();
+  const maxMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  const maxYear = today.getFullYear().toString();
+
   return (
-    <div className="payments-container" style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Payment Management</h2>
-      {isLoading && <p className="loading" style={{ textAlign: 'center' }}>Loading payments...</p>}
-      {error && <p className="error" style={{ color: 'red', fontWeight: 'bold', backgroundColor: '#ffe6e6', padding: '10px', borderRadius: '4px', textAlign: 'center' }}>{error}</p>}
-      {successMessage && <p className="success" style={{ color: 'green', fontWeight: 'bold', backgroundColor: '#e6ffe6', padding: '10px', borderRadius: '4px', textAlign: 'center' }}>{successMessage}</p>}
-      <div className="payment-list">
-        <h3 style={{ marginBottom: '10px' }}>Payments</h3>
-        {payments.length === 0 && !isLoading ? (
-          <p style={{ textAlign: 'center', color: '#666' }}>No payments found.</p>
+    <div id="payments-main-container">
+      <h2 id="payments-page-title">Payment Management</h2>
+
+      {/* Report Download Section */}
+      <div id="payments-report-section">
+        <div id="report-type-container">
+          <label id="report-type-label">Report Type:</label>
+          <select
+            id="report-type-select"
+            value={reportType}
+            onChange={(e) => setReportType(e.target.value)}
+          >
+            <option value="Monthly">Monthly</option>
+            <option value="Yearly">Yearly</option>
+          </select>
+        </div>
+        {reportType === 'Monthly' ? (
+          <div id="report-month-container">
+            <label id="report-month-label">Select Month:</label>
+            <input
+              id="report-month-input"
+              type="month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              max={maxMonth}
+            />
+          </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #ddd' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#007BFF', color: 'white' }}>
-                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Payment ID</th>
-                <th style={{ padding: '10px', border: '1px solid #ddd' }}>User ID</th>
-                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Customer</th>
-                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Amount</th>
-                <th style={{ padding: '10px', border: '1px solid #ddd' }}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payments.map(payment => (
-                <tr
-                  key={payment.payment_id}
-                  onClick={() => handleSelectPayment(payment)}
-                  style={{
-                    cursor: 'pointer',
-                    backgroundColor: selectedPayment?.payment_id === payment.payment_id ? '#e9ecef' : 'white',
-                    border: '1px solid #ddd'
-                  }}
-                >
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>{payment.payment_id || 'N/A'}</td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>{payment.customer_id?.userid || 'N/A'}</td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                    {payment.customer_id?.firstName || 'Unknown'} {payment.customer_id?.lastName || ''}
-                  </td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                    Rs. {payment.amount?.toLocaleString() || '0'}
-                  </td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>{payment.status || 'N/A'}</td>
+          <div id="report-year-container">
+            <label id="report-year-label">Select Year:</label>
+            <input
+              id="report-year-input"
+              type="number"
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              max={maxYear}
+              min="2000"
+            />
+          </div>
+        )}
+        <div id="report-buttons-container">
+          <button
+            id="download-pending-report-btn"
+            onClick={() => generateReportPDF('Pending')}
+          >
+            Download Pending Report
+          </button>
+          <button
+            id="download-approved-report-btn"
+            onClick={() => generateReportPDF('Approved')}
+          >
+            Download Approved Report
+          </button>
+          <button
+            id="download-all-report-btn"
+            onClick={() => generateReportPDF('All')}
+          >
+            Download All Payments Report
+          </button>
+        </div>
+      </div>
+
+      {isLoading && <p id="payments-loading-message">Loading payments...</p>}
+      {error && !isModalOpen && (
+        <p id="payments-error-message">{error}</p>
+      )}
+      {successMessage && !isModalOpen && (
+        <p id="payments-success-message">{successMessage}</p>
+      )}
+
+      {/* Pending Payments Table */}
+      <div id="pending-payments-section">
+        <h3 id="pending-payments-title">Pending Payments</h3>
+        {pendingPayments.length === 0 && !isLoading ? (
+          <p id="no-pending-payments">No pending payments found.</p>
+        ) : (
+          <div id="pending-payments-table-container">
+            <table id="pending-payments-table">
+              <thead>
+                <tr>
+                  <th>Payment ID</th>
+                  <th>User ID</th>
+                  <th>Customer</th>
+                  <th>Amount</th>
+                  <th>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {pendingPayments.map((payment, index) => (
+                  <tr
+                    key={payment.payment_id}
+                    id={`pending-payment-row-${index}`}
+                    className={`payment-table-row ${selectedPayment?.payment_id === payment.payment_id ? 'selected' : ''}`}
+                    onClick={() => handleSelectPayment(payment)}
+                  >
+                    <td>{payment.payment_id || 'N/A'}</td>
+                    <td>{payment.customer_id?.userid || 'N/A'}</td>
+                    <td>
+                      {payment.customer_id?.firstName || 'Unknown'} {payment.customer_id?.lastName || ''}
+                    </td>
+                    <td>Rs. {payment.amount?.toLocaleString() || '0'}</td>
+                    <td>{payment.status || 'N/A'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
-      {selectedPayment ? (
-        <div className="payment-details" style={{ marginTop: '20px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-          <h3 style={{ marginBottom: '15px' }}>Payment Details</h3>
-          <p><strong>Payment ID:</strong> {selectedPayment.payment_id || 'N/A'}</p>
-          <p><strong>User ID:</strong> {selectedPayment.customer_id?.userid || 'N/A'}</p>
-          <p><strong>Customer:</strong> {selectedPayment.customer_id?.firstName || 'Unknown'} {selectedPayment.customer_id?.lastName || ''}</p>
-          <p><strong>Email:</strong> {selectedPayment.customer_id?.email || 'N/A'}</p>
-          <p><strong>Amount:</strong> Rs. {selectedPayment.amount?.toLocaleString() || '0'}</p>
-          <p><strong>Status:</strong> {selectedPayment.status || 'N/A'}</p>
-          <p><strong>Payment Date:</strong> {selectedPayment.payment_date ? new Date(selectedPayment.payment_date).toLocaleDateString() : 'N/A'}</p>
-          {selectedPayment.reference_no && (
-            <div>
-              <h4 style={{ marginTop: '15px' }}>Bank Slip</h4>
-              {selectedPayment.reference_no.endsWith('.pdf') ? (
-                <a
-                  href={`http://localhost:5000${selectedPayment.reference_no}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#007BFF', textDecoration: 'underline' }}
-                >
-                  View PDF Bank Slip
-                </a>
-              ) : (
-                <img
-                  src={`http://localhost:5000${selectedPayment.reference_no}`}
-                  alt="Bank Slip"
-                  style={{ maxWidth: '500px', border: '1px solid #ddd', borderRadius: '4px' }}
-                  onError={() => console.error('❌ Failed to load bank slip image:', selectedPayment.reference_no)}
-                />
+
+      {/* Approved Payments Table */}
+      <div id="approved-payments-section">
+        <h3 id="approved-payments-title">Approved Payments</h3>
+        {approvedPayments.length === 0 && !isLoading ? (
+          <p id="no-approved-payments">No approved payments found.</p>
+        ) : (
+          <div id="approved-payments-table-container">
+            <table id="approved-payments-table">
+              <thead>
+                <tr>
+                  <th>Payment ID</th>
+                  <th>User ID</th>
+                  <th>Customer</th>
+                  <th>Amount</th>
+                  <th>Payment Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {approvedPayments.map((payment, index) => (
+                  <tr
+                    key={payment.payment_id}
+                    id={`approved-payment-row-${index}`}
+                    className={`payment-table-row ${selectedPayment?.payment_id === payment.payment_id ? 'selected' : ''}`}
+                    onClick={() => handleSelectPayment(payment)}
+                  >
+                    <td>{payment.payment_id || 'N/A'}</td>
+                    <td>{payment.customer_id?.userid || 'N/A'}</td>
+                    <td>
+                      {payment.customer_id?.firstName || 'Unknown'} {payment.customer_id?.lastName || ''}
+                    </td>
+                    <td>Rs. {payment.amount?.toLocaleString() || '0'}</td>
+                    <td>
+                      {payment.payment_date ? new Date(payment.payment_date).toLocaleDateString() : 'N/A'}
+                    </td>
+                    <td>{payment.status || 'N/A'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* All Payments Table */}
+      <div id="all-payments-section">
+        <h3 id="all-payments-title">All Payments</h3>
+        {payments.length === 0 && !isLoading ? (
+          <p id="no-all-payments">No payments found.</p>
+        ) : (
+          <div id="all-payments-table-container">
+            <table id="all-payments-table">
+              <thead>
+                <tr>
+                  <th>Payment ID</th>
+                  <th>User ID</th>
+                  <th>Customer</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {payments.map((payment, index) => (
+                  <tr
+                    key={payment.payment_id}
+                    id={`all-payment-row-${index}`}
+                    className={`payment-table-row ${selectedPayment?.payment_id === payment.payment_id ? 'selected' : ''}`}
+                    onClick={() => handleSelectPayment(payment)}
+                  >
+                    <td>{payment.payment_id || 'N/A'}</td>
+                    <td>{payment.customer_id?.userid || 'N/A'}</td>
+                    <td>
+                      {payment.customer_id?.firstName || 'Unknown'} {payment.customer_id?.lastName || ''}
+                    </td>
+                    <td>Rs. {payment.amount?.toLocaleString() || '0'}</td>
+                    <td>{payment.status || 'N/A'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Payment Details Modal */}
+      {isModalOpen && selectedPayment && (
+        <div id="payment-details-modal">
+          <div id="payment-modal-content">
+            <button id="modal-close-btn" onClick={handleCloseModal}>
+              ✕ Close
+            </button>
+            <h3 id="modal-payment-title">Payment Details</h3>
+            {error && (
+              <p id="modal-error-message">{error}</p>
+            )}
+            {successMessage && (
+              <p id="modal-success-message">{successMessage}</p>
+            )}
+            <div id="payment-details-container">
+              <div className="payment-detail-item">
+                <span className="payment-detail-label">Payment ID:</span>
+                <span className="payment-detail-value">{selectedPayment.payment_id || 'N/A'}</span>
+              </div>
+              <div className="payment-detail-item">
+                <span className="payment-detail-label">User ID:</span>
+                <span className="payment-detail-value">{selectedPayment.customer_id?.userid || 'N/A'}</span>
+              </div>
+              <div className="payment-detail-item">
+                <span className="payment-detail-label">Customer:</span>
+                <span className="payment-detail-value">
+                  {selectedPayment.customer_id?.firstName || 'Unknown'}{' '}
+                  {selectedPayment.customer_id?.lastName || ''}
+                </span>
+              </div>
+              <div className="payment-detail-item">
+                <span className="payment-detail-label">Email:</span>
+                <span className="payment-detail-value">{selectedPayment.customer_id?.email || 'N/A'}</span>
+              </div>
+              <div className="payment-detail-item">
+                <span className="payment-detail-label">Amount:</span>
+                <span className="payment-detail-value">Rs. {selectedPayment.amount?.toLocaleString() || '0'}</span>
+              </div>
+              <div className="payment-detail-item">
+                <span className="payment-detail-label">Status:</span>
+                <span className="payment-detail-value">{selectedPayment.status || 'N/A'}</span>
+              </div>
+              <div className="payment-detail-item">
+                <span className="payment-detail-label">Payment Date:</span>
+                <span className="payment-detail-value">
+                  {selectedPayment.payment_date ? new Date(selectedPayment.payment_date).toLocaleDateString() : 'N/A'}
+                </span>
+              </div>
+              {selectedPayment.reference_no && (
+                <div id="bank-slip-section">
+                  <h4 id="bank-slip-title">Bank Slip</h4>
+                  {selectedPayment.reference_no.endsWith('.pdf') ? (
+                    <a
+                      id="bank-slip-link"
+                      href={`http://localhost:5000${selectedPayment.reference_no}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View PDF Bank Slip
+                    </a>
+                  ) : (
+                    <img
+                      id="bank-slip-image"
+                      src={`http://localhost:5000${selectedPayment.reference_no}`}
+                      alt="Bank Slip"
+                      onError={() => console.error('❌ Failed to load bank slip image:', selectedPayment.reference_no)}
+                    />
+                  )}
+                </div>
               )}
             </div>
-          )}
-          <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
-            <button
-              onClick={() => handleUpdateStatus('Paid')}
-              disabled={isLoading || selectedPayment.status === 'Paid'}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: selectedPayment.status === 'Paid' ? '#6c757d' : '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: selectedPayment.status === 'Paid' ? 'not-allowed' : 'pointer'
-              }}
-            >
-              Mark as Paid
-            </button>
-            <button
-              onClick={() => handleUpdateStatus('Failed')}
-              disabled={isLoading || selectedPayment.status === 'Failed'}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: selectedPayment.status === 'Failed' ? '#6c757d' : '#dc3545',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: selectedPayment.status === 'Failed' ? 'not-allowed' : 'pointer'
-              }}
-            >
-              Mark as Failed
-            </button>
-            <button
-              onClick={generateReceiptPDF}
-              disabled={isLoading || selectedPayment.status !== 'Paid'}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: selectedPayment.status !== 'Paid' ? '#6c757d' : '#007BFF',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: selectedPayment.status !== 'Paid' ? 'not-allowed' : 'pointer'
-              }}
-            >
-              Generate Receipt
-            </button>
+            <div id="modal-actions-container">
+              <button
+                id="mark-paid-btn"
+                onClick={() => handleUpdateStatus('Paid')}
+                disabled={isLoading || selectedPayment.status === 'Paid'}
+              >
+                Mark as Paid
+              </button>
+              <button
+                id="mark-failed-btn"
+                onClick={() => handleUpdateStatus('Failed')}
+                disabled={isLoading || selectedPayment.status === 'Failed'}
+              >
+                Mark as Failed
+              </button>
+              <button
+                id="generate-receipt-btn"
+                onClick={generateReceiptPDF}
+                disabled={isLoading || selectedPayment.status !== 'Paid'}
+              >
+                Generate Receipt
+              </button>
+            </div>
           </div>
         </div>
-      ) : (
-        <p className="no-selection" style={{ color: '#666', fontStyle: 'italic', textAlign: 'center', marginTop: '20px' }}>
-          Please select a payment to view details.
-        </p>
       )}
     </div>
   );

@@ -16,7 +16,7 @@ const getAllPayments = async (req, res) => {
   try {
     console.log('📥 Fetching all payments...');
     let query = Payment.find()
-      .populate('itemId', 'serial_number item_name');
+      .populate('itemId', 'serial_number item_name purchase_price selling_price');
     if (Invoice) {
       query = query.populate('invoice_id');
     }
@@ -25,7 +25,7 @@ const getAllPayments = async (req, res) => {
     // Manually populate user details by querying User model with userid
     const paymentsWithCustomer = await Promise.all(payments.map(async (payment) => {
       const user = await User.findOne({ userid: payment.userid })
-        .select('firstName lastName email userid') // Added userid to selection
+        .select('firstName lastName email userid')
         .lean();
       if (!user) {
         console.warn(`⚠️ No user found for payment ${payment.payment_id}, userid: ${payment.userid}`);
@@ -40,7 +40,7 @@ const getAllPayments = async (req, res) => {
           firstName: user.firstName || 'Unknown',
           lastName: user.lastName || '',
           email: user.email || '',
-          userid: user.userid || '' // Added userid
+          userid: user.userid || ''
         }
       };
     }));
@@ -70,12 +70,16 @@ const updatePaymentStatus = async (req, res) => {
     if (!payment) {
       return res.status(404).json({ message: 'Payment not found' });
     }
-    // Populate user details for the response
+    // Populate user and item details for the response
+    const populatedPayment = await Payment.findOne({ payment_id })
+      .populate('itemId', 'serial_number item_name purchase_price selling_price')
+      .populate('invoice_id')
+      .lean();
     const user = await User.findOne({ userid: payment.userid })
       .select('firstName lastName email userid')
       .lean();
     const paymentWithCustomer = {
-      ...payment.toObject(),
+      ...populatedPayment,
       customer_id: user
         ? {
             firstName: user.firstName || 'Unknown',
@@ -160,16 +164,16 @@ const createPayment = async (req, res) => {
     await newPayment.save();
     console.log('💾 Payment saved:', payment_id);
 
-    // Manually populate user details
+    // Manually populate user and item details
     const populatedUser = await User.findOne({ userid: newPayment.userid })
       .select('firstName lastName email userid')
       .lean();
     let populatedPayment = await Payment.findOne({ payment_id })
-      .populate('itemId', 'serial_number item_name')
+      .populate('itemId', 'serial_number item_name purchase_price selling_price')
       .lean();
     if (Invoice) {
       populatedPayment = await Payment.findOne({ payment_id })
-        .populate('itemId', 'serial_number item_name')
+        .populate('itemId', 'serial_number item_name purchase_price selling_price')
         .populate('invoice_id')
         .lean();
     }

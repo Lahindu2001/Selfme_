@@ -16,8 +16,11 @@ import AllFeedback from "./Components/AdminPanel/AllFeedback/AllFeedback";
 import AllEmployee from "./Components/AdminPanel/AllEmployee/AllEmployee";
 import ViewSupplyAll from "./Components/AdminPanel/VeiwSupplyAll/ViewSupplyAll";
 import GetSupplyAll from "./Components/AdminPanel/GetSupplyAll/GetSupplyAll";
+
 //linuka
 import FinanceManager from "./Components/FinanceManager/FinanceManager";
+
+
 //sulakshi
 import TechnicianDashboard from "./Components/TechnicianDashboard/TechnicianDashboard";
 import RegisterEmployee from "./Components/TechnicianDashboard/RegisterEmployee";

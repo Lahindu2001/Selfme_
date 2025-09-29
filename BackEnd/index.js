@@ -13,13 +13,15 @@ const Product = require("./Model/inventory_models/itemModel");
 const Cart = require("./Model/UserModel/CartModel");
 const Payment = require("./Model/UserModel/PaymentModel");
 const SubmitFeedback = require("./Model/UserModel/SubmitFeedbackModel"); 
-
+const Expense = require("./Model/FinanceManager/ExpenseModel");
 
 //linuka
 const salaryRouter = require("./Routes/FinanceManager/salaryRoutes");
 const staffRouter = require("./Routes/FinanceManager/staffRoutes");
 const jobAssigningRouter = require("./Routes/FinanceManager/jobAssigningRoutes");
 const paymentRouter = require("./Routes/FinanceManager/PaymentRoutes");
+const updateFinancialStatusRoute = require("./Routes/FinanceManager/updateFinancialStatusRoute");
+const expenseRoutes = require("./Routes/FinanceManager/expenseRoutes");
 
 
 //lahindu
@@ -66,7 +68,8 @@ app.use("/auth", authRouter);
 app.use("/api", cartRoutes);
 app.use("/api", paymentRoutes);
 app.use("/api", itemRoute);
-app.use("/api/feedback", submitFeedbackRoute); // New feedback route
+app.use("/api/feedback", submitFeedbackRoute);
+app.use("/api/finance/expenses", expenseRoutes);
 app.use("/item_images", express.static(path.join(__dirname, "item_images")));
 // Test route
 app.get("/test", (req, res) => res.json({ message: "Server is working" }));
@@ -90,6 +93,7 @@ app.use("/employees", employeeRouter);
 //app.use("/assignments", assignmentRoutes);
 app.use("/paid-payments", getPaidPaymentRoute);
 app.use("/api/tech/paidtasks", paidTaskRouter);
+app.use("/api/finance/jobassignings", jobAssigningRouter); // Updated to match frontend
 
 
 //hasaranga
@@ -102,15 +106,16 @@ app.use("/suppliers", supplierRouter);
 app.use("/stockouts", stockOutRoutes);
 
 //linuka
+app.use("/api/finance", updateFinancialStatusRoute);
 app.use("/api/finance/salary", salaryRouter);
 app.use("/api/finance/staff", staffRouter);
 app.use("/api/finance/job-assigning", jobAssigningRouter);
-app.use("/api/finance/jobassignings", jobAssigningRouter); // Updated to match frontend
 app.use("/api/finance/payments", paymentRouter);
+
 
 // ------------------- DATABASE -------------------
 mongoose
-  .connect("mongodb+srv://adminSelfme:P40YIFy04Am8rnDe@cluster0.4bp3tta.mongodb.net/selfmedb")
+  .connect("mongodb+srv://adminSelfme:P40YIFy04Am8rnDe@cluster0.4bp3tta.mongodb.net/selfmedbabcde")
   .then(() => console.log("✅ Connected to MongoDB"))
   .then(() => {
     app.listen(5000, () => console.log("🚀 Server running on port 5000"));

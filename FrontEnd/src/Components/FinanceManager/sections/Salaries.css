@@ -1,0 +1,482 @@
+/* Salaries.css */
+
+/* Main Content Section */
+#salaries-content-section {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f0f8f7 0%, #e8f5f3 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Page Title */
+#salaries-page-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #004953;
+  margin-bottom: 0.75rem;
+  text-align: center;
+  background: linear-gradient(45deg, #004953, #006b7d);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Page Description */
+#salaries-page-description {
+  font-size: 1.1rem;
+  color: #006b7d;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
+/* Month Selection Container */
+#month-selection-container {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbfa 100%);
+  border: 2px solid #004953;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 6px 20px rgba(0, 73, 83, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Month Selection Label */
+#month-selection-label {
+  font-weight: 600;
+  color: #004953;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Month Dropdown */
+#month-dropdown {
+  border: 2px solid #004953;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #004953;
+  background: white;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-width: 180px;
+}
+
+#month-dropdown:focus {
+  outline: none;
+  border-color: #006b7d;
+  box-shadow: 0 0 0 3px rgba(0, 73, 83, 0.1);
+}
+
+#month-dropdown:hover {
+  background: #f0f8f7;
+  border-color: #006b7d;
+}
+
+/* Error Message */
+#salaries-error-message {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  color: #dc2626;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Salaries Table Container */
+#salaries-table-container {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 73, 83, 0.15);
+  border: 1px solid #e5e7eb;
+  margin-bottom: 2rem;
+}
+
+/* Main Salaries Table */
+#salaries-main-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+/* Table Header */
+#salaries-main-table thead {
+  background: linear-gradient(135deg, #004953 0%, #006b7d 100%);
+  color: white;
+}
+
+#salaries-main-table th {
+  padding: 1rem 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#salaries-main-table th:last-child {
+  border-right: none;
+}
+
+/* Table Body */
+#salaries-main-table td {
+  padding: 0.875rem 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  border-right: 1px solid #f3f4f6;
+  font-weight: 500;
+  color: #374151;
+}
+
+#salaries-main-table td:last-child {
+  border-right: none;
+}
+
+/* Table Row Hover Effects */
+#salaries-main-table tbody tr:hover {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 20%);
+  transform: scale(1.005);
+  transition: all 0.3s ease;
+}
+
+/* Total Row Styling */
+#salaries-total-row {
+  background: linear-gradient(135deg, #004953 0%, #006b7d 100%);
+  color: white;
+  font-weight: 700;
+}
+
+#salaries-total-row td {
+  border-bottom: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+#salaries-total-row td:last-child {
+  border-right: none;
+}
+
+/* Action Buttons */
+.salary-update-btn,
+.salary-download-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.salary-update-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+}
+
+.salary-update-btn:hover {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+.salary-download-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+}
+
+.salary-download-btn:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* No Data Message */
+#no-salaries-message {
+  background: #f9fafb;
+  border: 2px dashed #9ca3af;
+  border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
+  font-size: 1.1rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Edit Form Container */
+#salary-edit-form-container {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbfa 100%);
+  border: 2px solid #004953;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-top: 2rem;
+  box-shadow: 0 8px 25px rgba(0, 73, 83, 0.15);
+}
+
+/* Edit Form Title */
+#salary-edit-form-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #004953;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.75rem;
+}
+
+/* Employee Info in Edit Form */
+.salary-edit-employee-info {
+  background: #f0f8f7;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #006b7d;
+}
+
+.salary-edit-employee-info p {
+  margin: 0.25rem 0;
+  font-weight: 600;
+  color: #004953;
+}
+
+/* Form Field Containers */
+.salary-edit-field-container {
+  margin-bottom: 1.25rem;
+}
+
+.salary-edit-field-container label {
+  display: block;
+  font-weight: 600;
+  color: #004953;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* Form Inputs */
+.salary-edit-input,
+.salary-edit-select {
+  width: 100%;
+  max-width: 300px;
+  border: 2px solid #004953;
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #004953;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.salary-edit-input:focus,
+.salary-edit-select:focus {
+  outline: none;
+  border-color: #006b7d;
+  box-shadow: 0 0 0 3px rgba(0, 73, 83, 0.1);
+}
+
+.salary-edit-input:read-only {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+/* Form Action Buttons */
+#salary-edit-save-btn,
+#salary-edit-cancel-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 1rem;
+  margin-top: 1rem;
+}
+
+#salary-edit-save-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+#salary-edit-save-btn:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+#salary-edit-cancel-btn {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  color: white;
+}
+
+#salary-edit-cancel-btn:hover {
+  background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  #salaries-content-section {
+    padding: 1.5rem;
+  }
+  
+  #salaries-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  #salaries-main-table {
+    min-width: 1100px;
+  }
+}
+
+@media (max-width: 768px) {
+  #salaries-content-section {
+    padding: 1rem;
+  }
+  
+  #salaries-page-title {
+    font-size: 1.75rem;
+  }
+  
+  #salaries-page-description {
+    font-size: 1rem;
+  }
+  
+  #month-selection-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  #month-dropdown {
+    min-width: auto;
+  }
+  
+  #salaries-main-table {
+    font-size: 0.8rem;
+    min-width: 1000px;
+  }
+  
+  #salaries-main-table th,
+  #salaries-main-table td {
+    padding: 0.5rem 0.4rem;
+  }
+  
+  .salary-update-btn,
+  .salary-download-btn {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+    display: block;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  
+  #salary-edit-form-container {
+    padding: 1.5rem;
+  }
+  
+  .salary-edit-input,
+  .salary-edit-select {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  #salaries-page-title {
+    font-size: 1.5rem;
+  }
+  
+  #salaries-main-table {
+    min-width: 900px;
+    font-size: 0.75rem;
+  }
+  
+  #salary-edit-save-btn,
+  #salary-edit-cancel-btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Custom Scrollbar for Table Container */
+#salaries-table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+#salaries-table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+#salaries-table-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #004953 0%, #006b7d 100%);
+  border-radius: 4px;
+}
+
+#salaries-table-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #006b7d 0%, #004953 100%);
+}
+
+/* Loading Animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.salary-loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Status Badge Styling */
+.salary-status-paid {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.salary-status-non-paid {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* Role Badge Styling */
+.salary-role-manager {
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.salary-role-employee {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+}
