@@ -1,8 +1,8 @@
+// Frontend/Payment.jsx (updated to remove local invoiceId append since backend handles it, and show payment_id in success)
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
-import { v4 as uuidv4 } from "uuid";
 import Navbar from "../Nav/Navbar";
 import Footer from "../Footer/Footer";
 
@@ -13,7 +13,6 @@ function Payment() {
   const [slipFile, setSlipFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
-  const invoiceId = uuidv4();
 
   // Mock companyInfo (replace with actual definition)
   const companyInfo = {
@@ -103,7 +102,6 @@ function Payment() {
       formData.append("payment_method", "Bank Transfer");
       formData.append("payment_date", new Date().toISOString());
       formData.append("status", "Pending");
-      formData.append("invoice_id", invoiceId);
       formData.append("slip", slipFile);
       console.log("📤 Submitting payment...");
       const response = await axios.post("http://localhost:5000/api/payments", formData, {
@@ -114,7 +112,7 @@ function Payment() {
         timeout: 10000,
       });
       console.log("✅ Payment submitted:", response.data);
-      alert("Payment submitted successfully! Waiting for admin review.");
+      alert(`Payment submitted successfully! Your Payment ID is: ${response.data.payment.payment_id}. Waiting for admin review.`);
       navigate("/?view=dashboard");
     } catch (err) {
       console.error("💥 Payment submission error:", err);
@@ -225,7 +223,7 @@ function Payment() {
       doc.setTextColor(0, 0, 0);
       doc.text(title, pageWidth / 2, 45, { align: 'center' });
       doc.setFontSize(12);
-      doc.text(`Invoice ID: ${invoiceId}`, 15, 50);
+      doc.text(`Invoice ID: ${Date.now()}`, 15, 50); // Use timestamp as placeholder since backend generates
       doc.text(`Date: ${new Date().toLocaleDateString('en-GB')}`, 15, 55);
 
       data.forEach((item, index) => {

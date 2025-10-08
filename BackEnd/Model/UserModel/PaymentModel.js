@@ -1,8 +1,9 @@
+// Model/UserModel/PaymentModel.js (unchanged, provided for completeness)
 const mongoose = require('mongoose');
 const paymentSchema = new mongoose.Schema({
   payment_id: { type: String, required: true, unique: true },
   invoice_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Invoice', required: true },
-  userid: { type: String, ref: 'User', required: true }, // Changed from userId to userid to match User schema
+  userid: { type: String, ref: 'User', required: true }, 
   itemId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: false }], // Array of product IDs
   payment_method: { type: String, enum: ['Bank Transfer'], required: true },
   amount: { type: Number, required: true },

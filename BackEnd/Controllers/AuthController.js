@@ -1,14 +1,19 @@
+// Controllers/AuthController.js (updated to handle prefix on upsert for robustness)
 const User = require('../Model/UserModel');
-const Counter = require('../Model/AdminandSupplyModel/counterModel');
+const Counter = require('../Model/AdminandSupplyModel/counterUserModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = 'your_jwt_secret_key_here'; // Change this to a strong secret in .env
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key_here'; // Use env var for security
 
 // Function to get the next sequence value and generate formatted ID
 const getNextSequenceValue = async (sequenceName) => {
+  const prefix = 'SELFMEID'; // Fixed prefix for userid
   const counter = await Counter.findOneAndUpdate(
     { _id: sequenceName },
-    { $inc: { sequence_value: 1 } },
+    { 
+      $inc: { sequence_value: 1 },
+      $setOnInsert: { prefix } // Set prefix only on insert (first time)
+    },
     { new: true, upsert: true }
   );
   const sequence = counter.sequence_value.toString().padStart(4, '0'); // Pad with zeros to get 0001, 0002, etc.

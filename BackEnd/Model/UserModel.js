@@ -1,3 +1,4 @@
+// Model/UserModel.js (unchanged, provided for completeness)
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 

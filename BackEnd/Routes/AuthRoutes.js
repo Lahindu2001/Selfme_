@@ -1,4 +1,4 @@
-// BackEnd/Routes/AuthRoutes.js
+// BackEnd/Routes/AuthRoutes.js (updated to use process.env.JWT_SECRET)
 const express = require('express');
 const { signup, login } = require('../Controllers/AuthController');
 const jwt = require('jsonwebtoken');
@@ -36,6 +36,7 @@ router.get('/user', verifyToken, async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      userid: user.userid, // Include custom userid
       createdAt: user.created_at, // Match schema field name
     });
   } catch (err) {

@@ -1,14 +1,20 @@
+
 const Staff = require('../../Model/FinanceManager/staffModel');
-const Counter = require('../../Model/AdminandSupplyModel/counterModel');
+const Counter = require('../../Model/AdminandSupplyModel/counterEmployeeModel');
 
 // Function to get the next sequence value for empId
 const getNextSequenceValue = async (sequenceName) => {
+  const prefix = 'EMPID'; // Fixed prefix for empId
   const counter = await Counter.findOneAndUpdate(
     { _id: sequenceName },
-    { $inc: { sequence_value: 1 } },
+    { 
+      $inc: { sequence_value: 1 },
+      $setOnInsert: { prefix } // Set prefix only on insert (first time)
+    },
     { new: true, upsert: true }
   );
-  return `${counter.prefix}${String(counter.sequence_value).padStart(3, '0')}`;
+  const sequence = counter.sequence_value.toString().padStart(4, '0'); // Pad with zeros to get 0001, 0002, etc.
+  return `${counter.prefix}${sequence}`; // e.g., EMPID0001
 };
 
 // Register new employee
