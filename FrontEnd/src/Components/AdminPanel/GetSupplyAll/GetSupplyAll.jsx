@@ -306,7 +306,7 @@ function GetSupplyAll() {
         <div className="search-bar">
           <input
             type="text"
-            placeholder="🔍 Search by Supplier Name, Product Item, Quantity, Status..."
+            placeholder="Search by Supplier Name, Product Item, Quantity, Status..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />

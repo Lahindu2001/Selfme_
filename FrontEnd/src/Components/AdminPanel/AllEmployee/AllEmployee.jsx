@@ -28,7 +28,6 @@ function AllEmployee() {
     dob: true,
     contactNumber: true,
     hireDate: true,
-    createdAt: true,
   });
 
   // ------------------- COMPANY INFORMATION -------------------
@@ -189,7 +188,7 @@ function AllEmployee() {
           if (selectedFields[field]) {
             let label = field.replace(/([A-Z])/g, ' $1').trim().replace(/\b\w/g, (l) => l.toUpperCase());
             let value = employee[field] || 'N/A';
-            if (field === 'dob' || field === 'hireDate' || field === 'createdAt') {
+            if (field === 'dob' || field === 'hireDate') {
               value = value ? new Date(value).toLocaleDateString('en-GB') : 'N/A';
             }
             if (typeof value === 'string' && value.length > 50) {
@@ -294,7 +293,6 @@ function AllEmployee() {
                 <th>Employee DOB</th>
                 <th>Contact Number</th>
                 <th>Hire Date</th>
-                <th>Created At</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -307,7 +305,6 @@ function AllEmployee() {
                   <td>{employee.Employee_Dob ? new Date(employee.Employee_Dob).toLocaleDateString('en-GB') : 'N/A'}</td>
                   <td>{employee.contact_number || 'N/A'}</td>
                   <td>{employee.hire_date ? new Date(employee.hire_date).toLocaleDateString('en-GB') : 'N/A'}</td>
-                  <td>{employee.createdAt ? new Date(employee.createdAt).toLocaleDateString('en-GB') : 'N/A'}</td>
                   <td className="actions-cell">
                     <button
                       className="action-btn download-btn"

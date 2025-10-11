@@ -4,7 +4,26 @@ import { removeAuthToken } from '../../../utils/auth';
 import Nav from '../../Nav/Nav';
 import axios from 'axios';
 import jsPDF from 'jspdf';
+import { Bar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import './AllUser.css';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const URL = 'http://localhost:5000/all-users';
 
@@ -27,10 +46,36 @@ function AllUser() {
   const validateCeboNo = (value) => /^\d{10}$/.test(value);
   const validateDob = (value) => {
     if (!value) return false;
-    const today = new Date();
     const inputDate = new Date(value);
+    if (isNaN(inputDate.getTime())) return false;
+    const today = new Date();
     const ageInYears = (today - inputDate) / (1000 * 60 * 60 * 24 * 365.25);
     return inputDate < today && ageInYears >= 18;
+  };
+
+  const validateField = (name, value) => {
+    switch (name) {
+      case 'firstName':
+      case 'lastName':
+        return validateName(value) ? '' : value ? 'Only letters are allowed' : '';
+      case 'email':
+        return validateEmail(value) ? '' : value ? 'Invalid email format' : '';
+      case 'password':
+        return value && value.length < 6 ? 'Password must be at least 6 characters' : '';
+      case 'nic':
+        return validateNic(value, nicType) ? '' : value ? (nicType === 'New' ? 'NIC must be 12 digits' : 'NIC must be 9 digits + V/X') : '';
+      case 'phone':
+        return validatePhone(value) ? '' : value ? 'Phone must be exactly 10 digits' : '';
+      case 'ceboNo':
+        return validateCeboNo(value) ? '' : value ? 'CEBO must be exactly 10 digits' : '';
+      case 'dob':
+        return validateDob(value) ? '' : value ? 'Must be 18+ and a valid date' : '';
+      case 'role':
+      case 'status':
+        return value ? '' : 'Required';
+      default:
+        return '';
+    }
   };
 
   // State Management
@@ -39,7 +84,7 @@ function AllUser() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingUserId, setEditingUserId] = useState(null);
   const [selectedFields, setSelectedFields] = useState({
-    userid: true, // Added userid
+    userid: true,
     firstName: true,
     lastName: true,
     email: true,
@@ -52,7 +97,7 @@ function AllUser() {
     status: true,
   });
   const defaultInputs = {
-    userid: '', // Added userid
+    userid: '',
     firstName: '',
     lastName: '',
     email: '',
@@ -70,6 +115,15 @@ function AllUser() {
   const [errors, setErrors] = useState({});
   const [nicType, setNicType] = useState('New');
 
+  // Chart States
+  const [roleCounts, setRoleCounts] = useState({
+    Admin: 0,
+    Inventory: 0,
+    Finance: 0,
+    Technician: 0,
+    Customer: 0,
+  });
+
   // Company Information
   const companyInfo = {
     name: 'SelfMe',
@@ -84,7 +138,23 @@ function AllUser() {
   const fetchUsers = async () => {
     try {
       const res = await axios.get(URL);
-      setUsers(res.data.users || []);
+      const fetchedUsers = res.data.users || [];
+      setUsers(fetchedUsers);
+
+      // Compute role counts
+      const counts = {
+        Admin: 0,
+        Inventory: 0,
+        Finance: 0,
+        Technician: 0,
+        Customer: 0,
+      };
+      fetchedUsers.forEach((user) => {
+        if (user.role) {
+          counts[user.role] = (counts[user.role] || 0) + 1;
+        }
+      });
+      setRoleCounts(counts);
     } catch (err) {
       console.error('Error fetching users:', err);
       setUsers([]);
@@ -96,40 +166,189 @@ function AllUser() {
     fetchUsers();
   }, []);
 
+  // COLORFUL Chart Data with Gradients
+  const chartData = {
+    labels: ['Admin', 'Inventory', 'Finance', 'Technician', 'Customer'],
+    datasets: [{
+      label: '',
+      data: [
+        roleCounts.Admin, 
+        roleCounts.Inventory, 
+        roleCounts.Finance, 
+        roleCounts.Technician, 
+        roleCounts.Customer
+      ],
+      backgroundColor: [
+        'rgba(255, 99, 132, 0.8)',   // Pink/Red for Admin
+        'rgba(54, 162, 235, 0.8)',   // Blue for Inventory
+        'rgba(255, 206, 86, 0.8)',   // Yellow for Finance
+        'rgba(75, 192, 192, 0.8)',   // Teal for Technician
+        'rgba(153, 102, 255, 0.8)',  // Purple for Customer
+      ],
+      borderColor: [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+      ],
+      borderWidth: 3,
+      borderRadius: 12,
+      borderSkipped: false,
+      hoverBackgroundColor: [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+      ],
+      hoverBorderWidth: 4,
+    }],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: {
+      duration: 2000,
+      easing: 'easeInOutQuart',
+      onComplete: function(animation) {
+        const chart = animation.chart;
+        const ctx = chart.ctx;
+        ctx.font = 'bold 14px Poppins';
+        ctx.fillStyle = '#333';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        
+        chart.data.datasets.forEach((dataset, i) => {
+          const meta = chart.getDatasetMeta(i);
+          meta.data.forEach((bar, index) => {
+            const data = dataset.data[index];
+            if (data > 0) {
+              ctx.fillText(data, bar.x, bar.y - 5);
+            }
+          });
+        });
+      }
+    },
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: true,
+        text: 'Users Distribution by Role',
+        font: {
+          size: 20,
+          weight: 'bold',
+          family: 'Poppins',
+        },
+        color: '#2c3e50',
+        padding: {
+          top: 15,
+          bottom: 25,
+        },
+      },
+      tooltip: {
+        backgroundColor: 'rgba(44, 62, 80, 0.95)',
+        titleColor: 'white',
+        titleFont: {
+          size: 14,
+          weight: 'bold',
+        },
+        bodyColor: 'white',
+        bodyFont: {
+          size: 13,
+        },
+        borderColor: 'rgba(255, 255, 255, 0.3)',
+        borderWidth: 2,
+        cornerRadius: 10,
+        padding: 12,
+        displayColors: true,
+        callbacks: {
+          label: function(context) {
+            const label = context.dataset.label || '';
+            const value = context.parsed.y;
+            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+            return `${value} (${percentage}%)`;
+          }
+        }
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: '#34495e',
+          font: {
+            family: 'Poppins',
+            size: 12,
+            weight: '600',
+          },
+        },
+      },
+      y: {
+        grid: {
+          color: 'rgba(149, 165, 166, 0.2)',
+          borderDash: [5, 5],
+        },
+        ticks: {
+          color: '#34495e',
+          font: {
+            family: 'Poppins',
+            size: 12,
+            weight: '600',
+          },
+          stepSize: 1,
+        },
+        beginAtZero: true,
+      },
+    },
+  };
+
   // Input Handlers
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if ((name === 'firstName' || name === 'lastName') && value !== '' && !validateName(value)) {
+    if ((name === 'firstName' || name === 'lastName') && value && !validateName(value)) {
       return;
     }
-    if ((name === 'phone' || name === 'ceboNo') && value !== '' && !/^\d*$/.test(value)) {
+    if (name === 'nic' && value && !(nicType === 'New' ? /^\d*$/ : /^[\dVX]*$/).test(value)) {
       return;
     }
-    if (name === 'nic' && value !== '' && !(nicType === 'New' ? /^\d*$/ : /^[\dVX]*$/).test(value)) {
-      return;
+    if ((name === 'phone' || name === 'ceboNo')) {
+      if (!/^\d{0,10}$/.test(value)) {
+        return;
+      }
     }
     setInputs((prev) => ({ ...prev, [name]: value }));
+    const error = validateField(name, value);
     setErrors((prev) => ({
       ...prev,
-      [name]: '',
+      [name]: error,
     }));
   };
 
   const handleEditInputChange = (e) => {
     const { name, value } = e.target;
-    if ((name === 'firstName' || name === 'lastName') && value !== '' && !validateName(value)) {
+    if ((name === 'firstName' || name === 'lastName') && value && !validateName(value)) {
       return;
     }
-    if ((name === 'phone' || name === 'ceboNo') && value !== '' && !/^\d*$/.test(value)) {
+    if (name === 'nic' && value && !(nicType === 'New' ? /^\d*$/ : /^[\dVX]*$/).test(value)) {
       return;
     }
-    if (name === 'nic' && value !== '' && !(nicType === 'New' ? /^\d*$/ : /^[\dVX]*$/).test(value)) {
-      return;
+    if ((name === 'phone' || name === 'ceboNo')) {
+      if (!/^\d{0,10}$/.test(value)) {
+        return;
+      }
     }
     setEditInputs((prev) => ({ ...prev, [name]: value }));
+    const error = validateField(name, value);
     setErrors((prev) => ({
       ...prev,
-      [name]: '',
+      [name]: error,
     }));
   };
 
@@ -145,6 +364,20 @@ function AllUser() {
       if (nicType === 'Old' && !/[0-9VX]/.test(e.key)) e.preventDefault();
     }
   };
+
+  useEffect(() => {
+    if (inputs.nic) {
+      const error = validateField('nic', inputs.nic);
+      setErrors(prev => ({...prev, nic: error}));
+    }
+  }, [nicType]);
+
+  useEffect(() => {
+    if (editingUserId && editInputs.nic) {
+      const error = validateField('nic', editInputs.nic);
+      setErrors(prev => ({...prev, nic: error}));
+    }
+  }, [nicType, editingUserId]);
 
   // Validation
   const validateInputs = (inputData, isEdit = false) => {
@@ -165,10 +398,10 @@ function AllUser() {
       newErrors.nic = nicType === 'New' ? 'NIC must be 12 digits' : 'NIC must be 9 digits + V/X';
     }
     if (inputData.phone && !validatePhone(inputData.phone)) {
-      newErrors.phone = 'Phone must be 10 digits';
+      newErrors.phone = 'Phone must be exactly 10 digits';
     }
     if (inputData.ceboNo && !validateCeboNo(inputData.ceboNo)) {
-      newErrors.ceboNo = 'CEBO must be 10 digits';
+      newErrors.ceboNo = 'CEBO must be exactly 10 digits';
     }
     if (!inputData.dob || !validateDob(inputData.dob)) {
       newErrors.dob = 'Must be 18+ and a valid date';
@@ -204,7 +437,7 @@ function AllUser() {
   const startEdit = (user) => {
     setEditingUserId(user._id);
     setEditInputs({
-      userid: user.userid || '', // Added userid
+      userid: user.userid || '',
       firstName: user.firstName || '',
       lastName: user.lastName || '',
       email: user.email || '',
@@ -415,7 +648,7 @@ function AllUser() {
 
   // Define visible fields for table
   const visibleFields = [
-    'userid', // Added userid
+    'userid',
     'firstName',
     'lastName',
     'email',
@@ -437,6 +670,11 @@ function AllUser() {
           <h2 className="Title">User Management System</h2>
           <p className="subtitle">{companyInfo.name} - {companyInfo.tagline}</p>
         </div>
+
+        <div className="chart-container colorful-chart">
+          <Bar data={chartData} options={chartOptions} />
+        </div>
+
         <button className="add-user-toggle" onClick={() => setShowAddForm(!showAddForm)}>
           {showAddForm ? 'Hide Add User Form' : 'Show Add User Form'}
         </button>
@@ -525,11 +763,12 @@ function AllUser() {
               <div className="form-group">
                 <input
                   type="text"
-                  placeholder="Phone"
+                  placeholder="Phone (10 digits only)"
                   name="phone"
                   value={inputs.phone}
                   onChange={handleInputChange}
                   onKeyPress={(e) => handleKeyPress(e, 'phone')}
+                  maxLength={10}
                   aria-label="Phone"
                 />
                 {errors.phone && <p className="error">{errors.phone}</p>}
@@ -560,11 +799,12 @@ function AllUser() {
               <div className="form-group">
                 <input
                   type="text"
-                  placeholder="CEBO No"
+                  placeholder="CEBO No (10 digits only)"
                   name="ceboNo"
                   value={inputs.ceboNo}
                   onChange={handleInputChange}
                   onKeyPress={(e) => handleKeyPress(e, 'ceboNo')}
+                  maxLength={10}
                   aria-label="CEBO Number"
                 />
                 {errors.ceboNo && <p className="error">{errors.ceboNo}</p>}
@@ -720,6 +960,7 @@ function AllUser() {
                               onChange={handleEditInputChange}
                               aria-label="Password (optional)"
                             />
+                            {errors.password && <p className="error">{errors.password}</p>}
                           </div>
                           <div className="form-group">
                             <select name="nicType" value={nicType} onChange={(e) => setNicType(e.target.value)} aria-label="NIC Type">
@@ -742,11 +983,12 @@ function AllUser() {
                           <div className="form-group">
                             <input
                               type="text"
-                              placeholder="Phone"
+                              placeholder="Phone (10 digits only)"
                               name="phone"
                               value={editInputs.phone}
                               onChange={handleEditInputChange}
                               onKeyPress={(e) => handleKeyPress(e, 'phone')}
+                              maxLength={10}
                               aria-label="Phone"
                             />
                             {errors.phone && <p className="error">{errors.phone}</p>}
@@ -777,11 +1019,12 @@ function AllUser() {
                           <div className="form-group">
                             <input
                               type="text"
-                              placeholder="CEBO No"
+                              placeholder="CEBO No (10 digits only)"
                               name="ceboNo"
                               value={editInputs.ceboNo}
                               onChange={handleEditInputChange}
                               onKeyPress={(e) => handleKeyPress(e, 'ceboNo')}
+                              maxLength={10}
                               aria-label="CEBO Number"
                             />
                             {errors.ceboNo && <p className="error">{errors.ceboNo}</p>}

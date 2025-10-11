@@ -1,4 +1,4 @@
-/* AllFeedback.css - Professional Design for AllFeedback Component */
+/* Updated AllFeedback.css with Chart Container Styling */
 
 /* Main Content Container */
 .all-feedback-section {
@@ -54,6 +54,30 @@
   position: relative;
   z-index: 1;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Chart Container */
+.all-feedback-section .chart-container {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 25px rgba(46, 125, 50, 0.15);
+  border: 2px solid rgba(129, 199, 132, 0.2);
+  width: 100%;
+  height: 300px;
+  position: relative;
+  overflow: hidden;
+}
+
+.all-feedback-section .chart-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #2e7d32, #81c784, #66bb6a);
 }
 
 /* Add Feedback Toggle Button */
@@ -502,6 +526,11 @@
   .all-feedback-section .subtitle {
     font-size: 0.9rem;
   }
+  .all-feedback-section .chart-container {
+    height: 250px;
+    padding: 15px;
+    border-radius: 12px;
+  }
   .all-feedback-section .field-checkboxes {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
@@ -529,6 +558,11 @@
   .all-feedback-section .subtitle {
     font-size: 0.85rem;
   }
+  .all-feedback-section .chart-container {
+    height: 200px;
+    padding: 12px;
+    border-radius: 10px;
+  }
   .all-feedback-section .field-checkboxes {
     grid-template-columns: 1fr;
   }
@@ -553,6 +587,11 @@
   .all-feedback-section .Title {
     font-size: 1.6rem;
   }
+  .all-feedback-section .chart-container {
+    height: 180px;
+    padding: 10px;
+    border-radius: 8px;
+  }
   .all-feedback-section .download-options,
   .all-feedback-section .add-user-container {
     padding: 15px;
@@ -575,7 +614,8 @@
   .all-feedback-section .download-options,
   .all-feedback-section .search-bar,
   .all-feedback-section .action-btn,
-  .all-feedback-section .add-user-container {
+  .all-feedback-section .add-user-container,
+  .all-feedback-section .chart-container {
     display: none !important;
   }
   .all-feedback-section {

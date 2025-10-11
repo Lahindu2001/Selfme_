@@ -1,10 +1,21 @@
+// Updated AllFeedback.jsx with Pie Chart for Ratings
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../../utils/auth';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import Nav from '../../Nav/Nav';
+import { Pie } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import './AllFeedback.css';
+
+ChartJS.register(ArcElement, Title, Tooltip, Legend);
 
 const URL = 'http://localhost:5000/all-feedback';
 
@@ -28,6 +39,15 @@ function AllFeedback() {
     comments: true,
     created_at: true,
     feedback_id: true,
+  });
+
+  // Chart States
+  const [ratingCounts, setRatingCounts] = useState({
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
   });
 
   // ------------------- COMPANY INFORMATION -------------------
@@ -57,7 +77,17 @@ function AllFeedback() {
   const fetchFeedbacks = async () => {
     try {
       const res = await axios.get(URL);
-      setFeedbacks(res.data.feedbacks || []);
+      const fetchedFeedbacks = res.data.feedbacks || [];
+      setFeedbacks(fetchedFeedbacks);
+
+      // Compute rating counts
+      const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      fetchedFeedbacks.forEach((feedback) => {
+        if (feedback.rating) {
+          counts[feedback.rating] = (counts[feedback.rating] || 0) + 1;
+        }
+      });
+      setRatingCounts(counts);
     } catch (err) {
       console.error('Error fetching feedbacks:', err);
       setFeedbacks([]);
@@ -251,10 +281,72 @@ function AllFeedback() {
           <p className="subtitle">{companyInfo.name} - {companyInfo.tagline}</p>
         </div>
 
+        <div className="chart-container">
+          <Pie data={{
+            labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
+            datasets: [{
+              label: 'Feedback Ratings',
+              data: [ratingCounts[1], ratingCounts[2], ratingCounts[3], ratingCounts[4], ratingCounts[5]],
+              backgroundColor: [
+                '#ff6384', // 1 Star - Red
+                '#ff9f40', // 2 Stars - Orange
+                '#ffcd56', // 3 Stars - Yellow
+                '#4bc0c0', // 4 Stars - Teal
+                '#36a2eb', // 5 Stars - Blue
+              ],
+              borderColor: [
+                '#ff6384',
+                '#ff9f40',
+                '#ffcd56',
+                '#4bc0c0',
+                '#36a2eb',
+              ],
+              borderWidth: 2,
+            }],
+          }} options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'top',
+                labels: {
+                  font: {
+                    size: 12,
+                    family: 'Poppins',
+                  },
+                  color: '#2e7d32',
+                },
+              },
+              title: {
+                display: true,
+                text: 'Feedback Ratings Distribution',
+                font: {
+                  size: 16,
+                  weight: 'bold',
+                  family: 'Poppins',
+                },
+                color: '#2e7d32',
+                padding: {
+                  top: 10,
+                  bottom: 20,
+                },
+              },
+              tooltip: {
+                backgroundColor: 'rgba(46, 125, 50, 0.8)',
+                titleColor: 'white',
+                bodyColor: 'white',
+                borderColor: '#81c784',
+                borderWidth: 1,
+                cornerRadius: 8,
+              },
+            },
+          }} />
+        </div>
+
         <div className="search-bar">
           <input
             type="text"
-            placeholder="🔍 Search by Feedback ID, Customer ID, Rating, Comments..."
+            placeholder="Search by Feedback ID, Customer ID, Rating, Comments..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
