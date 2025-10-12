@@ -1,4 +1,3 @@
-
 const Staff = require('../../Model/FinanceManager/staffModel');
 const Counter = require('../../Model/AdminandSupplyModel/counterEmployeeModel');
 
@@ -37,12 +36,6 @@ exports.registerEmployee = async (req, res) => {
     }
     if (!hire_date) {
       return res.status(400).json({ error: 'Hire date is required' });
-    }
-    const hireDate = new Date(hire_date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (hireDate > today) {
-      return res.status(400).json({ error: 'Hire date cannot be in the future' });
     }
 
     // Generate empId
@@ -125,12 +118,6 @@ exports.updateEmployee = async (req, res) => {
     }
     if (!hire_date) {
       return res.status(400).json({ error: 'Hire date is required' });
-    }
-    const hireDate = new Date(hire_date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (hireDate > today) {
-      return res.status(400).json({ error: 'Hire date cannot be in the future' });
     }
 
     // Map dropdown value to boolean for isManager

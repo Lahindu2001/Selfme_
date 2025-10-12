@@ -1,5 +1,5 @@
 /* CompletedTasks.css */
-#completedTasksDashboard {
+.completed-tasks-container {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
@@ -7,21 +7,23 @@
   color: #333;
 }
 
-/* Search and Filter Section */
-#completedTasksDashboard .search-filter-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.page-title {
+  text-align: center;
   margin-bottom: 20px;
-  gap: 10px;
-  flex-wrap: wrap;
+  color: #1a3c5e;
 }
 
-#completedTasksDashboard .search-box {
-  flex: 1;
+.loading {
+  text-align: center;
+  color: #007bff;
+  font-style: italic;
 }
 
-#completedTasksDashboard .search-input {
+.search-bar {
+  margin-bottom: 20px;
+}
+
+.search-input {
   width: 100%;
   padding: 10px;
   font-size: 1rem;
@@ -31,57 +33,72 @@
   transition: border-color 0.3s ease;
 }
 
-#completedTasksDashboard .search-input:focus {
+.search-input:focus {
   border-color: #007bff;
 }
 
-#completedTasksDashboard .filter-container {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+.download-options {
+  margin-bottom: 40px;
+  text-align: center;
 }
 
-#completedTasksDashboard .filter-select {
-  padding: 10px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #f9f9f9;
-  outline: none;
-  transition: border-color 0.3s ease;
+.download-title {
+  margin-bottom: 10px;
+  color: #1a3c5e;
 }
 
-#completedTasksDashboard .filter-select:focus {
-  border-color: #007bff;
-  background-color: #fff;
+.download-buttons {
+  display: inline-block;
 }
 
-#completedTasksDashboard .cta-button {
-  padding: 10px 15px;
-  font-size: 1rem;
+.download-all-btn {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 1rem;
   transition: background-color 0.3s ease;
-  background-color: #90EE90;
-  color: #333;
 }
 
-#completedTasksDashboard .cta-button:hover {
-  background-color: #76c77c;
+.download-all-btn:hover {
+  background-color: #218838;
 }
 
-#completedTasksDashboard .cta-button.primary {
-  background-color: #007bff;
-  color: #fff;
+.download-note {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #666;
 }
 
-#completedTasksDashboard .cta-button.primary:hover {
-  background-color: #0056b3;
+.paid-tasks-list {
+  margin-bottom: 40px;
 }
 
-/* Table styles */
-#completedTasksDashboard .orders-table {
+.section-title {
+  margin-bottom: 10px;
+  color: #1a3c5e;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.task-count {
+  font-weight: bold;
+}
+
+.filtered-count {
+  color: #007bff;
+}
+
+.tasks-table {
   width: 100%;
   border-collapse: collapse;
   background-color: #fff;
@@ -90,100 +107,310 @@
   overflow: hidden;
 }
 
-#completedTasksDashboard .orders-table th,
-#completedTasksDashboard .orders-table td {
+.tasks-table th,
+.tasks-table td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid #e0e0e0;
 }
 
-#completedTasksDashboard .orders-table th {
-  background-color: #1a3c5e;
-  color: #fff;
+.tasks-table th {
+  background-color: #28a745;
+  color: white;
   font-weight: bold;
 }
 
-#completedTasksDashboard .orders-table tr:nth-child(even) {
+.tasks-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-#completedTasksDashboard .orders-table tr:hover {
+.tasks-table tr:hover {
   background-color: #e8f5e9;
 }
 
-/* Modal overlay and content */
-#completedTasksDashboard .modal-overlay {
+.selected-row {
+  background-color: #e9ecef !important;
+}
+
+.action-btn {
+  padding: 5px 10px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.3s ease;
+}
+
+.assign-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.assign-btn:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.assign-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.download-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.download-btn:hover {
+  background-color: #0056b3;
+}
+
+.no-tasks-message {
+  text-align: center;
+  color: #666;
+  padding: 20px;
+}
+
+.clear-search-btn {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.clear-search-btn:hover {
+  background-color: #5a6268;
+}
+
+/* Modal Styles */
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
-#completedTasksDashboard .modal-content {
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
   background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  width: 340px;
-  max-height: 80vh;
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 85vh;
   overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  text-align: center;
+  animation: modalSlideIn 0.3s ease-in-out;
+}
+
+@keyframes modalSlideIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-title {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.assigned-warning {
+  color: #ff9800;
+  font-weight: bold;
+  background-color: #fff3e0;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.assignment-form {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-group {
+  margin: 10px 0;
+  width: 100%;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.staff-list {
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.staff-item {
+  margin: 5px 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.checkbox-label input {
+  margin-right: 10px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s ease;
+}
+
+.form-input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.form-input.readonly {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 14px;
+  margin-top: 5px;
   text-align: center;
 }
 
-#completedTasksDashboard .modal-content h3 {
-  font-size: 1.5rem;
-  color: #1a3c5e;
-  margin-bottom: 10px;
+.form-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
 
-#completedTasksDashboard .modal-content p {
-  font-size: 1rem;
-  color: #333;
-  margin-bottom: 15px;
+.submit-btn,
+.cancel-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  min-width: 100px;
+}
+
+.submit-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.submit-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.cancel-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background-color: #5a6268;
+}
+
+.cancel-btn:disabled {
+  background-color: #495057;
+  cursor: not-allowed;
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
-  #completedTasksDashboard {
+  .completed-tasks-container {
     padding: 10px;
   }
 
-  #completedTasksDashboard .orders-table th,
-  #completedTasksDashboard .orders-table td {
+  .tasks-table th,
+  .tasks-table td {
     padding: 8px;
     font-size: 0.85rem;
   }
 
-  #completedTasksDashboard .modal-content {
-    width: 90%;
-    max-height: 90vh;
+  .modal-content {
+    width: 95%;
+    padding: 20px;
   }
 
-  #completedTasksDashboard .search-filter-container {
+  .table-header {
     flex-direction: column;
-  }
-
-  #completedTasksDashboard .filter-container {
-    flex-direction: column;
+    align-items: flex-start;
     gap: 5px;
+  }
+
+  .download-all-btn {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .submit-btn,
+  .cancel-btn {
+    width: 100%;
   }
 }
 
 @media (max-width: 600px) {
-  #completedTasksDashboard .orders-table {
+  .tasks-table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
   }
 
-  #completedTasksDashboard .cta-button {
-    font-size: 0.85rem;
-    padding: 6px 10px;
+  .action-btn {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    margin-right: 3px;
+  }
+
+  .submit-btn,
+  .cancel-btn {
+    font-size: 16px;
+    padding: 12px 24px;
   }
 }

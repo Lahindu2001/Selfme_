@@ -82,8 +82,9 @@ function RegisterEmployee() {
       const hireDate = new Date(form.hire_date);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      if (hireDate > today) {
-        newErrors.hire_date = "Hire date cannot be in the future";
+      const sevenDaysFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+      if (hireDate < today || hireDate > sevenDaysFromNow) {
+        newErrors.hire_date = "Hire date must be between today and the next 7 days";
       }
     }
     if (!form.isManager) {
@@ -129,7 +130,8 @@ function RegisterEmployee() {
   const today = new Date();
   const minDob = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate());
   const maxDob = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-  const maxHireDate = today.toISOString().split("T")[0];
+  const minHireDate = today.toISOString().split("T")[0];
+  const maxHireDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
 
   return (
     <TechnicianLayout>
@@ -203,6 +205,7 @@ function RegisterEmployee() {
               name="hire_date"
               value={form.hire_date}
               onChange={handleInput}
+              min={minHireDate}
               max={maxHireDate}
               required
             />
