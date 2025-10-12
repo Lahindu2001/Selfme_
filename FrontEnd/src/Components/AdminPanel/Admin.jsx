@@ -1,4 +1,4 @@
-
+// 7) Updated FrontEnd/src/Components/AdminPanel/Admin.jsx
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../utils/auth';
@@ -32,6 +32,7 @@ function Admin() {
   const [employeesCount, setEmployeesCount] = useState(0);
   const [suppliersCount, setSuppliersCount] = useState(0);
   const [requestsCount, setRequestsCount] = useState(0);
+  const [productsCount, setProductsCount] = useState(0);
   const navigate = useNavigate();
   const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
   const firstName = authUser.firstName || 'Admin';
@@ -51,18 +52,20 @@ function Admin() {
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const [usersRes, feedbacksRes, employeesRes, suppliersRes, requestsRes] = await Promise.all([
+        const [usersRes, feedbacksRes, employeesRes, suppliersRes, requestsRes, productsRes] = await Promise.all([
           axios.get('http://localhost:5000/all-users'),
           axios.get('http://localhost:5000/all-feedback'),
           axios.get('http://localhost:5000/all-employees'),
           axios.get('http://localhost:5000/all-suppliers'),
-          axios.get('http://localhost:5000/all-productrequests')
+          axios.get('http://localhost:5000/all-productrequests'),
+          axios.get('http://localhost:5000/products')
         ]);
         setUsersCount(usersRes.data.users?.length || 0);
         setFeedbacksCount(feedbacksRes.data.feedbacks?.length || 0);
         setEmployeesCount(employeesRes.data.employees?.length || 0);
         setSuppliersCount(suppliersRes.data.suppliers?.length || 0);
         setRequestsCount(requestsRes.data.productRequests?.length || 0);
+        setProductsCount(productsRes.data.length || 0);
       } catch (error) {
         console.error('Error fetching dashboard counts:', error);
       }
@@ -71,23 +74,25 @@ function Admin() {
   }, []);
 
   const chartData = {
-    labels: ['Users', 'Feedbacks', 'Employees', 'Suppliers', 'Requests'],
+    labels: ['Users', 'Feedbacks', 'Employees', 'Suppliers', 'Requests', 'Products'],
     datasets: [{
       label: '',
-      data: [usersCount, feedbacksCount, employeesCount, suppliersCount, requestsCount],
+      data: [usersCount, feedbacksCount, employeesCount, suppliersCount, requestsCount, productsCount],
       backgroundColor: [
         'rgba(54, 162, 235, 0.8)',   // Blue
         'rgba(75, 192, 192, 0.8)',   // Teal
         'rgba(153, 102, 255, 0.8)',  // Purple
         'rgba(255, 159, 64, 0.8)',   // Orange
-        'rgba(255, 99, 132, 0.8)'    // Red
+        'rgba(255, 99, 132, 0.8)',    // Red
+        'rgba(46, 125, 50, 0.8)'      // Green
       ],
       borderColor: [
         'rgba(54, 162, 235, 1)',
         'rgba(75, 192, 192, 1)',
         'rgba(153, 102, 255, 1)',
         'rgba(255, 159, 64, 1)',
-        'rgba(255, 99, 132, 1)'
+        'rgba(255, 99, 132, 1)',
+        'rgba(46, 125, 50, 1)'
       ],
       borderWidth: 2,
       borderRadius: 8,
@@ -105,7 +110,7 @@ function Admin() {
     onClick: (event, elements) => {
       if (elements.length > 0) {
         const index = elements[0].index;
-        const routes = ['/AllUsers', '/AllFeedback', '/AllEmployees', '/ViewSupplyAll', '/GetSupplyAll'];
+        const routes = ['/AllUsers', '/AllFeedback', '/AllEmployees', '/ViewSupplyAll', '/GetSupplyAll', '/AllProducts'];
         navigate(routes[index]);
       }
     },
@@ -256,6 +261,15 @@ function Admin() {
           </li>
           <li>
             <NavLink
+              to="/AllProducts"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="Product Management"
+            >
+              <span className="text">All Products</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
               to="#"
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
               title="Test"
@@ -328,13 +342,11 @@ function Admin() {
             </div>
 
             <div className="card">
-              <NavLink to="#" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
-                <h2>Test ({requestsCount})</h2>
-                <p>Test</p>
+              <NavLink to="/AllProducts" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
+                <h2>All Products ({productsCount})</h2>
+                <p>View all product details.</p>
               </NavLink>
             </div>
-
-
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+// 9) Updated FrontEnd/src/App.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
@@ -16,6 +17,7 @@ import AllFeedback from "./Components/AdminPanel/AllFeedback/AllFeedback";
 import AllEmployee from "./Components/AdminPanel/AllEmployee/AllEmployee";
 import ViewSupplyAll from "./Components/AdminPanel/VeiwSupplyAll/ViewSupplyAll";
 import GetSupplyAll from "./Components/AdminPanel/GetSupplyAll/GetSupplyAll";
+import AllProductFSuppli from "./Components/AdminPanel/AllProductFSuppli/AllProductFSuppli";
 
 //linuka
 import FinanceManager from "./Components/FinanceManager/FinanceManager";
@@ -149,6 +151,10 @@ function App() {
         <Route
           path="/AllEmployees"
           element={isAuthenticated() ? <AllEmployee /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/AllProducts"
+          element={isAuthenticated() ? <AllProductFSuppli /> : <Navigate to="/login" />}
         />
         <Route
           path="/ViewSupplyAll"

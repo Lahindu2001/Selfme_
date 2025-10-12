@@ -1,6 +1,6 @@
+// 4) Updated BackEnd/index.js
 const express = require("express");
 const mongoose = require("mongoose");
-
 
 const authRouter = require("./Routes/AuthRoutes");
 const cartRoutes = require("./Routes/UserRoutes/CartRoute");
@@ -23,7 +23,6 @@ const paymentRouter = require("./Routes/FinanceManager/PaymentRoutes");
 const updateFinancialStatusRoute = require("./Routes/FinanceManager/updateFinancialStatusRoute");
 const expenseRoutes = require("./Routes/FinanceManager/expenseRoutes");
 
-
 //lahindu
 const userRouter = require("./Routes/AdminandSupplyRoutes/userRoutes");
 const allFeedbackRouter = require("./Routes/AdminandSupplyRoutes/AllFeedbackRoutes");
@@ -31,14 +30,11 @@ const allEmployeeRouter = require("./Routes/AdminandSupplyRoutes/AllEmployeeRout
 const viewSupplyAllRoute = require("./Routes/AdminandSupplyRoutes/ViewSupplyAllRoute");
 const getSupplyAllRoute = require("./Routes/AdminandSupplyRoutes/GetSupplyAllRoute");
 
-
 //sulakshi
 const employeeRouter = require("./Routes/TechRoute/employeeRoutes");
 //const assignmentRoutes = require("./Routes/TechRoute/assignmentRoutes");
 const getPaidPaymentRoute = require("./Routes/TechRoute/GetPaisPaymentRoute");
 const paidTaskRouter = require("./Routes/TechRoute/PaidRoute");
-
-
 
 //hasaranga
 const inventoryInvoiceRoutes = require("./Routes/item_routes/inventoryInvoiceRoutes");
@@ -48,7 +44,6 @@ const productRequestRoutes = require("./Routes/item_routes/productRequestRoutes"
 const supplierRouter = require("./Routes/item_routes/supplierRoutes");
 const orderRoutes = require("./Routes/item_routes/orderRoutes");
 const stockOutRoutes = require("./Routes/item_routes/stockOutRoutes");
-
 
 const path = require("path");
 const fs = require("fs");
@@ -95,7 +90,6 @@ app.use("/paid-payments", getPaidPaymentRoute);
 app.use("/api/tech/paidtasks", paidTaskRouter);
 app.use("/api/finance/jobassignings", jobAssigningRouter); // Updated to match frontend
 
-
 //hasaranga
 app.use("/api/inventory-invoices", inventoryInvoiceRoutes); // ✅ fixed route
 app.use("/api/invoice-orders", invoiceOrderRoutes);
@@ -111,7 +105,6 @@ app.use("/api/finance/salary", salaryRouter);
 app.use("/api/finance/staff", staffRouter);
 app.use("/api/finance/job-assigning", jobAssigningRouter);
 app.use("/api/finance/payments", paymentRouter);
-
 
 // ------------------- DATABASE -------------------
 mongoose

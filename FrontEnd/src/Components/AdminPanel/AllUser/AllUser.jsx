@@ -642,8 +642,16 @@ function AllUser() {
   const handleDownloadSingle = (user) => generatePDF([user], `User Report - ${user.firstName}`);
 
   // Filtered Users
-  const filteredUsers = users.filter((user) =>
-    (user.firstName?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+ const filteredUsers = users.filter(
+    (user) =>
+      (user.firstName?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (user.lastName?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (user.email?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (user.nic || '').includes(searchTerm) ||
+      (user.phone || '').includes(searchTerm) ||
+      (user.role?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (user.status?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (user.userid || '').includes(searchTerm)
   );
 
   // Define visible fields for table
@@ -848,10 +856,10 @@ function AllUser() {
         <div className="search-bar">
           <input
             type="text"
-            placeholder="Search by First Name..."
+            placeholder="Search by Name, Email, NIC, Phone, Role or Status..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            aria-label="Search by First Name"
+            aria-label="Search by Name, Email, NIC, Phone, Role or Status"
           />
         </div>
         <div className="download-options professional-section">

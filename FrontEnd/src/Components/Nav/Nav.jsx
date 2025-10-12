@@ -1,21 +1,21 @@
-// 7) Updated nav.jsx
+// 8) Updated FrontEnd/src/Components/Nav/Nav.jsx
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../utils/auth';
 import './Nav.css';
-function Nav() {
+function Nav({ firstName, handleLogout }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
-  const firstName = authUser.firstName || 'Admin';
+  const name = firstName || (authUser.firstName || 'Admin');
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-  const handleLogout = () => {
+  const onLogout = handleLogout || (() => {
     removeAuthToken();
     localStorage.removeItem('authUser');
     navigate('/login');
-  };
+  });
   const companyInfo = {
     name: 'SelfMe',
     logo: '/newLogo.png', // Ensure this logo exists in the public directory
@@ -85,20 +85,21 @@ function Nav() {
             <span className="text">All Product Requests</span>
           </NavLink>
         </li>
-         <li>
+        <li>
           <NavLink
-            to="#"
+            to="/AllProducts"
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-            title="test"
+            title="Product Management"
           >
-            <span className="text">test</span>
+            <span className="text">All Products</span>
           </NavLink>
         </li>
+         
       
       </ul>
       <div className="sidebar-user-info">
-        <span className="user-name">Welcome, {firstName}</span>
-        <button className="logout-btn" onClick={handleLogout}>
+        <span className="user-name">Welcome, {name}</span>
+        <button className="logout-btn" onClick={onLogout}>
        
           <span className="text">Logout</span>
         </button>
