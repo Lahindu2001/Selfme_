@@ -47,7 +47,7 @@ const Login = () => {
           navigate("/FinanceManager");
           break;
         case "Technician":
-          navigate("/assigned-tasks");
+          navigate("/technicianDashboard");
           break;
         case "Customer":
           navigate("/"); // Redirect to home

@@ -35,6 +35,17 @@ function TechnicianLayout({ children }) {
           </button>
         </div>
         <ul className="sidebar-menu">
+
+          <li>
+            <NavLink
+              to="/technicianDashboard"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="Submit Report"
+            >
+              <span className="text">Technician Dashboard</span>
+            </NavLink>
+          </li>
+          
           <li>
             <NavLink
               to="/register-employee"
