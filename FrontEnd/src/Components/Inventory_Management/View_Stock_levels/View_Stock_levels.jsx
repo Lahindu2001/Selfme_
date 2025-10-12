@@ -124,225 +124,226 @@ function View_Stock_Levels() {
 
   const stats = calculateStats();
 
+  // Professional PDF Generation with consistent header colors
   // Professional PDF Generation with price columns
-  const generatePDF = (itemsToExport, reportType = "all") => {
-    setPdfLoading(true);
-    try {
-      const doc = new jsPDF("p", "mm", "a4");
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const margin = 15;
+const generatePDF = (itemsToExport, reportType = "all") => {
+  setPdfLoading(true);
+  try {
+    const doc = new jsPDF("p", "mm", "a4");
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 15;
 
-      const date = new Date();
-      const formattedDate = date.toLocaleDateString();
-      const formattedTime = date.toLocaleTimeString();
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString();
+    const formattedTime = date.toLocaleTimeString();
 
-      // --- Professional Header ---
-      doc.addImage(logo, "PNG", margin, 8, 20, 20);
+    // --- Professional Header ---
+    doc.addImage(logo, "PNG", margin, 8, 20, 20);
+    
+    // Company Info
+    doc.setFontSize(16);
+    doc.setTextColor(33, 37, 41);
+    doc.text("SelfMe Pvt Ltd", margin + 25, 15);
+    
+    doc.setFontSize(9);
+    doc.setTextColor(100, 100, 100);
+    doc.text("No/346, Madalanda, Dompe, Colombo, Sri Lanka", margin + 25, 21);
+    doc.text("Phone: +94 717 882 883 | Email: Selfmepvtltd@gmail.com", margin + 25, 26);
+
+    // Header line
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.5);
+    doc.line(margin, 32, pageWidth - margin, 32);
+
+    // --- Report Title ---
+    doc.setFontSize(14);
+    doc.setTextColor(0, 53, 128);
+    const title = reportType === "selected" 
+      ? "SELECTED ITEMS STOCK REPORT" 
+      : "INVENTORY STOCK REPORT";
+    doc.text(title, pageWidth / 2, 45, { align: "center" });
+
+    // --- Report Details ---
+    doc.setFontSize(10);
+    doc.setTextColor(80, 80, 80);
+    doc.text(`Generated on: ${formattedDate} at ${formattedTime}`, margin, 55);
+    doc.text(`Total Items: ${itemsToExport.length}`, margin, 62);
+
+    // --- Calculate total capital value for the report ---
+    const reportTotalCapital = itemsToExport.reduce((total, item) => {
+      const purchasePrice = item.purchase_price || 0;
+      const quantity = item.quantity_in_stock || 0;
+      return total + (purchasePrice * quantity);
+    }, 0);
+
+    doc.text(`Total Capital Value: Rs. ${reportTotalCapital.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, margin, 69);
+
+    // --- Professional Table Setup with Price Columns ---
+    const tableColumns = [
+      { header: "#", dataKey: "index", width: 8 },
+      { header: "Serial Number", dataKey: "serial", width: 25 },
+      { header: "Product Name", dataKey: "name", width: 35 },
+      { header: "Category", dataKey: "category", width: 30 },
+      { header: "Stock Qty", dataKey: "stock", width: 15 },
+      { header: "Reorder Level", dataKey: "reorder", width: 18 },
+      { header: "Unit Price (Rs.)", dataKey: "unitPrice", width: 20 },
+      { header: "Total Value (Rs.)", dataKey: "totalValue", width: 22 },
+      { header: "Status", dataKey: "status", width: 20 }
+    ];
+
+    const tableData = itemsToExport.map((item, index) => {
+      const unitPrice = item.purchase_price || 0;
+      const totalValue = unitPrice * (item.quantity_in_stock || 0);
       
-      // Company Info
-      doc.setFontSize(16);
-      doc.setTextColor(33, 37, 41);
-      doc.text("SelfMe Pvt Ltd", margin + 25, 15);
-      
-      doc.setFontSize(9);
-      doc.setTextColor(100, 100, 100);
-      doc.text("No/346, Madalanda, Dompe, Colombo, Sri Lanka", margin + 25, 21);
-      doc.text("Phone: +94 717 882 883 | Email: Selfmepvtltd@gmail.com", margin + 25, 26);
+      return {
+        index: index + 1,
+        serial: item.serial_number,
+        name: item.item_name.length > 25 ? item.item_name.substring(0, 25) + "..." : item.item_name,
+        category: item.category.length > 20 ? item.category.substring(0, 20) + "..." : item.category,
+        stock: item.quantity_in_stock.toString(),
+        reorder: item.re_order_level.toString(),
+        unitPrice: unitPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
+        totalValue: totalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
+        status: getStatusText(item.quantity_in_stock, item.re_order_level)
+      };
+    });
 
-      // Header line
-      doc.setDrawColor(200, 200, 200);
-      doc.setLineWidth(0.5);
-      doc.line(margin, 32, pageWidth - margin, 32);
-
-      // --- Report Title ---
-      doc.setFontSize(14);
-      doc.setTextColor(0, 53, 128);
-      const title = reportType === "selected" 
-        ? "SELECTED ITEMS STOCK REPORT" 
-        : "INVENTORY STOCK REPORT";
-      doc.text(title, pageWidth / 2, 45, { align: "center" });
-
-      // --- Report Details ---
-      doc.setFontSize(10);
-      doc.setTextColor(80, 80, 80);
-      doc.text(`Generated on: ${formattedDate} at ${formattedTime}`, margin, 55);
-      doc.text(`Total Items: ${itemsToExport.length}`, margin, 62);
-
-      // --- Calculate total capital value for the report ---
-      const reportTotalCapital = itemsToExport.reduce((total, item) => {
-        const purchasePrice = item.purchase_price || 0;
-        const quantity = item.quantity_in_stock || 0;
-        return total + (purchasePrice * quantity);
-      }, 0);
-
-      doc.text(`Total Capital Value: Rs. ${reportTotalCapital.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, margin, 69);
-
-      // --- Professional Table Setup with Price Columns ---
-      const tableColumns = [
-        { header: "#", dataKey: "index", width: 8 },
-        { header: "Serial Number", dataKey: "serial", width: 25 },
-        { header: "Product Name", dataKey: "name", width: 35 },
-        { header: "Category", dataKey: "category", width: 30 },
-        { header: "Stock Qty", dataKey: "stock", width: 15 },
-        { header: "Reorder Level", dataKey: "reorder", width: 18 },
-        { header: "Unit Price (Rs.)", dataKey: "unitPrice", width: 20 },
-        { header: "Total Value (Rs.)", dataKey: "totalValue", width: 22 },
-        { header: "Status", dataKey: "status", width: 20 }
-      ];
-
-      const tableData = itemsToExport.map((item, index) => {
-        const unitPrice = item.purchase_price || 0;
-        const totalValue = unitPrice * (item.quantity_in_stock || 0);
-        
-        return {
-          index: index + 1,
-          serial: item.serial_number,
-          name: item.item_name.length > 25 ? item.item_name.substring(0, 25) + "..." : item.item_name,
-          category: item.category.length > 20 ? item.category.substring(0, 20) + "..." : item.category,
-          stock: item.quantity_in_stock.toString(),
-          reorder: item.re_order_level.toString(),
-          unitPrice: unitPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
-          totalValue: totalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
-          status: getStatusText(item.quantity_in_stock, item.re_order_level)
-        };
-      });
-
-      // --- AutoTable with Professional Styling ---
-      doc.autoTable({
-        columns: tableColumns,
-        body: tableData,
-        startY: 75,
-        margin: { left: margin, right: margin },
-        theme: 'grid',
-        styles: {
-          fontSize: 7,
-          cellPadding: 2,
-          textColor: [33, 37, 41],
-          lineColor: [200, 200, 200],
-          lineWidth: 0.1
+    // --- AutoTable with Professional Styling ---
+    doc.autoTable({
+      columns: tableColumns,
+      body: tableData,
+      startY: 75,
+      margin: { left: margin, right: margin },
+      theme: 'grid',
+      styles: {
+        fontSize: 7,
+        cellPadding: 2,
+        textColor: [33, 37, 41],
+        lineColor: [200, 200, 200],
+        lineWidth: 0.1
+      },
+      headStyles: {
+        fillColor: [0, 53, 128], // Consistent blue color for ALL headers
+        textColor: 255, // White text for ALL headers
+        fontStyle: 'bold',
+        fontSize: 8,
+        cellPadding: 3,
+        halign: 'center'
+      },
+      bodyStyles: {
+        fontSize: 7,
+        cellPadding: 2,
+        valign: 'middle'
+      },
+      columnStyles: {
+        index: { 
+          cellWidth: 8, 
+          halign: 'center',
+          fontStyle: 'bold'
         },
-        headStyles: {
-          fillColor: [0, 53, 128], // Consistent blue color for all headers
-          textColor: 255,
-          fontStyle: 'bold',
-          fontSize: 8,
-          cellPadding: 3,
+        serial: { 
+          cellWidth: 25, 
+          halign: 'center',
+          fontStyle: 'bold'
+        },
+        name: { 
+          cellWidth: 35, 
+          halign: 'left'
+        },
+        category: { 
+          cellWidth: 30, 
+          halign: 'left'
+        },
+        stock: { 
+          cellWidth: 15, 
+          halign: 'center',
+          fontStyle: 'bold'
+        },
+        reorder: { 
+          cellWidth: 18, 
           halign: 'center'
         },
-        bodyStyles: {
-          fontSize: 7,
-          cellPadding: 2,
-          valign: 'middle'
+        unitPrice: { 
+          cellWidth: 20, 
+          halign: 'right',
+          fontStyle: 'bold'
         },
-        columnStyles: {
-          index: { 
-            cellWidth: 8, 
-            halign: 'center',
-            fontStyle: 'bold'
-          },
-          serial: { 
-            cellWidth: 25, 
-            halign: 'center',
-            fontStyle: 'bold'
-          },
-          name: { 
-            cellWidth: 35, 
-            halign: 'left'
-          },
-          category: { 
-            cellWidth: 30, 
-            halign: 'left'
-          },
-          stock: { 
-            cellWidth: 15, 
-            halign: 'center',
-            fontStyle: 'bold'
-          },
-          reorder: { 
-            cellWidth: 18, 
-            halign: 'center'
-          },
-          unitPrice: { 
-            cellWidth: 20, 
-            halign: 'right',
-            fontStyle: 'bold'
-          },
-          totalValue: { 
-            cellWidth: 22, 
-            halign: 'right',
-            fontStyle: 'bold'
-          },
-          status: { 
-            cellWidth: 20, 
-            halign: 'center'
-          }
+        totalValue: { 
+          cellWidth: 22, 
+          halign: 'right',
+          fontStyle: 'bold'
         },
-        didParseCell: function(data) {
-          // Color code status cells
-          if (data.column.dataKey === 'status') {
-            const status = data.cell.raw;
-            if (status === 'Out of Stock') {
-              data.cell.styles.fillColor = [248, 215, 218];
-              data.cell.styles.textColor = [114, 28, 36];
-            } else if (status === 'Reorder Needed') {
-              data.cell.styles.fillColor = [255, 243, 205];
-              data.cell.styles.textColor = [133, 100, 4];
-            } else if (status === 'Low Stock') {
-              data.cell.styles.fillColor = [255, 234, 167];
-              data.cell.styles.textColor = [133, 100, 4];
-            } else {
-              data.cell.styles.fillColor = [212, 237, 218];
-              data.cell.styles.textColor = [21, 87, 36];
-            }
-          }
-          
-          // Style price columns
-          if (data.column.dataKey === 'unitPrice' || data.column.dataKey === 'totalValue') {
-            data.cell.styles.fontStyle = 'bold';
-            data.cell.styles.textColor = [0, 100, 0]; // Dark green for money
-          }
-        },
-        didDrawPage: function(data) {
-          // Professional footer
-          const pageCount = doc.internal.getNumberOfPages();
-          const currentPage = data.pageNumber;
-          
-          doc.setFontSize(8);
-          doc.setTextColor(150, 150, 150);
-          
-          // Footer text only - removed confidential watermark
-          doc.text(
-            `SelfMe Inventory Management System - Page ${currentPage} of ${pageCount}`,
-            pageWidth / 2,
-            doc.internal.pageSize.height - 10,
-            { align: "center" }
-          );
+        status: { 
+          cellWidth: 20, 
+          halign: 'center'
         }
-      });
-
-      // --- Final Signature Section ---
-      const finalY = doc.lastAutoTable.finalY + 15;
-      if (finalY < doc.internal.pageSize.height - 30) {
-        doc.setFontSize(10);
-        doc.setTextColor(80, 80, 80);
-        doc.text("Authorized Signature:", margin, finalY);
-        doc.line(margin + 50, finalY + 1, margin + 150, finalY + 1);
+      },
+      didParseCell: function(data) {
+        // Color code status cells (body only)
+        if (data.section === 'body' && data.column.dataKey === 'status') {
+          const status = data.cell.raw;
+          if (status === 'Out of Stock') {
+            data.cell.styles.fillColor = [248, 215, 218];
+            data.cell.styles.textColor = [114, 28, 36];
+          } else if (status === 'Reorder Needed') {
+            data.cell.styles.fillColor = [255, 243, 205];
+            data.cell.styles.textColor = [133, 100, 4];
+          } else if (status === 'Low Stock') {
+            data.cell.styles.fillColor = [255, 234, 167];
+            data.cell.styles.textColor = [133, 100, 4];
+          } else {
+            data.cell.styles.fillColor = [212, 237, 218];
+            data.cell.styles.textColor = [21, 87, 36];
+          }
+        }
         
-        doc.text("Date:", pageWidth - margin - 50, finalY);
-        doc.line(pageWidth - margin - 30, finalY + 1, pageWidth - margin, finalY + 1);
+        // Style price columns (body only)
+        if (data.section === 'body' && (data.column.dataKey === 'unitPrice' || data.column.dataKey === 'totalValue')) {
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.textColor = [0, 100, 0]; // Dark green for money
+        }
+      },
+      didDrawPage: function(data) {
+        // Professional footer
+        const pageCount = doc.internal.getNumberOfPages();
+        const currentPage = data.pageNumber;
+        
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        
+        // Footer text only - removed confidential watermark
+        doc.text(
+          `SelfMe Inventory Management System - Page ${currentPage} of ${pageCount}`,
+          pageWidth / 2,
+          doc.internal.pageSize.height - 10,
+          { align: "center" }
+        );
       }
+    });
 
-      // --- Save PDF ---
-      const fileName = `Stock_Report_${reportType}_${formattedDate.replace(/\//g, "-")}.pdf`;
-      doc.save(fileName);
-
-    } catch (err) {
-      console.error("PDF generation error:", err);
-      alert("Error generating PDF. Please try again.");
-    } finally {
-      setPdfLoading(false);
+    // --- Final Signature Section ---
+    const finalY = doc.lastAutoTable.finalY + 15;
+    if (finalY < doc.internal.pageSize.height - 30) {
+      doc.setFontSize(10);
+      doc.setTextColor(80, 80, 80);
+      doc.text("Authorized Signature:", margin, finalY);
+      doc.line(margin + 50, finalY + 1, margin + 150, finalY + 1);
+      
+      doc.text("Date:", pageWidth - margin - 50, finalY);
+      doc.line(pageWidth - margin - 30, finalY + 1, pageWidth - margin, finalY + 1);
     }
-  };
+
+    // --- Save PDF ---
+    const fileName = `Stock_Report_${reportType}_${formattedDate.replace(/\//g, "-")}.pdf`;
+    doc.save(fileName);
+
+  } catch (err) {
+    console.error("PDF generation error:", err);
+    alert("Error generating PDF. Please try again.");
+  } finally {
+    setPdfLoading(false);
+  }
+};
 
   const handleAllItemsPDF = () => {
     if (items.length === 0) return alert("No items in inventory.");
