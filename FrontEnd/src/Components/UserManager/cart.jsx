@@ -1,15 +1,15 @@
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Nav/Navbar";
 import Footer from "../Footer/Footer";
+import "./Cart.css";
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [updating, setUpdating] = useState({}); // Track which items are being updated
+  const [updating, setUpdating] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,7 +37,7 @@ function Cart() {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        timeout: 10000 // 10 second timeout
+        timeout: 10000
       });
       console.log("✅ API Response:", {
         status: res.status,
@@ -213,227 +213,114 @@ function Cart() {
   console.log("📊 Rendering - Items:", cartItems.length, "Total: Rs.", grandTotal);
 
   return (
-    <div>
+    <div className="cart-main-container">
       <Navbar />
-      <div style={{
-        minHeight: "100vh",
-        backgroundColor: "#f5f5f5",
-        padding: "20px 0",
-        marginTop: "60px"
-      }}>
-        <div style={{
-          maxWidth: "900px",
-          margin: "0 auto",
-          backgroundColor: "white",
-          borderRadius: "8px",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-          padding: "20px"
-        }}>
-          <h1 style={{ textAlign: "center", marginBottom: "20px", color: "#333" }}>
-            🛒 My Cart
-          </h1>
+      <div className="cart-content-wrapper">
+        <div className="cart-card">
+          <div className="cart-header">
+            <h1 className="cart-title">🛒 My Cart</h1>
+          </div>
+          
           {loading && (
-            <div style={{ textAlign: "center", padding: "50px" }}>
-              <div style={{ fontSize: "3rem", marginBottom: "20px" }}>⏳</div>
-              <h2>Loading your cart...</h2>
-              <p style={{ color: "#666" }}>Just a moment while we fetch your items!</p>
+            <div className="cart-loading-container">
+              <div className="cart-loading-icon">⏳</div>
+              <h2 className="cart-loading-text">Loading your cart...</h2>
+              <p className="cart-loading-subtext">Just a moment while we fetch your items!</p>
             </div>
           )}
+          
           {error && (
-            <div style={{
-              textAlign: "center",
-              color: "red",
-              padding: "20px",
-              backgroundColor: "#fee",
-              borderRadius: "5px",
-              marginBottom: "20px",
-              border: "1px solid #fcc"
-            }}>
-              <strong>❌ Error:</strong> {error}
-              <br />
-              <br />
-              <button
-                onClick={fetchCart}
-                disabled={loading}
-                style={{
-                  padding: "8px 16px",
-                  background: loading ? "#6c757d" : "#007BFF",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: loading ? "not-allowed" : "pointer",
-                  marginRight: "10px",
-                  opacity: loading ? 0.6 : 1
-                }}
-              >
-                {loading ? "⏳ Loading..." : "🔄 Retry"}
-              </button>
-            
-              {error.includes("login") && (
+            <div className="cart-error-container">
+              <div className="cart-error-message">
+                <strong>❌ Error:</strong> {error}
+              </div>
+              <div className="cart-error-actions">
                 <button
-                  onClick={() => navigate("/login")}
-                  style={{
-                    padding: "8px 16px",
-                    background: "#dc3545",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer"
-                  }}
+                  onClick={fetchCart}
+                  disabled={loading}
+                  className="cart-retry-btn"
                 >
-                  🔐 Login
+                  {loading ? "⏳ Loading..." : "🔄 Retry"}
                 </button>
-              )}
+                {error.includes("login") && (
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="cart-login-btn"
+                  >
+                    🔐 Login
+                  </button>
+                )}
+              </div>
             </div>
           )}
+          
           {!loading && !error && (
             <div>
-              <div style={{
-                marginBottom: "30px",
-                paddingBottom: "15px",
-                borderBottom: "2px solid #ddd"
-              }}>
-                <h2 style={{ margin: "0 0 5px 0", color: "#333" }}>
-                  Your Shopping Cart
-                </h2>
-                <p style={{ margin: 0, color: "#666" }}>
+              <div className="cart-info-header">
+                <h2 className="cart-info-title">Your Shopping Cart</h2>
+                <p className="cart-info-subtitle">
                   {cartItems.length} item{cartItems.length !== 1 ? 's' : ''} selected
                 </p>
               </div>
-              <table style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                marginBottom: "20px",
-                backgroundColor: "white",
-                borderRadius: "8px",
-                overflow: "hidden",
-                boxShadow: "0 2px 5px rgba(0,0,0,0.1)"
-              }}>
-                <thead>
-                  <tr style={{ backgroundColor: "#007BFF", color: "white" }}>
-                    <th style={{ padding: "15px", textAlign: "left", border: "none" }}>
-                      Item
-                    </th>
-                    <th style={{ padding: "15px", textAlign: "center", border: "none" }}>
-                      Quantity
-                    </th>
-                    <th style={{ padding: "15px", textAlign: "center", border: "none" }}>
-                      Unit Price
-                    </th>
-                    <th style={{ padding: "15px", textAlign: "center", border: "none" }}>
-                      Subtotal
-                    </th>
-                    <th style={{ padding: "15px", textAlign: "center", border: "none", width: "80px" }}>
-                      Actions
-                    </th>
+              
+              <table className="cart-table">
+                <thead className="cart-table-header">
+                  <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Subtotal</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {cartItems.length > 0 ? (
                     cartItems.map((item, index) => (
-                      <tr key={item._id || `item-${index}`} style={{
-                        backgroundColor: index % 2 === 0 ? "#f8f9fa" : "white"
-                      }}>
-                        <td style={{
-                          padding: "15px",
-                          textAlign: "left",
-                          borderBottom: "1px solid #ddd",
-                          verticalAlign: "middle"
-                        }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-                            <div style={{ flexShrink: 0 }}>
+                      <tr key={item._id || `item-${index}`} className="cart-table-row">
+                        <td className="cart-item-cell">
+                          <div className="cart-item-content">
+                            <div className="cart-item-image-container">
                               {item.itemId?.item_image ? (
                                 <img
                                   src={`http://localhost:5000${item.itemId.item_image}`}
                                   alt={item.itemId?.item_name || "Product"}
-                                  style={{
-                                    width: "60px",
-                                    height: "60px",
-                                    objectFit: "cover",
-                                    borderRadius: "4px",
-                                    border: "1px solid #ddd"
-                                  }}
+                                  className="cart-item-image"
                                   onError={(e) => {
-                                    e.target.src = "https://via.placeholder.com/60x60/007BFF/FFFFFF?text=?";
+                                    e.target.src = "https://via.placeholder.com/70x70/81c784/FFFFFF?text=SOLAR";
                                   }}
                                 />
                               ) : (
-                                <div style={{
-                                  width: "60px",
-                                  height: "60px",
-                                  backgroundColor: "#e9ecef",
-                                  borderRadius: "4px",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  color: "#6c757d",
-                                  fontSize: "12px"
-                                }}>
+                                <div className="cart-item-placeholder">
                                   No Image
                                 </div>
                               )}
                             </div>
-                            <div style={{ flex: 1 }}>
-                              <div style={{ fontWeight: "600", color: "#333", marginBottom: "5px" }}>
+                            <div className="cart-item-details">
+                              <div className="cart-item-name">
                                 {item.itemId?.item_name || "Solar Product"}
                               </div>
-                              <div style={{ fontSize: "14px", color: "#666", marginBottom: "8px" }}>
+                              <div className="cart-item-description">
                                 {item.itemId?.description || "High-quality solar solution"}
                               </div>
-                              <div style={{ fontSize: "12px", color: "#999" }}>
+                              <div className="cart-item-date">
                                 Added: {item.created_at ? new Date(item.created_at).toLocaleDateString() : "Unknown"}
                               </div>
                             </div>
                           </div>
                         </td>
-                        <td style={{
-                          padding: "15px",
-                          textAlign: "center",
-                          borderBottom: "1px solid #ddd",
-                          verticalAlign: "middle"
-                        }}>
-                          <div style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "8px",
-                            backgroundColor: "#f8f9fa",
-                            borderRadius: "20px",
-                            padding: "5px 10px",
-                            border: "1px solid #dee2e6"
-                          }}>
+                        <td className="cart-quantity-cell">
+                          <div className="cart-quantity-controls">
                             <button
                               onClick={() => updateQuantity(item._id, item.quantity - 1)}
                               disabled={updating[item._id] || item.quantity <= 1}
-                              style={{
-                                width: "24px",
-                                height: "24px",
-                                border: "none",
-                                borderRadius: "50%",
-                                backgroundColor: (updating[item._id] || item.quantity <= 1) ? "#6c757d" : "#dc3545",
-                                color: "white",
-                                cursor: (updating[item._id] || item.quantity <= 1) ? "not-allowed" : "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontSize: "14px",
-                                fontWeight: "bold",
-                                opacity: (updating[item._id] || item.quantity <= 1) ? 0.6 : 1,
-                                transition: "all 0.2s ease"
-                              }}
+                              className="cart-quantity-btn cart-quantity-decrease"
                               title="Decrease quantity"
                             >
                               −
                             </button>
-                            <span style={{
-                              minWidth: "30px",
-                              textAlign: "center",
-                              fontWeight: "600",
-                              color: "#333",
-                              fontSize: "16px"
-                            }}>
+                            <span className="cart-quantity-display">
                               {updating[item._id] ? (
-                                <span style={{ color: "#007BFF" }}>⏳</span>
+                                <span className="cart-quantity-loading">⏳</span>
                               ) : (
                                 item.quantity || 1
                               )}
@@ -441,73 +328,28 @@ function Cart() {
                             <button
                               onClick={() => updateQuantity(item._id, item.quantity + 1)}
                               disabled={updating[item._id]}
-                              style={{
-                                width: "24px",
-                                height: "24px",
-                                border: "none",
-                                borderRadius: "50%",
-                                backgroundColor: updating[item._id] ? "#6c757d" : "#28a745",
-                                color: "white",
-                                cursor: updating[item._id] ? "not-allowed" : "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontSize: "14px",
-                                fontWeight: "bold",
-                                opacity: updating[item._id] ? 0.6 : 1,
-                                transition: "all 0.2s ease"
-                              }}
+                              className="cart-quantity-btn cart-quantity-increase"
                               title="Increase quantity"
                             >
                               +
                             </button>
                           </div>
                         </td>
-                        <td style={{
-                          padding: "15px",
-                          textAlign: "center",
-                          borderBottom: "1px solid #ddd"
-                        }}>
-                          <span style={{ color: "#28a745", fontWeight: "600" }}>
+                        <td className="cart-price-cell">
+                          <span className="cart-unit-price">
                             Rs. {(item.unit_price || 0).toLocaleString()}
                           </span>
                         </td>
-                        <td style={{
-                          padding: "15px",
-                          textAlign: "center",
-                          borderBottom: "1px solid #ddd"
-                        }}>
-                          <strong style={{ color: "#dc3545", fontSize: "16px" }}>
+                        <td className="cart-subtotal-cell">
+                          <strong className="cart-item-subtotal">
                             Rs. {(item.subtotal || 0).toLocaleString()}
                           </strong>
                         </td>
-                        <td style={{
-                          padding: "15px",
-                          textAlign: "center",
-                          borderBottom: "1px solid #ddd",
-                          verticalAlign: "middle"
-                        }}>
+                        <td className="cart-actions-cell">
                           <button
                             onClick={() => deleteItem(item._id)}
                             disabled={updating[item._id]}
-                            style={{
-                              padding: "8px 12px",
-                              backgroundColor: updating[item._id] ? "#6c757d" : "#dc3545",
-                              color: "white",
-                              border: "none",
-                              borderRadius: "4px",
-                              cursor: updating[item._id] ? "not-allowed" : "pointer",
-                              fontSize: "14px",
-                              fontWeight: "600",
-                              transition: "all 0.2s ease",
-                              opacity: updating[item._id] ? 0.6 : 1,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              gap: "4px",
-                              margin: "0 auto",
-                              whiteSpace: "nowrap"
-                            }}
+                            className="cart-remove-btn"
                             title="Remove item"
                           >
                             {updating[item._id] ? "⏳" : "🗑️"} Remove
@@ -517,28 +359,15 @@ function Cart() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="5" style={{
-                        padding: "60px",
-                        textAlign: "center",
-                        color: "#6c757d"
-                      }}>
-                        <div style={{ fontSize: "4rem", marginBottom: "20px" }}>🛒</div>
-                        <h3>Your cart is empty</h3>
-                        <p style={{ marginBottom: "20px" }}>
+                      <td colSpan="5" className="cart-empty-container">
+                        <div className="cart-empty-icon">🛒</div>
+                        <h3 className="cart-empty-title">Your cart is empty</h3>
+                        <p className="cart-empty-text">
                           Add some amazing solar products to get started!
                         </p>
                         <button
                           onClick={() => navigate("/?view=packages")}
-                          style={{
-                            padding: "12px 24px",
-                            background: "#007BFF",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "5px",
-                            cursor: "pointer",
-                            fontSize: "16px",
-                            textDecoration: "none"
-                          }}
+                          className="cart-shop-btn"
                         >
                           🛍️ Shop Solar Products
                         </button>
@@ -547,82 +376,40 @@ function Cart() {
                   )}
                 </tbody>
               </table>
+              
               {cartItems.length > 0 && (
-                <div style={{
-                  backgroundColor: "#f8f9fa",
-                  borderRadius: "8px",
-                  padding: "25px",
-                  marginTop: "20px",
-                  textAlign: "right",
-                  border: "1px solid #dee2e6"
-                }}>
-                  <div style={{
-                    fontSize: "18px",
-                    fontWeight: "600",
-                    color: "#333",
-                    marginBottom: "10px"
-                  }}>
+                <div className="cart-summary">
+                  <div className="cart-subtotal">
                     Subtotal: Rs. {totalAmount.toLocaleString()}
                   </div>
-                  <div style={{
-                    fontSize: "16px",
-                    color: "#666",
-                    marginBottom: "10px"
-                  }}>
+                  <div className="cart-tax">
                     Tax (8.5%): Rs. {taxAmount.toLocaleString()}
                   </div>
-                  <div style={{
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    color: "#28a745",
-                    borderTop: "2px solid #ddd",
-                    paddingTop: "10px"
-                  }}>
+                  <div className="cart-grand-total">
                     Total: Rs. {grandTotal.toLocaleString()}
                   </div>
                 </div>
               )}
             </div>
           )}
-          <div style={{ textAlign: "center", marginTop: "30px", display: "flex", justifyContent: "center", gap: "20px" }}>
+          
+          <div className="cart-action-buttons">
             <button
               onClick={handleAddMoreItems}
-              style={{
-                padding: "15px 40px",
-                fontSize: "16px",
-                fontWeight: "600",
-                backgroundColor: "#007BFF",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-                transition: "all 0.3s ease"
-              }}
+              className="cart-add-more-btn"
             >
               🛍️ Add More Items
             </button>
             <button
               onClick={handleProceed}
               disabled={cartItems.length === 0 || loading}
-              style={{
-                padding: "15px 40px",
-                fontSize: "16px",
-                fontWeight: "600",
-                backgroundColor: (cartItems.length === 0 || loading) ? "#6c757d" : "#28a745",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: (cartItems.length === 0 || loading) ? "not-allowed" : "pointer",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-                transition: "all 0.3s ease",
-                opacity: (cartItems.length === 0 || loading) ? 0.6 : 1
-              }}
+              className="cart-proceed-btn"
             >
               💳 Proceed to Payment
             </button>
           </div>
-          <div style={{ textAlign: "center", marginTop: "20px", color: "#666", fontSize: "14px" }}>
+          
+          <div className="cart-footer-info">
             <p>🔒 Secure checkout • 🚚 Free shipping • ⏪ 30-day returns</p>
           </div>
         </div>

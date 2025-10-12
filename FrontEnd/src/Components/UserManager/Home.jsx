@@ -36,22 +36,21 @@ import Gimage6 from "./Home-Images/G6.jpeg";
 import Gimage7 from "./Home-Images/G7.jpeg";
 import Gimage8 from "./Home-Images/G8.jpeg";
 import CTA_image from "./Home-Images/cta-image.jpg";
-
 function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [items, setItems] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const view = query.get("view");
-
   // Force re-render on query parameter change
   useEffect(() => {
     // This ensures the component re-renders when the view parameter changes
   }, [location.search]);
-
   // Fetch items for the Packages page
   useEffect(() => {
     if (view === "packages") {
@@ -61,6 +60,7 @@ function Home() {
           const response = await axios.get("http://localhost:5000/api/items");
           const data = Array.isArray(response.data) ? response.data : [];
           setItems(data);
+          setFilteredItems(data); // Initialize filteredItems with all items
           setLoading(false);
         } catch (err) {
           if (err.response && err.response.status === 404) {
@@ -69,13 +69,26 @@ function Home() {
             setError("Failed to fetch items. Please try again later.");
           }
           setItems([]);
+          setFilteredItems([]);
           setLoading(false);
         }
       };
       fetchItems();
     }
   }, [view]);
-
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    if (query.trim() === "") {
+      setFilteredItems(items); // Reset to all items if search is empty
+    } else {
+      const filtered = items.filter((item) =>
+        item.item_name?.toLowerCase().startsWith(query)
+      );
+      setFilteredItems(filtered);
+    }
+  };
   // Handle adding item to cart
   const handleAddToCart = async (itemId) => {
     try {
@@ -101,7 +114,6 @@ function Home() {
       }
     }
   };
-
   // Handle view query parameter
   if (view === "dashboard") {
     return <UserDashboard />;
@@ -115,89 +127,93 @@ function Home() {
   if (view === "feedback") {
     return <SubmitFeedback />;
   }
-  
+ 
   if (view === "packages") {
     return (
-      <div className="home-container packages-page" style={{ margin: "50px" }}>
+      <div className="home-container packages-page">
         <Navbar />
-        <h2>Our Product</h2>
-        {loading && <p>Loading packages...</p>}
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {Array.isArray(items) && items.length > 0 ? (
-          <div style={{ overflowX: "auto" }}>
-            <table
-              className="packages-table"
-              style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}
-            >
-              <thead>
-                <tr style={{ backgroundColor: "#f2f2f2" }}>
-                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Image</th>
-                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Serial Number</th>
-                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Item Name</th>
-                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Category</th>
-                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Description</th>
-                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Quantity in Stock</th>
-                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Re-order Level</th>
-                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Supplier</th>
-                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Purchase Price</th>
-                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Selling Price</th>
-                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Status</th>
-                  <th style={{ border: "1px solid #ddd", padding: "10px" }}>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((item) => (
-                  <tr key={item._id}>
-                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>
-                      <img
-                        src={
-                          item.item_image
-                            ? `http://localhost:5000/item_images/${item.item_image}`
-                            : kw5Solar
-                        }
-                        alt={item.item_name || "Item image"}
-                        style={{ width: "100px", height: "100px", objectFit: "cover" }}
-                        onError={(e) => {
-                          e.target.src = kw5Solar; // Fallback image
-                        }}
-                      />
-                    </td>
-                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.serial_number || "N/A"}</td>
-                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.item_name || "N/A"}</td>
-                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.category || "N/A"}</td>
-                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.description || "N/A"}</td>
-                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.quantity_in_stock || 0}</td>
-                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.re_order_level || 0}</td>
-                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.supplier_name || "N/A"}</td>
-                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>
-                      Rs. {(item.purchase_price || 0).toLocaleString()}
-                    </td>
-                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>
-                      Rs. {(item.selling_price || 0).toLocaleString()}
-                    </td>
-                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>{item.status || "N/A"}</td>
-                    <td style={{ border: "1px solid #ddd", padding: "10px" }}>
-                      <button
-                        onClick={() => handleAddToCart(item._id)}
-                        style={{
-                          backgroundColor: "#28a745",
-                          color: "white",
-                          padding: "5px 10px",
-                          border: "none",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Add to Cart
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="packages-header">
+          <h2 className="packages-title">Our Solar Products</h2>
+          <p className="packages-subtitle">Discover our range of premium solar solutions for your energy needs</p>
+        </div>
+       
+        <div className="search-container">
+          <div className="search-wrapper">
+            <svg className="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input
+              type="text"
+              placeholder="Search products by name..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="search-input"
+            />
+            {searchQuery && (
+              <button
+                className="clear-search"
+                onClick={() => {
+                  setSearchQuery("");
+                  setFilteredItems(items);
+                }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+          <div className="search-results-info">
+            {searchQuery && (
+              <span className="results-count">
+                {filteredItems.length} {filteredItems.length === 1 ? 'product' : 'products'} found
+              </span>
+            )}
+          </div>
+        </div>
+        {loading && <div className="loading-state"><div className="spinner"></div><p>Loading products...</p></div>}
+        {error && <div className="error-state"><p>{error}</p></div>}
+        {Array.isArray(filteredItems) && filteredItems.length > 0 ? (
+          <div id="products-grid">
+            {filteredItems.map((item) => (
+              <div key={item._id} className="product-card">
+                <img
+                  src={
+                    item.item_image
+                      ? `http://localhost:5000/item_images/${item.item_image}`
+                      : kw5Solar
+                  }
+                  alt={item.item_name || "Item image"}
+                  className="product-image"
+                  onError={(e) => {
+                    e.target.src = kw5Solar; // Fallback image
+                  }}
+                />
+                <div className="product-details">
+                  <p id="serial-number">Serial: {item.serial_number || "N/A"}</p>
+                  <h3 id="item-name">{item.item_name || "N/A"}</h3>
+                  <p id="category">Category: {item.category || "N/A"}</p>
+                  <p id="description">{item.description || "N/A"}</p>
+                  <p id="quantity">Stock: {item.quantity_in_stock || 0}</p>
+                  <p id="selling-price">Rs. {(item.selling_price || 0).toLocaleString()}</p>
+                  <button
+                    onClick={() => handleAddToCart(item._id)}
+                    className="add-to-cart-btn"
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
-          !loading && <p>No Product available at the moment.</p>
+          !loading && <div className="no-results-state">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <h3>No products found</h3>
+            <p>Try adjusting your search terms or browse all products</p>
+          </div>
         )}
         <Footer />
       </div>
@@ -385,7 +401,6 @@ function Home() {
       </div>
     );
   }
-
   const slides = [
     {
       image: BannerImg1,
@@ -433,26 +448,21 @@ function Home() {
       highlight: "Starting from Rs. 150,000",
     },
   ];
-
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 6000);
     return () => clearInterval(interval);
   }, [slides.length]);
-
   const goToSlide = (index) => {
     setCurrentSlide(index);
   };
-
   const goToPrev = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
-
   const goToNext = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
-
   return (
     <div className="home-container">
       <Navbar />
@@ -615,27 +625,35 @@ function Home() {
         <div className="Product-section">
           <div className="products-category">
             <img src={kw5Solar} alt="5KW Home Solar System" onError={(e) => { e.target.src = kw5Solar; }} />
-            <h3>5KW Home Solar System</h3>
-            <p>Perfect for houses, save 70% on electricity bills</p>
-            <button>View Details</button>
+            <div>
+              <h3>5KW Home Solar System</h3>
+              <p>Perfect for houses, save 70% on electricity bills</p>
+              <button>View Details</button>
+            </div>
           </div>
           <div className="products-category">
             <img src={BusinessSolar} alt="20KW Business Package" onError={(e) => { e.target.src = kw5Solar; }} />
-            <h3>20KW Business Package</h3>
-            <p>Best for small businesses and offices</p>
-            <button>View Details</button>
+            <div>
+              <h3>20KW Business Package</h3>
+              <p>Best for small businesses and offices</p>
+              <button>View Details</button>
+            </div>
           </div>
           <div className="products-category">
             <img src={Battery} alt="Lithium-ion Battery Pack" onError={(e) => { e.target.src = kw5Solar; }} />
-            <h3>Lithium-ion Battery Pack</h3>
-            <p>Long lifespan, maintenance-free energy storage</p>
-            <button>View Details</button>
+            <div>
+              <h3>Lithium-ion Battery Pack</h3>
+              <p>Long lifespan, maintenance-free energy storage</p>
+              <button>View Details</button>
+            </div>
           </div>
           <div className="products-category">
             <img src={Inverter} alt="Hybrid Inverter" onError={(e) => { e.target.src = kw5Solar; }} />
-            <h3>Hybrid Inverter</h3>
-            <p>Smart switching between solar & grid power</p>
-            <button>View Details</button>
+            <div>
+              <h3>Hybrid Inverter</h3>
+              <p>Smart switching between solar & grid power</p>
+              <button>View Details</button>
+            </div>
           </div>
         </div>
         <button className="allProducts-btn">View All Products</button>
@@ -753,5 +771,4 @@ function Home() {
     </div>
   );
 }
-
 export default Home;

@@ -7,7 +7,7 @@ import "./FinancialOverview.css";
 
 // Static company info
 const companyInfo = {
-  name: "Your Company",
+  name: "SelfMe",
   address: ["123 Business St", "City, Country"],
   phone: "+1234567890",
   email: "info@company.com",
@@ -38,6 +38,7 @@ const getLogoAsBase64 = () => {
 const FinancialOverview = () => {
   const [incomes, setIncomes] = useState([]);
   const [filteredIncomes, setFilteredIncomes] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [salaries, setSalaries] = useState([]);
   const [otherExpenses, setOtherExpenses] = useState([]);
   const [totalIncome, setTotalIncome] = useState(0);
@@ -74,6 +75,27 @@ const FinancialOverview = () => {
     setSelectedMonth(currentMonth);
     setSelectedYear(today.getFullYear().toString());
   }, []);
+
+  // Get filtered data based on search query
+  const getFilteredIncomes = () => {
+    if (!searchQuery.trim()) {
+      return filteredIncomes;
+    }
+    return filteredIncomes.filter(inc =>
+      inc.payment_id?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
+  const getFilteredExpenses = () => {
+    if (!searchQuery.trim()) {
+      return otherExpenses;
+    }
+    return otherExpenses.filter(exp =>
+      exp.referenceId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      exp._id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      exp.type?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
 
   // Function to calculate profit for a single item after tax
   const calculateItemProfit = (item) => {
@@ -120,6 +142,7 @@ const FinancialOverview = () => {
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
         const res = await axios.get("http://localhost:5000/api/finance/payments", { headers });
         const paidPayments = res.data.filter((p) => p.status === "Paid");
+        console.log("Fetched Incomes:", paidPayments);
         setIncomes(paidPayments);
         setFilteredIncomes(paidPayments);
         setTotalIncome(paidPayments.reduce((acc, p) => acc + p.amount, 0));
@@ -140,7 +163,9 @@ const FinancialOverview = () => {
 
     const fetchSalaries = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/finance/salary?month=${selectedMonth || "September 2025"}`);
+        const month = selectedMonth ? new Date(`${selectedMonth}-01`).toLocaleString("default", { month: "long", year: "numeric" }) : "October 2025";
+        const response = await axios.get(`http://localhost:5000/api/finance/salary?month=${month}`);
+        console.log("Fetched Salaries:", response.data);
         setSalaries(response.data);
       } catch (err) {
         console.error("Error fetching salaries:", err.message);
@@ -150,7 +175,9 @@ const FinancialOverview = () => {
 
     const fetchOtherExpenses = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/finance/expenses?month=${selectedMonth || "September 2025"}`);
+        const month = selectedMonth ? new Date(`${selectedMonth}-01`).toLocaleString("default", { month: "long", year: "numeric" }) : "October 2025";
+        const response = await axios.get(`http://localhost:5000/api/finance/expenses?month=${month}`);
+        console.log("Fetched Other Expenses:", response.data);
         setOtherExpenses(response.data);
       } catch (err) {
         console.error("Error fetching other expenses:", err.message);
@@ -167,7 +194,6 @@ const FinancialOverview = () => {
   const handleExpenseInputChange = (e) => {
     const { name, value } = e.target;
     if (name === "amount") {
-      // Only allow numbers and ensure positive value
       if (value === "" || (/^\d*\.?\d*$/.test(value) && parseFloat(value) >= 0)) {
         if (editingExpense) {
           setEditingExpense({ ...editingExpense, [name]: value });
@@ -207,14 +233,30 @@ const FinancialOverview = () => {
       const token = localStorage.getItem("token");
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const month = new Date(newExpense.date).toLocaleString("default", { month: "long", year: "numeric" });
-      await axios.post("http://localhost:5000/api/finance/expenses", { ...newExpense, month }, { headers });
+      const response = await axios.post("http://localhost:5000/api/finance/expenses", { ...newExpense, month }, { headers });
+      const newExpenseData = response.data;
+
+      let shouldAddToTable = true;
+      if (fromDate && toDate) {
+        const expenseDate = new Date(newExpenseData.date);
+        shouldAddToTable = expenseDate >= new Date(fromDate) && expenseDate <= new Date(toDate);
+      }
+      if (selectedMonth) {
+        const [year, monthNum] = selectedMonth.split("-");
+        const expenseDate = new Date(newExpenseData.date);
+        shouldAddToTable = shouldAddToTable && expenseDate.getFullYear() === parseInt(year) && expenseDate.getMonth() === parseInt(monthNum) - 1;
+      }
+
+      if (shouldAddToTable) {
+        setOtherExpenses((prev) => [...prev, newExpenseData]);
+      }
+
       setNewExpense({ type: "", amount: "", date: "", description: "", referenceId: "" });
-      const response = await axios.get(`http://localhost:5000/api/finance/expenses?month=${selectedMonth || month}`);
-      setOtherExpenses(response.data);
+
       setTotalExpenses(
         filteredIncomes.reduce((acc, p) => acc + calculatePurchasePrice(p), 0) +
         calculateTotalSalaries(salaries) +
-        calculateTotalOtherExpenses(response.data)
+        calculateTotalOtherExpenses(shouldAddToTable ? [...otherExpenses, newExpenseData] : otherExpenses)
       );
       setError(null);
     } catch (err) {
@@ -246,18 +288,43 @@ const FinancialOverview = () => {
       const token = localStorage.getItem("token");
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const month = new Date(editingExpense.date).toLocaleString("default", { month: "long", year: "numeric" });
-      await axios.put(`http://localhost:5000/api/finance/expenses/${editingExpense._id}`, 
-        { ...editingExpense, month }, 
+      const response = await axios.put(
+        `http://localhost:5000/api/finance/expenses/${editingExpense._id}`,
+        { ...editingExpense, month },
         { headers }
       );
-      setEditingExpense(null);
-      const response = await axios.get(`http://localhost:5000/api/finance/expenses?month=${selectedMonth || month}`);
-      setOtherExpenses(response.data);
+      const updatedExpenseData = response.data;
+
+      let shouldIncludeInTable = true;
+      if (fromDate && toDate) {
+        const expenseDate = new Date(updatedExpenseData.date);
+        shouldIncludeInTable = expenseDate >= new Date(fromDate) && expenseDate <= new Date(toDate);
+      }
+      if (selectedMonth) {
+        const [year, monthNum] = selectedMonth.split("-");
+        const expenseDate = new Date(updatedExpenseData.date);
+        shouldIncludeInTable = shouldIncludeInTable && expenseDate.getFullYear() === parseInt(year) && expenseDate.getMonth() === parseInt(monthNum) - 1;
+      }
+
+      if (shouldIncludeInTable) {
+        setOtherExpenses((prev) =>
+          prev.map((exp) => (exp._id === updatedExpenseData._id ? updatedExpenseData : exp))
+        );
+      } else {
+        setOtherExpenses((prev) => prev.filter((exp) => exp._id !== updatedExpenseData._id));
+      }
+
       setTotalExpenses(
         filteredIncomes.reduce((acc, p) => acc + calculatePurchasePrice(p), 0) +
         calculateTotalSalaries(salaries) +
-        calculateTotalOtherExpenses(response.data)
+        calculateTotalOtherExpenses(
+          shouldIncludeInTable
+            ? otherExpenses.map((exp) => (exp._id === updatedExpenseData._id ? updatedExpenseData : exp))
+            : otherExpenses.filter((exp) => exp._id !== updatedExpenseData._id)
+        )
       );
+
+      setEditingExpense(null);
       setError(null);
     } catch (err) {
       console.error("Error updating expense:", err.message);
@@ -274,12 +341,11 @@ const FinancialOverview = () => {
       const token = localStorage.getItem("token");
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       await axios.delete(`http://localhost:5000/api/finance/expenses/${id}`, { headers });
-      const response = await axios.get(`http://localhost:5000/api/finance/expenses?month=${selectedMonth || "September 2025"}`);
-      setOtherExpenses(response.data);
+      setOtherExpenses((prev) => prev.filter((exp) => exp._id !== id));
       setTotalExpenses(
         filteredIncomes.reduce((acc, p) => acc + calculatePurchasePrice(p), 0) +
         calculateTotalSalaries(salaries) +
-        calculateTotalOtherExpenses(response.data)
+        calculateTotalOtherExpenses(otherExpenses.filter((exp) => exp._id !== id))
       );
       setError(null);
     } catch (err) {
@@ -290,7 +356,7 @@ const FinancialOverview = () => {
 
   // Start editing expense
   const startEditing = (expense) => {
-    setEditingExpense(expense);
+    setEditingExpense({ ...expense, date: new Date(expense.date).toISOString().split("T")[0] });
   };
 
   // Cancel editing
@@ -298,9 +364,20 @@ const FinancialOverview = () => {
     setEditingExpense(null);
   };
 
+  // Handle search changes
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // Clear search
+  const clearSearch = () => {
+    setSearchQuery("");
+  };
+
   // Reset filter
   const resetFilter = () => {
     setFilteredIncomes(incomes);
+    setSearchQuery("");
     setTotalIncome(incomes.reduce((acc, p) => acc + p.amount, 0));
     setTotalProfit(
       incomes.reduce((acc, p) =>
@@ -313,7 +390,7 @@ const FinancialOverview = () => {
     );
     setFromDate("");
     setToDate("");
-    setSelectedMonth("");
+    setSelectedMonth(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`);
     setSelectedYear(today.getFullYear().toString());
   };
 
@@ -356,11 +433,19 @@ const FinancialOverview = () => {
     setOtherExpenses(filteredExpenses);
   };
 
-  // Updated report generator to match Payments.jsx style
+  // Calculate salary for an employee
+  const calculateSalary = (emp) => {
+    const basic = emp.isManager ? 20000 : 10000;
+    const perDayManpower = 3000;
+    const manpowerAllowance = perDayManpower * (emp.workingDays || 0);
+    return { total: basic + manpowerAllowance + (emp.otherAllowance || 0) };
+  };
+
+  // UPDATED Download report function with new PDF style
   const downloadReport = async (type) => {
     try {
       // Validate inputs
-      if (!filteredIncomes && !salaries && !otherExpenses) {
+      if (!incomes.length && !salaries.length && !otherExpenses.length) {
         setError("No records available to download.");
         console.warn("⚠️ No data available for report");
         alert("No records to download!");
@@ -372,40 +457,49 @@ const FinancialOverview = () => {
         alert("Please select a valid month for the report.");
         return;
       }
-      if (type === "Yearly" && (!selectedYear || isNaN(selectedYear) || selectedYear < 2000 || selectedYear > 2025)) {
+      if (type === "Yearly" && (!selectedYear || isNaN(selectedYear) || selectedYear < 2000 || selectedYear > currentYear)) {
         setError("Please select a valid year (2000-2025) for the report.");
         console.warn("⚠️ Invalid or no year selected for Yearly report:", selectedYear);
         alert("Please select a valid year (2000-2025) for the report.");
         return;
       }
-
+      
       const logoBase64 = await getLogoAsBase64();
       const doc = new jsPDF();
-      autoTable(doc, {}); // Apply jspdf-autotable plugin
       const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
 
-      // Letterhead function
+      // UPDATED LETTERHEAD to match payment report style
       const addLetterhead = () => {
+        // Logo on the left
         if (logoBase64) {
-          doc.addImage(logoBase64, "PNG", 15, 10, 20, 20);
+          doc.addImage(logoBase64, "PNG", 15, 15, 30, 30);
         }
+        
+        // Company name centered and bold
         doc.setFont("times", "bold");
-        doc.setFontSize(16);
+        doc.setFontSize(20);
         doc.setTextColor(0, 0, 0);
-        doc.text(companyInfo.name, pageWidth / 2, 20, { align: "center" });
+        doc.text("Your Company", pageWidth / 2, 25, { align: "center" });
+        
+        // Address below company name
         doc.setFont("times", "normal");
+        doc.setFontSize(11);
+        doc.text(companyInfo.address.join(", "), pageWidth / 2, 32, { align: "center" });
+        
+        // Contact info on one line
         doc.setFontSize(10);
-        doc.text(companyInfo.address.join(", "), pageWidth / 2, 28, { align: "center" });
         doc.text(
           `Phone: ${companyInfo.phone} | Email: ${companyInfo.email} | Website: ${companyInfo.website}`,
           pageWidth / 2,
-          34,
+          38,
           { align: "center" }
         );
+        
+        // Black line separator
         doc.setLineWidth(0.5);
         doc.setDrawColor(0, 0, 0);
-        doc.line(15, 40, pageWidth - 15, 40);
+        doc.line(15, 45, pageWidth - 15, 45);
       };
 
       // Footer function
@@ -433,26 +527,60 @@ const FinancialOverview = () => {
         doc.text("Authorized Signature: __________________", pageWidth - 85, pageHeight - 30);
       };
 
+      // Prepare data based on selected table - using ALL data, not filtered data
       let data = [];
       let reportTitle = "";
       let columns = [];
+      let reportIncomes = incomes;
+      let reportExpenses = otherExpenses;
+      let reportSalaries = salaries;
+
+      // Filter data based on report type
+      if (type === "Monthly") {
+        const [year, month] = selectedMonth.split("-");
+        reportIncomes = incomes.filter((inc) => {
+          const date = new Date(inc.payment_date);
+          return date.getFullYear() === parseInt(year) && date.getMonth() === parseInt(month) - 1;
+        });
+        reportExpenses = otherExpenses.filter((exp) => {
+          const date = new Date(exp.date);
+          return date.getFullYear() === parseInt(year) && date.getMonth() === parseInt(month) - 1;
+        });
+        reportSalaries = salaries.filter((sal) => {
+          const date = new Date(sal.date || sal.createdAt || today);
+          return date.getFullYear() === parseInt(year) && date.getMonth() === parseInt(month) - 1;
+        });
+      } else if (type === "Yearly") {
+        reportIncomes = incomes.filter((inc) => {
+          const date = new Date(inc.payment_date);
+          return date.getFullYear() === parseInt(selectedYear);
+        });
+        reportExpenses = otherExpenses.filter((exp) => {
+          const date = new Date(exp.date);
+          return date.getFullYear() === parseInt(selectedYear);
+        });
+        reportSalaries = salaries.filter((sal) => {
+          const date = new Date(sal.date || sal.createdAt || today);
+          return date.getFullYear() === parseInt(selectedYear);
+        });
+      }
 
       // Prepare data based on selected table
       if (selectedTable === "income") {
-        reportTitle = "Income Report";
+        reportTitle = `Income Report - ${type === "Monthly" ? new Date(selectedMonth + "-01").toLocaleString("default", { month: "long", year: "numeric" }) : selectedYear}`;
         columns = [
           { header: "Payment ID", dataKey: "payment_id" },
           { header: "Date", dataKey: "date" },
           { header: "Amount", dataKey: "amount" },
         ];
-        data = filteredIncomes.map((inc, idx) => ({
+        data = reportIncomes.map((inc, idx) => ({
           payment_id: inc.payment_id || "N/A",
           date: inc.payment_date ? new Date(inc.payment_date).toLocaleDateString("en-GB") : "N/A",
           amount: `Rs. ${typeof inc.amount === "number" ? inc.amount.toLocaleString() : "0"}`,
           index: idx,
         }));
       } else if (selectedTable === "profit") {
-        reportTitle = "Profit Analysis Report";
+        reportTitle = `Profit Analysis Report - ${type === "Monthly" ? new Date(selectedMonth + "-01").toLocaleString("default", { month: "long", year: "numeric" }) : selectedYear}`;
         columns = [
           { header: "Payment ID", dataKey: "payment_id" },
           { header: "Item ID", dataKey: "item_id" },
@@ -461,7 +589,7 @@ const FinancialOverview = () => {
           { header: "Tax Amount", dataKey: "tax_amount" },
           { header: "Profit", dataKey: "profit" },
         ];
-        data = filteredIncomes.flatMap((inc, idx) =>
+        data = reportIncomes.flatMap((inc, idx) =>
           inc.itemId && inc.itemId.length > 0
             ? inc.itemId.map((item, itemIdx) => ({
                 payment_id: itemIdx === 0 ? inc.payment_id || "N/A" : "",
@@ -483,53 +611,176 @@ const FinancialOverview = () => {
               }]
         );
       } else if (selectedTable === "expenses") {
-        reportTitle = "Expenses Report";
+        reportTitle = `Expenses Report - ${type === "Monthly" ? new Date(selectedMonth + "-01").toLocaleString("default", { month: "long", year: "numeric" }) : selectedYear}`;
         columns = [
           { header: "Record ID", dataKey: "record_id" },
-          { header: "Date/Role", dataKey: "date_role" },
+          { header: "Date", dataKey: "date_role" },
           { header: "Amount", dataKey: "amount" },
           { header: "Type", dataKey: "type" },
         ];
         data = [
-          ...filteredIncomes.map((inc, idx) => ({
+          ...reportIncomes.map((inc, idx) => ({
             record_id: inc.payment_id || "N/A",
             date_role: inc.payment_date ? new Date(inc.payment_date).toLocaleDateString("en-GB") : "N/A",
             amount: `Rs. ${calculatePurchasePrice(inc).toLocaleString()}`,
             type: "Purchase",
             index: idx,
           })),
-          ...salaries.map((emp, idx) => ({
-            record_id: emp.empId || "N/A",
-            date_role: emp.isManager ? "Team Manager" : "Employee",
-            amount: `Rs. ${calculateSalary(emp).total.toLocaleString()}`,
-            type: "Salary",
-            index: idx + filteredIncomes.length,
-          })),
-          ...otherExpenses.map((exp, idx) => ({
+          ...reportSalaries.map((emp, idx) => {
+            let salaryDate;
+            if (type === "Monthly" && selectedMonth) {
+              const [year, month] = selectedMonth.split("-");
+              salaryDate = new Date(parseInt(year), parseInt(month) - 1, 10).toLocaleDateString("en-GB");
+            } else if (type === "Yearly" && selectedYear) {
+              salaryDate = new Date(parseInt(selectedYear), 0, 10).toLocaleDateString("en-GB");
+            } else {
+              salaryDate = "N/A";
+            }
+            return {
+              record_id: emp.empId || "N/A",
+              date_role: salaryDate,
+              amount: `Rs. ${calculateSalary(emp).total.toLocaleString()}`,
+              type: "Salary",
+              index: idx + reportIncomes.length,
+            };
+          }),
+          ...reportExpenses.map((exp, idx) => ({
             record_id: exp.referenceId || exp._id || "N/A",
             date_role: exp.date ? new Date(exp.date).toLocaleDateString("en-GB") : "N/A",
             amount: `Rs. ${typeof exp.amount === "number" ? exp.amount.toLocaleString() : "0"}`,
             type: exp.type || "N/A",
-            index: idx + filteredIncomes.length + salaries.length,
+            index: idx + reportIncomes.length + reportSalaries.length,
           })),
         ];
       } else if (selectedTable === "netIncome") {
-        reportTitle = "Net Income Report";
+        reportTitle = `Net Income Report - ${type === "Monthly" ? new Date(selectedMonth + "-01").toLocaleString("default", { month: "long", year: "numeric" }) : selectedYear}`;
         columns = [
           { header: "Total Income", dataKey: "total_income" },
           { header: "Total Expenses", dataKey: "total_expenses" },
           { header: "Net Income", dataKey: "net_income" },
         ];
+        const reportTotalIncome = reportIncomes.reduce((acc, p) => acc + p.amount, 0);
+        const reportTotalExpenses = reportIncomes.reduce((acc, p) => acc + calculatePurchasePrice(p), 0) + calculateTotalSalaries(reportSalaries) + calculateTotalOtherExpenses(reportExpenses);
         data = [{
-          total_income: `Rs. ${totalIncome.toLocaleString()}`,
-          total_expenses: `Rs. ${totalExpenses.toLocaleString()}`,
-          net_income: `Rs. ${calculateNetIncome().toLocaleString()}`,
+          total_income: `Rs. ${reportTotalIncome.toLocaleString()}`,
+          total_expenses: `Rs. ${reportTotalExpenses.toLocaleString()}`,
+          net_income: `Rs. ${(reportTotalIncome - reportTotalExpenses).toLocaleString()}`,
           index: 0,
         }];
       }
 
-      // Apply time-based filtering and other logic continues...
-      
+      // Check if no data found
+      if (data.length === 0) {
+        addLetterhead();
+        doc.setFont("times", "bold");
+        doc.setFontSize(16);
+        doc.text(reportTitle, pageWidth / 2, 55, { align: "center" });
+        doc.setFont("times", "normal");
+        doc.setFontSize(12);
+        doc.text("No records found for the selected criteria.", pageWidth / 2, 70, { align: "center" });
+        addSignatureField();
+        addFooter(1, 1, -1);
+        const fileName = `${reportTitle.replace(/\s+/g, "_")}_${type}_${new Date().toISOString().split("T")[0]}.pdf`;
+        doc.save(fileName);
+        alert(`Official report "${fileName}" downloaded successfully (no data found)!`);
+        return;
+      }
+
+      // Calculate pagination
+      const tableRowHeight = 10;
+      const rowsPerPage = Math.floor((pageHeight - 90) / tableRowHeight);
+      const totalPages = Math.ceil(data.length / rowsPerPage);
+
+      // Add letterhead
+      addLetterhead();
+
+      // UPDATED TITLE STYLE to match payment report
+      doc.setFont("times", "bold");
+      doc.setFontSize(16);
+      doc.setTextColor(0, 0, 0);
+      doc.text(reportTitle, pageWidth / 2, 55, { align: "center" });
+
+      let currentPage = 1;
+      for (let i = 0; i < data.length; i += rowsPerPage) {
+        if (i > 0) {
+          addSignatureField();
+          addFooter(currentPage, totalPages, i - 1);
+          doc.addPage();
+          currentPage++;
+          addLetterhead();
+          doc.setFont("times", "bold");
+          doc.setFontSize(16);
+          doc.text(reportTitle, pageWidth / 2, 55, { align: "center" });
+        }
+
+        const pageData = data.slice(i, i + rowsPerPage);
+        const bodyData = pageData.map(item => columns.map(col => item[col.dataKey]));
+
+        // UPDATED TABLE STYLE with professional blue header for financial reports
+        autoTable(doc, {
+          startY: 62,
+          head: [columns.map(col => col.header)],
+          body: bodyData,
+          theme: "striped",
+          headStyles: {
+            fillColor: [41, 128, 185],
+            textColor: [255, 255, 255],
+            fontStyle: "bold",
+            fontSize: 11,
+            halign: "left",
+          },
+          bodyStyles: {
+            textColor: [0, 0, 0],
+            fontSize: 10,
+          },
+          alternateRowStyles: {
+            fillColor: [245, 245, 245],
+          },
+          styles: {
+            font: "times",
+            fontSize: 10,
+            cellPadding: 4,
+            lineColor: [200, 200, 200],
+            lineWidth: 0.1,
+          },
+          columnStyles: 
+            selectedTable === "income" ? {
+              0: { cellWidth: 60 },
+              1: { cellWidth: 50 },
+              2: { cellWidth: 60, halign: "left" },
+            } :
+            selectedTable === "profit" ? {
+              0: { cellWidth: 30 },
+              1: { cellWidth: 30 },
+              2: { cellWidth: 30 },
+              3: { cellWidth: 30 },
+              4: { cellWidth: 30 },
+              5: { cellWidth: 30 },
+            } :
+            selectedTable === "expenses" ? {
+              0: { cellWidth: 40 },
+              1: { cellWidth: 40 },
+              2: { cellWidth: 50, halign: "left" },
+              3: { cellWidth: 40 },
+            } :
+            selectedTable === "netIncome" ? {
+              0: { cellWidth: 60, halign: "left" },
+              1: { cellWidth: 60, halign: "left" },
+              2: { cellWidth: 60, halign: "left" },
+            } : {}
+        });
+      }
+
+      // Add signature field and footer to last page
+      addSignatureField();
+      addFooter(currentPage, totalPages, data.length - 1);
+
+      // Save the PDF
+      const fileName = `${reportTitle.replace(/\s+/g, "_")}_${type}_${new Date().toISOString().split("T")[0]}.pdf`;
+      doc.save(fileName);
+      setError(null);
+      alert(`Official report "${fileName}" downloaded successfully!`);
+      console.log("✅ Report generated successfully:", fileName);
     } catch (err) {
       console.error("❌ Report generation error:", err.message);
       setError("Failed to generate report. Please check the console for details.");
@@ -537,16 +788,9 @@ const FinancialOverview = () => {
     }
   };
 
-  // Calculate salary for an employee
-  const calculateSalary = (emp) => {
-    const basic = emp.isManager ? 20000 : 10000;
-    const perDayManpower = 3000;
-    const manpowerAllowance = perDayManpower * (emp.workingDays || 0);
-    return { total: basic + manpowerAllowance + (emp.otherAllowance || 0) };
-  };
-
   // Monthly report with validation
   const downloadMonthlyReport = () => {
+    console.log("Downloading Monthly Report for:", selectedMonth);
     if (!selectedMonth) {
       alert("Please select a month.");
       return;
@@ -556,12 +800,16 @@ const FinancialOverview = () => {
 
   // Yearly report with validation
   const downloadYearlyReport = () => {
+    console.log("Downloading Yearly Report for:", selectedYear);
     if (!selectedYear) {
       alert("Please select a year.");
       return;
     }
     downloadReport("Yearly");
   };
+
+  const displayIncomes = getFilteredIncomes();
+  const displayExpenses = getFilteredExpenses();
 
   return (
     <div id="financial-overview-content-section">
@@ -603,9 +851,37 @@ const FinancialOverview = () => {
         </button>
       </div>
 
+      {/* Search Bar Section */}
+      <div id="financial-overview-search-section">
+        <div id="financial-overview-search-container">
+          <input
+            id="financial-overview-search-input"
+            type="text"
+            placeholder="Search by Payment ID or Expense ID..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+            className="financial-overview-search-input"
+          />
+          {searchQuery && (
+            <button
+              id="financial-overview-search-clear-btn"
+              onClick={clearSearch}
+              className="financial-overview-search-clear-btn"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+        {searchQuery && (
+          <div id="financial-overview-search-results-info">
+            <p>{displayIncomes.length === 0 && displayExpenses.length === 0 ? `No records found matching "${searchQuery}"` : `Found ${displayIncomes.length + displayExpenses.length} record(s) matching your search`}</p>
+          </div>
+        )}
+      </div>
+
       {/* Error Message */}
       {error && <div id="financial-overview-error-message">{error}</div>}
-
+      
       {/* Income Section */}
       <h2 className="financial-overview-section-header">Income</h2>
       <div className="financial-overview-table-container">
@@ -618,14 +894,14 @@ const FinancialOverview = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredIncomes.length === 0 ? (
+            {displayIncomes.length === 0 ? (
               <tr>
                 <td colSpan="3" className="financial-overview-no-data">
                   No income records found
                 </td>
               </tr>
             ) : (
-              filteredIncomes.map((inc) => (
+              displayIncomes.map((inc) => (
                 <tr key={inc.payment_id}>
                   <td>{inc.payment_id}</td>
                   <td>{new Date(inc.payment_date).toLocaleDateString()}</td>
@@ -653,14 +929,14 @@ const FinancialOverview = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredIncomes.length === 0 ? (
+            {displayIncomes.length === 0 ? (
               <tr>
                 <td colSpan="6" className="financial-overview-no-data">
                   No profit records found
                 </td>
               </tr>
             ) : (
-              filteredIncomes.map((inc) =>
+              displayIncomes.map((inc) =>
                 inc.itemId && inc.itemId.length > 0 ? (
                   inc.itemId.map((item, index) => (
                     <tr key={`${inc.payment_id}-${index}`}>
@@ -696,14 +972,14 @@ const FinancialOverview = () => {
           <thead>
             <tr>
               <th>Record ID</th>
-              <th>Date/Role</th>
+              <th>Date</th>
               <th>Amount</th>
               <th>Type</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredIncomes.length === 0 && salaries.length === 0 && otherExpenses.length === 0 ? (
+            {displayIncomes.length === 0 && salaries.length === 0 && displayExpenses.length === 0 ? (
               <tr>
                 <td colSpan="5" className="financial-overview-no-data">
                   No expense records found
@@ -711,7 +987,7 @@ const FinancialOverview = () => {
               </tr>
             ) : (
               <>
-                {filteredIncomes.map((inc) => (
+                {displayIncomes.map((inc) => (
                   <tr key={`purchase-${inc.payment_id}`}>
                     <td>{inc.payment_id}</td>
                     <td>{new Date(inc.payment_date).toLocaleDateString()}</td>
@@ -720,16 +996,21 @@ const FinancialOverview = () => {
                     <td></td>
                   </tr>
                 ))}
-                {salaries.map((emp) => (
-                  <tr key={`salary-${emp._id}`}>
-                    <td>{emp.empId}</td>
-                    <td>{emp.isManager ? "Team Manager" : "Employee"}</td>
-                    <td>Rs. {calculateSalary(emp).total.toLocaleString()}</td>
-                    <td>Salary</td>
-                    <td></td>
-                  </tr>
-                ))}
-                {otherExpenses.map((exp) => (
+                {salaries.length > 0 && !searchQuery && salaries.map((emp) => {
+                  const salaryDate = selectedMonth
+                    ? new Date(selectedMonth.split("-")[0], selectedMonth.split("-")[1] - 1, 10).toLocaleDateString()
+                    : "N/A";
+                  return (
+                    <tr key={`salary-${emp._id}`}>
+                      <td>{emp.empId}</td>
+                      <td>{salaryDate}</td>
+                      <td>Rs. {calculateSalary(emp).total.toLocaleString()}</td>
+                      <td>Salary</td>
+                      <td></td>
+                    </tr>
+                  );
+                })}
+                {displayExpenses.map((exp) => (
                   <tr key={`other-${exp._id}`}>
                     <td>{exp.referenceId || exp._id}</td>
                     <td>{new Date(exp.date).toLocaleDateString()}</td>
@@ -800,10 +1081,10 @@ const FinancialOverview = () => {
               type="date"
               name="date"
               className="financial-overview-form-input"
-              value={editingExpense ? editingExpense.date.split("T")[0] : newExpense.date}
+              value={editingExpense ? editingExpense.date : newExpense.date}
               onChange={handleExpenseInputChange}
               min={firstDayOfMonth}
-              max={lastDayOfMonth}
+              max={today.toISOString().split("T")[0]}
               required
             />
           </div>
@@ -920,4 +1201,3 @@ const FinancialOverview = () => {
 };
 
 export default FinancialOverview;
-

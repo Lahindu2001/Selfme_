@@ -6,7 +6,7 @@ import './Payments.css';
 
 // Static company info (replace with your actual company details)
 const companyInfo = {
-  name: 'Your Company',
+  name: 'SelfMe',
   address: ['123 Business St', 'City, Country'],
   phone: '+1234567890',
   email: 'info@company.com',
@@ -30,12 +30,13 @@ const getLogoAsBase64 = () => {
       console.warn('Could not load logo, proceeding without it');
       resolve(null);
     };
-    img.src = '/newLogo.png'; // Update path if needed
+    img.src = '/newLogo.png';
   });
 };
 
 const Payments = () => {
   const [payments, setPayments] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -48,7 +49,6 @@ const Payments = () => {
   useEffect(() => {
     console.log('Component mounted, fetching payments...');
     fetchPayments();
-    // Set default month and year to current
     const today = new Date();
     setSelectedMonth(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`);
     setSelectedYear(today.getFullYear().toString());
@@ -79,6 +79,16 @@ const Payments = () => {
       setIsLoading(false);
       console.log('Fetch payments complete, isLoading:', false);
     }
+  };
+
+  const getFilteredPayments = () => {
+    if (!searchQuery.trim()) {
+      return payments;
+    }
+    return payments.filter(payment =>
+      payment.payment_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      payment.customer_id?.userid?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   };
 
   const handleSelectPayment = (payment) => {
@@ -182,7 +192,6 @@ const Payments = () => {
 
   const generateReportPDF = async (statusFilter) => {
     try {
-      // Validate inputs
       if (!payments || !Array.isArray(payments)) {
         setError('No payment data available.');
         console.warn('⚠️ Payments array is invalid:', payments);
@@ -204,11 +213,10 @@ const Payments = () => {
 
       const logoBase64 = await getLogoAsBase64();
       const doc = new jsPDF();
-      autoTable(doc, {}); // Apply jspdf-autotable plugin
+      autoTable(doc, {});
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
 
-      // Letterhead function
       const addLetterhead = () => {
         if (logoBase64) {
           doc.addImage(logoBase64, 'PNG', 15, 10, 20, 20);
@@ -231,7 +239,6 @@ const Payments = () => {
         doc.line(15, 40, pageWidth - 15, 40);
       };
 
-      // Footer function
       const addFooter = (pageNum, totalPages, lastRecordIdx) => {
         doc.setFont('times', 'normal');
         doc.setFontSize(8);
@@ -248,7 +255,6 @@ const Payments = () => {
         doc.text(`Generated on ${genDate} at ${genTime}`, 15, pageHeight - 10);
       };
 
-      // Signature field function
       const addSignatureField = () => {
         doc.setFont('times', 'normal');
         doc.setFontSize(10);
@@ -259,7 +265,6 @@ const Payments = () => {
       let filteredPayments = payments;
       let reportTitle = '';
 
-      // Apply status filter
       if (statusFilter === 'Pending') {
         filteredPayments = payments.filter((payment) => payment?.status === 'Pending');
         reportTitle = 'Pending Payments Report';
@@ -270,7 +275,6 @@ const Payments = () => {
         reportTitle = 'All Payments Report';
       }
 
-      // Apply time-based filtering
       if (reportType === 'Monthly' && selectedMonth) {
         const [year, month] = selectedMonth.split('-').map(Number);
         filteredPayments = filteredPayments.filter((payment, index) => {
@@ -313,7 +317,6 @@ const Payments = () => {
         reportTitle += ` - ${year}`;
       }
 
-      // Check if filtered payments are empty
       if (filteredPayments.length === 0) {
         setError(`No ${statusFilter || 'All'} payments found for the selected ${reportType.toLowerCase()} period.`);
         console.warn(`⚠️ No payments found for ${statusFilter || 'All'} in ${reportType}:`, selectedMonth || selectedYear);
@@ -332,9 +335,8 @@ const Payments = () => {
         return;
       }
 
-      // Calculate pagination
-      const tableRowHeight = 10; // Approximate height per row
-      const rowsPerPage = Math.floor((pageHeight - 80) / tableRowHeight); // Account for letterhead, footer, signature
+      const tableRowHeight = 10;
+      const rowsPerPage = Math.floor((pageHeight - 80) / tableRowHeight);
       let totalPages = Math.ceil(filteredPayments.length / rowsPerPage);
       let lastRecordIdxPerPage = [];
       let currentPageRecords = [];
@@ -351,14 +353,12 @@ const Payments = () => {
       });
       lastRecordIdxPerPage.push(startIndex + currentPageRecords.length - 1);
 
-      // Generate PDF
       addLetterhead();
       doc.setFont('times', 'bold');
       doc.setFontSize(14);
       doc.setTextColor(0, 0, 0);
       doc.text(reportTitle, pageWidth / 2, 45, { align: 'center' });
 
-      // Define table columns
       const columns = [
         { header: 'Payment ID', dataKey: 'payment_id' },
         { header: 'User ID', dataKey: 'userid' },
@@ -368,7 +368,6 @@ const Payments = () => {
         { header: 'Payment Date', dataKey: 'payment_date' },
       ];
 
-      // Split payments into pages
       currentPage = 1;
       for (let i = 0; i < filteredPayments.length; i += rowsPerPage) {
         if (i > 0) {
@@ -379,7 +378,6 @@ const Payments = () => {
           addLetterhead();
         }
 
-        // Prepare table data for current page
         const data = filteredPayments.slice(i, i + rowsPerPage).map((payment, index) => {
           if (!payment) {
             console.warn(`⚠️ Null or undefined payment at index ${i + index}`);
@@ -402,7 +400,6 @@ const Payments = () => {
           };
         });
 
-        // Generate table
         autoTable(doc, {
           columns,
           body: data,
@@ -416,11 +413,9 @@ const Payments = () => {
         });
       }
 
-      // Add final signature and footer
       addSignatureField();
       addFooter(currentPage, totalPages, lastRecordIdxPerPage[currentPage - 1]);
 
-      // Save PDF
       const timestamp = new Date().toISOString().split('T')[0];
       const fileName = `${companyInfo.name}_${statusFilter || 'All'}_Payments_Report_${reportType === 'Monthly' ? selectedMonth : selectedYear}_${timestamp}.pdf`;
       doc.save(fileName);
@@ -443,12 +438,13 @@ const Payments = () => {
     }
   };
 
-  // Filter payments by status for tables
-  const pendingPayments = payments.filter((payment) => payment?.status === 'Pending');
-  const approvedPayments = payments.filter((payment) => payment?.status === 'Paid');
+  const filteredPayments = getFilteredPayments();
+  const pendingPayments = filteredPayments.filter((payment) => payment?.status === 'Pending');
+  const approvedPayments = filteredPayments.filter((payment) => payment?.status === 'Paid');
 
   console.log(
     'Rendering Payments component, payments:', payments.length,
+    'filteredPayments:', filteredPayments.length,
     'pendingPayments:', pendingPayments.length,
     'approvedPayments:', approvedPayments.length,
     'selectedPayment:', selectedPayment?.payment_id,
@@ -458,10 +454,17 @@ const Payments = () => {
     'selectedYear:', selectedYear
   );
 
-  // Dynamic max attributes for date pickers
   const today = new Date();
   const maxMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
   const maxYear = today.getFullYear().toString();
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery('');
+  };
 
   return (
     <div id="payments-main-container">
@@ -524,6 +527,34 @@ const Payments = () => {
             Download All Payments Report
           </button>
         </div>
+      </div>
+
+      {/* Search Bar Section */}
+      <div id="payments-search-section">
+        <div id="search-container-pp">
+          <input
+            id="payment-search-input"
+            type="text"
+            placeholder="Search by Payment ID or User ID..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+            className="search-input"
+          />
+          {searchQuery && (
+            <button
+              id="search-clear-btn"
+              onClick={clearSearch}
+              className="search-clear-btn"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+        {searchQuery && (
+          <div id="search-results-info">
+            <p>{filteredPayments.length === 0 ? `No payments found matching "${searchQuery}"` : `Found ${filteredPayments.length} payment(s) matching your search`}</p>
+          </div>
+        )}
       </div>
 
       {isLoading && <p id="payments-loading-message">Loading payments...</p>}
@@ -621,7 +652,7 @@ const Payments = () => {
       {/* All Payments Table */}
       <div id="all-payments-section">
         <h3 id="all-payments-title">All Payments</h3>
-        {payments.length === 0 && !isLoading ? (
+        {filteredPayments.length === 0 && !isLoading ? (
           <p id="no-all-payments">No payments found.</p>
         ) : (
           <div id="all-payments-table-container">
@@ -636,7 +667,7 @@ const Payments = () => {
                 </tr>
               </thead>
               <tbody>
-                {payments.map((payment, index) => (
+                {filteredPayments.map((payment, index) => (
                   <tr
                     key={payment.payment_id}
                     id={`all-payment-row-${index}`}
@@ -723,7 +754,7 @@ const Payments = () => {
                       id="bank-slip-image"
                       src={`http://localhost:5000${selectedPayment.reference_no}`}
                       alt="Bank Slip"
-                      onError={() => console.error('❌ Failed to load bank slip image:', selectedPayment.reference_no)}
+                      onError={() => console.error('Failed to load bank slip image:', selectedPayment.reference_no)}
                     />
                   )}
                 </div>

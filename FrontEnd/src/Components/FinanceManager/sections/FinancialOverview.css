@@ -603,3 +603,137 @@
   color: #6b7280;
   font-weight: 600;
 }
+
+/* Add these CSS styles to your existing FinancialOverview.css */
+
+/* ========================================
+   SEARCH SECTION
+   ======================================== */
+
+
+
+#financial-overview-search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  flex: 1;
+  max-width: 700px; /* smaller width */
+  margin: 0 auto 2rem auto; /* centers horizontally and keeps bottom margin */
+  margin-bottom: 2rem;
+}
+
+#financial-overview-search-input {
+  width: 100%;
+  padding: 0.6rem 2.5rem 0.6rem 0.8rem;
+  border: 2px solid #004953;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background-color: white;
+  transition: all 0.3s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #004953;
+  font-weight: 500;
+}
+
+#financial-overview-search-input::placeholder {
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+#financial-overview-search-input:focus {
+  outline: none;
+  border-color: #006b7d;
+  box-shadow: 0 0 0 3px rgba(0, 73, 83, 0.1);
+  background-color: #f0f8f7;
+}
+
+#financial-overview-search-input:not(:placeholder-shown) {
+  border-color: #006b7d;
+}
+
+/* Search Clear Button */
+#financial-overview-search-clear-btn {
+  position: absolute;
+  right: 0.5rem;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border: none;
+  font-size: 1.2rem;
+  color: white;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  font-weight: bold;
+}
+
+#financial-overview-search-clear-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+}
+
+#financial-overview-search-clear-btn:active {
+  transform: scale(0.95);
+}
+
+/* Search Results Info */
+#financial-overview-search-results-info {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%);
+  border-left: 4px solid #10b981;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #065f46;
+  font-weight: 600;
+}
+
+#financial-overview-search-results-info p {
+  margin: 0;
+}
+
+/* Responsive Design for Search */
+@media (max-width: 1200px) {
+  #financial-overview-search-container {
+    max-width: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  #financial-overview-search-section {
+    padding: 1rem;
+  }
+
+  #financial-overview-search-container {
+    max-width: 100%;
+  }
+
+  #financial-overview-search-input {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 640px) {
+  #financial-overview-search-input {
+    font-size: 0.85rem;
+    padding: 0.5rem 2.2rem 0.5rem 0.7rem;
+  }
+
+  #financial-overview-search-clear-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 1rem;
+    right: 0.3rem;
+  }
+
+  #financial-overview-search-results-info {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.75rem;
+    margin-top: 0.75rem;
+  }
+}
