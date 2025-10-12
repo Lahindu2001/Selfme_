@@ -1,4 +1,4 @@
-// Updated admin.jsx with Standard Color Scheme
+
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../../utils/auth';
@@ -254,6 +254,15 @@ function Admin() {
               <span className="text">All Product Requests</span>
             </NavLink>
           </li>
+          <li>
+            <NavLink
+              to="#"
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              title="Test"
+            >
+              <span className="text">Test</span>
+            </NavLink>
+          </li>
         </ul>
         <div className="sidebar-user-info">
           <button className="logout-btn" onClick={handleLogout}>
@@ -317,6 +326,15 @@ function Admin() {
                 <p>Manage all product requests and statuses.</p>
               </NavLink>
             </div>
+
+            <div className="card">
+              <NavLink to="#" className={({ isActive }) => `activehome ${isActive ? 'active' : ''}`}>
+                <h2>Test ({requestsCount})</h2>
+                <p>Test</p>
+              </NavLink>
+            </div>
+
+
           </div>
         </div>
       </div>
