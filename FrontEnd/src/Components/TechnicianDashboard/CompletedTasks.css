@@ -1,5 +1,5 @@
 /* CompletedTasks.css */
-.completed-tasks-container {
+#completedTasks .completed-tasks-container {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
@@ -7,23 +7,23 @@
   color: #333;
 }
 
-.page-title {
+#completedTasks .page-title {
   text-align: center;
   margin-bottom: 20px;
   color: #1a3c5e;
 }
 
-.loading {
+#completedTasks .loading {
   text-align: center;
   color: #007bff;
   font-style: italic;
 }
 
-.search-bar {
+#completedTasks .search-bar {
   margin-bottom: 20px;
 }
 
-.search-input {
+#completedTasks .search-input {
   width: 100%;
   padding: 10px;
   font-size: 1rem;
@@ -33,25 +33,25 @@
   transition: border-color 0.3s ease;
 }
 
-.search-input:focus {
+#completedTasks .search-input:focus {
   border-color: #007bff;
 }
 
-.download-options {
+#completedTasks .download-options {
   margin-bottom: 40px;
   text-align: center;
 }
 
-.download-title {
+#completedTasks .download-title {
   margin-bottom: 10px;
   color: #1a3c5e;
 }
 
-.download-buttons {
+#completedTasks .download-buttons {
   display: inline-block;
 }
 
-.download-all-btn {
+#completedTasks .download-all-btn {
   padding: 10px 20px;
   background-color: #28a745;
   color: white;
@@ -62,26 +62,26 @@
   transition: background-color 0.3s ease;
 }
 
-.download-all-btn:hover {
+#completedTasks .download-all-btn:hover {
   background-color: #218838;
 }
 
-.download-note {
+#completedTasks .download-note {
   margin-top: 10px;
   font-size: 0.9rem;
   color: #666;
 }
 
-.paid-tasks-list {
+#completedTasks .paid-tasks-list {
   margin-bottom: 40px;
 }
 
-.section-title {
+#completedTasks .section-title {
   margin-bottom: 10px;
   color: #1a3c5e;
 }
 
-.table-header {
+#completedTasks .table-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -90,15 +90,15 @@
   color: #666;
 }
 
-.task-count {
+#completedTasks .task-count {
   font-weight: bold;
 }
 
-.filtered-count {
+#completedTasks .filtered-count {
   color: #007bff;
 }
 
-.tasks-table {
+#completedTasks .tasks-table {
   width: 100%;
   border-collapse: collapse;
   background-color: #fff;
@@ -107,32 +107,32 @@
   overflow: hidden;
 }
 
-.tasks-table th,
-.tasks-table td {
+#completedTasks .tasks-table th,
+#completedTasks .tasks-table td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid #e0e0e0;
 }
 
-.tasks-table th {
+#completedTasks .tasks-table th {
   background-color: #28a745;
   color: white;
   font-weight: bold;
 }
 
-.tasks-table tr:nth-child(even) {
+#completedTasks .tasks-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-.tasks-table tr:hover {
+#completedTasks .tasks-table tr:hover {
   background-color: #e8f5e9;
 }
 
-.selected-row {
+#completedTasks .selected-row {
   background-color: #e9ecef !important;
 }
 
-.action-btn {
+#completedTasks .action-btn {
   padding: 5px 10px;
   margin-right: 5px;
   border: none;
@@ -142,36 +142,36 @@
   transition: background-color 0.3s ease;
 }
 
-.assign-btn {
+#completedTasks .assign-btn {
   background-color: #28a745;
   color: white;
 }
 
-.assign-btn:hover:not(:disabled) {
+#completedTasks .assign-btn:hover:not(:disabled) {
   background-color: #218838;
 }
 
-.assign-btn:disabled {
+#completedTasks .assign-btn:disabled {
   background-color: #6c757d;
   cursor: not-allowed;
 }
 
-.download-btn {
+#completedTasks .download-btn {
   background-color: #007bff;
   color: white;
 }
 
-.download-btn:hover {
+#completedTasks .download-btn:hover {
   background-color: #0056b3;
 }
 
-.no-tasks-message {
+#completedTasks .no-tasks-message {
   text-align: center;
   color: #666;
   padding: 20px;
 }
 
-.clear-search-btn {
+#completedTasks .clear-search-btn {
   background-color: #6c757d;
   color: white;
   border: none;
@@ -181,12 +181,12 @@
   margin-top: 10px;
 }
 
-.clear-search-btn:hover {
+#completedTasks .clear-search-btn:hover {
   background-color: #5a6268;
 }
 
 /* Modal Styles */
-.modal-overlay {
+#completedTasks .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -205,7 +205,7 @@
   to { opacity: 1; }
 }
 
-.modal-content {
+#completedTasks .modal-content {
   background-color: #fff;
   padding: 30px;
   border-radius: 12px;
@@ -224,13 +224,13 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-.modal-title {
+#completedTasks .modal-title {
   margin-bottom: 20px;
   font-size: 24px;
   color: #333;
 }
 
-.assigned-warning {
+#completedTasks .assigned-warning {
   color: #ff9800;
   font-weight: bold;
   background-color: #fff3e0;
@@ -239,7 +239,7 @@
   margin-bottom: 15px;
 }
 
-.assignment-form {
+#completedTasks .assignment-form {
   width: 100%;
   text-align: left;
   display: flex;
@@ -247,12 +247,12 @@
   align-items: center;
 }
 
-.form-group {
+#completedTasks .form-group {
   margin: 10px 0;
   width: 100%;
 }
 
-.form-label {
+#completedTasks .form-label {
   display: block;
   margin-bottom: 5px;
   font-size: 16px;
@@ -260,7 +260,7 @@
   color: #333;
 }
 
-.staff-list {
+#completedTasks .staff-list {
   max-height: 150px;
   overflow-y: auto;
   border: 1px solid #ddd;
@@ -269,22 +269,22 @@
   background-color: #f9f9f9;
 }
 
-.staff-item {
+#completedTasks .staff-item {
   margin: 5px 0;
 }
 
-.checkbox-label {
+#completedTasks .checkbox-label {
   display: flex;
   align-items: center;
   font-size: 14px;
   cursor: pointer;
 }
 
-.checkbox-label input {
+#completedTasks .checkbox-label input {
   margin-right: 10px;
 }
 
-.form-input {
+#completedTasks .form-input {
   width: 100%;
   padding: 8px;
   border-radius: 4px;
@@ -293,32 +293,32 @@
   transition: border-color 0.3s ease;
 }
 
-.form-input:focus {
+#completedTasks .form-input:focus {
   border-color: #007bff;
   outline: none;
 }
 
-.form-input.readonly {
+#completedTasks .form-input.readonly {
   background-color: #f0f0f0;
   cursor: not-allowed;
 }
 
-.error-message {
+#completedTasks .error-message {
   color: #dc3545;
   font-size: 14px;
   margin-top: 5px;
   text-align: center;
 }
 
-.form-actions {
+#completedTasks .form-actions {
   margin-top: 20px;
   display: flex;
   justify-content: center;
   gap: 10px;
 }
 
-.submit-btn,
-.cancel-btn {
+#completedTasks .submit-btn,
+#completedTasks .cancel-btn {
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
@@ -328,88 +328,88 @@
   min-width: 100px;
 }
 
-.submit-btn {
+#completedTasks .submit-btn {
   background-color: #28a745;
   color: white;
 }
 
-.submit-btn:hover:not(:disabled) {
+#completedTasks .submit-btn:hover:not(:disabled) {
   background-color: #218838;
 }
 
-.submit-btn:disabled {
+#completedTasks .submit-btn:disabled {
   background-color: #6c757d;
   cursor: not-allowed;
 }
 
-.cancel-btn {
+#completedTasks .cancel-btn {
   background-color: #6c757d;
   color: white;
 }
 
-.cancel-btn:hover:not(:disabled) {
+#completedTasks .cancel-btn:hover:not(:disabled) {
   background-color: #5a6268;
 }
 
-.cancel-btn:disabled {
+#completedTasks .cancel-btn:disabled {
   background-color: #495057;
   cursor: not-allowed;
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .completed-tasks-container {
+  #completedTasks .completed-tasks-container {
     padding: 10px;
   }
 
-  .tasks-table th,
-  .tasks-table td {
+  #completedTasks .tasks-table th,
+  #completedTasks .tasks-table td {
     padding: 8px;
     font-size: 0.85rem;
   }
 
-  .modal-content {
+  #completedTasks .modal-content {
     width: 95%;
     padding: 20px;
   }
 
-  .table-header {
+  #completedTasks .table-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 5px;
   }
 
-  .download-all-btn {
+  #completedTasks .download-all-btn {
     font-size: 0.9rem;
     padding: 8px 16px;
   }
 
-  .form-actions {
+  #completedTasks .form-actions {
     flex-direction: column;
     gap: 10px;
   }
 
-  .submit-btn,
-  .cancel-btn {
+  #completedTasks .submit-btn,
+  #completedTasks .cancel-btn {
     width: 100%;
   }
 }
 
 @media (max-width: 600px) {
-  .tasks-table {
+  #completedTasks .tasks-table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
   }
 
-  .action-btn {
+  #completedTasks .action-btn {
     font-size: 0.8rem;
     padding: 4px 8px;
     margin-right: 3px;
   }
 
-  .submit-btn,
-  .cancel-btn {
+  #completedTasks .submit-btn,
+  #completedTasks .cancel-btn {
     font-size: 16px;
     padding: 12px 24px;
   }
