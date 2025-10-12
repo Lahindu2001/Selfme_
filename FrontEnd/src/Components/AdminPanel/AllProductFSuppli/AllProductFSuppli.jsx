@@ -699,8 +699,8 @@ function AllProductFSuppli() {
                   <td>{product.quantity_in_stock || 'N/A'}</td>
                   <td>{product.re_order_level || 'N/A'}</td>
                   <td>{product.supplier_name || 'N/A'}</td>
-                  <td>${product.purchase_price ? parseFloat(product.purchase_price).toFixed(2) : 'N/A'}</td>
-                  <td>${product.selling_price ? parseFloat(product.selling_price).toFixed(2) : 'N/A'}</td>
+                  <td>{product.purchase_price ? parseFloat(product.purchase_price).toFixed(2) : 'N/A'}</td>
+                  <td>{product.selling_price ? parseFloat(product.selling_price).toFixed(2) : 'N/A'}</td>
                   <td>{product.status || 'N/A'}</td>
                   <td className="actions-cell">
                     <button
