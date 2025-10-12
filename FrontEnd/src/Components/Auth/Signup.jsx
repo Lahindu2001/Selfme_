@@ -226,11 +226,12 @@ const Signup = () => {
   };
 
   return (
-    <div className="signup-container">
+    <div id="signup-page" className="signup-container">
       {/* Background Elements */}
       <div className="solar-panel-grid"></div>
       <div className="energy-wave energy-wave-1"></div>
       <div className="energy-wave energy-wave-2"></div>
+      <div className="energy-wave energy-wave-3"></div>
       <div className="solar-pattern"></div>
       <div className="gradient-overlay"></div>
 

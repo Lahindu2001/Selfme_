@@ -66,7 +66,7 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
+    <div id="login-page" className="login-container">
       <div className="solar-panel-grid"></div>
       <div className="energy-wave energy-wave-1"></div>
       <div className="energy-wave energy-wave-2"></div>

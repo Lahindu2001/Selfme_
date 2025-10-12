@@ -1,4 +1,6 @@
-.signup-container {
+/* Signup.css - Scoped with #signup-page ID selector for specificity to this JSX component only */
+
+#signup-page.signup-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -18,7 +20,7 @@
 }
 
 /* Background Elements */
-.solar-panel-grid {
+#signup-page .solar-panel-grid {
   position: absolute;
   top: 0;
   left: 0;
@@ -42,7 +44,7 @@
   }
 }
 
-.energy-wave {
+#signup-page .energy-wave {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -57,16 +59,22 @@
   animation: waveFlow 8s linear infinite;
 }
 
-.energy-wave-1 {
+#signup-page .energy-wave-1 {
   animation-delay: 0s;
   height: 80px;
   opacity: 0.3;
 }
 
-.energy-wave-2 {
+#signup-page .energy-wave-2 {
   animation-delay: 2.5s;
   height: 120px;
   opacity: 0.2;
+}
+
+#signup-page .energy-wave-3 {
+  animation-delay: 5s;
+  height: 60px;
+  opacity: 0.1;
 }
 
 @keyframes waveFlow {
@@ -78,7 +86,7 @@
   }
 }
 
-.solar-pattern {
+#signup-page .solar-pattern {
   position: absolute;
   top: 0;
   left: 0;
@@ -107,7 +115,7 @@
   }
 }
 
-.gradient-overlay {
+#signup-page .gradient-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -121,7 +129,7 @@
 }
 
 /* Signup Card */
-.signup-card {
+#signup-page .signup-card {
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(10px);
   border-radius: 16px;
@@ -134,33 +142,33 @@
   z-index: 10;
 }
 
-.signup-header {
+#signup-page .signup-header {
   text-align: center;
   margin-bottom: 30px;
 }
 
-.signup-logo {
+#signup-page .signup-logo {
   height: 80px;
   width: auto;
   margin-bottom: 15px;
   border-radius: 8px;
 }
 
-.company-title {
+#signup-page .company-title {
   font-size: 2.5rem;
   font-weight: 700;
   color: #1b5e20;
   margin: 0 0 10px 0;
 }
 
-.company-tagline {
+#signup-page .company-tagline {
   color: #4caf50;
   font-size: 1rem;
   font-weight: 400;
   margin: 0 0 20px 0;
 }
 
-.form-title {
+#signup-page .form-title {
   font-size: 1.8rem;
   font-weight: 600;
   color: #212529;
@@ -168,14 +176,14 @@
 }
 
 /* Progress Steps */
-.progress-steps {
+#signup-page .progress-steps {
   display: flex;
   justify-content: space-between;
   margin-bottom: 30px;
   position: relative;
 }
 
-.progress-steps::before {
+#signup-page .progress-steps::before {
   content: "";
   position: absolute;
   top: 20px;
@@ -186,7 +194,7 @@
   z-index: 1;
 }
 
-.step {
+#signup-page .step {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -195,7 +203,7 @@
   flex: 1;
 }
 
-.step-number {
+#signup-page .step-number {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -210,28 +218,28 @@
   border: 3px solid #e9ecef;
 }
 
-.step.active .step-number {
+#signup-page .step.active .step-number {
   background: #212529;
   color: white;
   border-color: #495057;
 }
 
-.step span {
+#signup-page .step span {
   font-size: 0.8rem;
   color: #6c757d;
   font-weight: 500;
 }
 
-.step.active span {
+#signup-page .step.active span {
   color: #212529;
 }
 
 /* Form Styles */
-.signup-form {
+#signup-page .signup-form {
   margin-bottom: 25px;
 }
 
-.form-step {
+#signup-page .form-step {
   animation: slideIn 0.3s ease-out;
 }
 
@@ -246,20 +254,20 @@
   }
 }
 
-.input-group {
+#signup-page .input-group {
   margin-bottom: 20px;
 }
 
-.input-row {
+#signup-page .input-row {
   display: flex;
   gap: 15px;
 }
 
-.input-column {
+#signup-page .input-column {
   flex: 1;
 }
 
-.form-input {
+#signup-page .form-input {
   width: 100%;
   padding: 14px 16px;
   border: 2px solid #e9ecef;
@@ -271,30 +279,30 @@
   color: #212529;
 }
 
-.form-input::placeholder {
+#signup-page .form-input::placeholder {
   color: #6c757d;
 }
 
-.form-input:focus {
+#signup-page .form-input:focus {
   outline: none;
   border-color: #495057;
   background: #ffffff;
   box-shadow: 0 0 0 3px rgba(73, 80, 87, 0.1);
 }
 
-.nic-selection {
+#signup-page .nic-selection {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 10px;
 }
 
-.nic-selection label {
+#signup-page .nic-selection label {
   color: #495057;
   font-weight: 500;
 }
 
-.nic-select {
+#signup-page .nic-select {
   padding: 8px 12px;
   border: 2px solid #e9ecef;
   border-radius: 6px;
@@ -304,8 +312,8 @@
 }
 
 /* Buttons */
-.next-button,
-.submit-button {
+#signup-page .next-button,
+#signup-page .submit-button {
   width: 100%;
   padding: 14px;
   background: #212529;
@@ -323,23 +331,23 @@
   gap: 10px;
 }
 
-.next-button:hover:not(:disabled),
-.submit-button:hover:not(:disabled) {
+#signup-page .next-button:hover:not(:disabled),
+#signup-page .submit-button:hover:not(:disabled) {
   background: #495057;
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(33, 37, 41, 0.2);
 }
 
-.submit-button:disabled {
+#signup-page .submit-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-.submit-button.loading {
+#signup-page .submit-button.loading {
   pointer-events: none;
 }
 
-.button-spinner {
+#signup-page .button-spinner {
   width: 18px;
   height: 18px;
   border: 2px solid transparent;
@@ -357,13 +365,13 @@
   }
 }
 
-.form-navigation {
+#signup-page .form-navigation {
   display: flex;
   gap: 15px;
   margin-top: 20px;
 }
 
-.back-button {
+#signup-page .back-button {
   flex: 1;
   padding: 14px;
   background: #6c757d;
@@ -376,20 +384,20 @@
   transition: all 0.3s ease;
 }
 
-.back-button:hover {
+#signup-page .back-button:hover {
   background: #495057;
   transform: translateY(-1px);
 }
 
 /* Error Messages */
-.error-message {
+#signup-page .error-message {
   color: #dc3545;
   font-size: 0.8rem;
   margin-top: 5px;
   padding-left: 5px;
 }
 
-.submit-error {
+#signup-page .submit-error {
   text-align: center;
   background: #f8d7da;
   color: #721c24;
@@ -400,7 +408,7 @@
 }
 
 /* Login Redirect */
-.login-redirect {
+#signup-page .login-redirect {
   text-align: center;
   padding-top: 15px;
   border-top: 1px solid #e9ecef;
@@ -408,66 +416,66 @@
   font-size: 0.9rem;
 }
 
-.login-link {
+#signup-page .login-link {
   color: #495057;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.3s ease;
 }
 
-.login-link:hover {
+#signup-page .login-link:hover {
   color: #212529;
   text-decoration: underline;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .signup-container {
+  #signup-page.signup-container {
     padding: 15px;
   }
 
-  .signup-card {
+  #signup-page .signup-card {
     padding: 30px 25px;
     max-width: 100%;
   }
 
-  .company-title {
+  #signup-page .company-title {
     font-size: 2rem;
   }
 
-  .form-title {
+  #signup-page .form-title {
     font-size: 1.5rem;
   }
 
-  .input-row {
+  #signup-page .input-row {
     flex-direction: column;
     gap: 0;
   }
 
-  .progress-steps::before {
+  #signup-page .progress-steps::before {
     left: 15%;
     right: 15%;
   }
 
-  .step span {
+  #signup-page .step span {
     font-size: 0.7rem;
   }
 }
 
 @media (max-width: 480px) {
-  .signup-card {
+  #signup-page .signup-card {
     padding: 25px 20px;
   }
 
-  .company-title {
+  #signup-page .company-title {
     font-size: 1.8rem;
   }
 
-  .form-input {
+  #signup-page .form-input {
     padding: 12px 14px;
   }
 
-  .nic-selection {
+  #signup-page .nic-selection {
     flex-direction: column;
     align-items: flex-start;
     gap: 5px;
