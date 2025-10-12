@@ -227,82 +227,88 @@ function FullCompletedTask() {
 
   return (
     <TechnicianLayout firstName={firstName} handleLogout={handleLogout}>
-      <div id="fullCompletedTasks" style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Completed Tasks</h2>
+      <div id="fullCompletedTasks" className="animate-slide-in-left">
+        <h2 className="dashboard-title">Completed Tasks</h2>
 
-        {isLoading && <p className="loading" style={{ textAlign: 'center' }}>Loading tasks...</p>}
+        {isLoading && (
+          <div className="loading-overlay">
+            <div className="spinner animate-spin-slow"></div>
+            <p className="loading-text">Loading tasks...</p>
+          </div>
+        )}
 
-        <div id="search-bar">
-          <input
-            type="text"
-            placeholder="Search by Payment ID, User ID, Customer, or Amount..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: '100%', padding: '8px', borderRadius: '4px', fontSize: '14px', marginBottom: '20px' }}
-          />
+        <div className="search-filter-container animate-slide-in-right">
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="Search by Payment ID, User ID, Customer, or Amount..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input employee-form"
+            />
+          </div>
         </div>
 
-        <div id="download-options">
-          <h3 id="download-options-title">Official Report Generation</h3>
-          <div id="download-buttons">
-            <button id="download-all-btn" onClick={handleDownloadAll}>
+        <div className="download-options animate-slide-in-right">
+          <div className="download-header">
+            <h3 className="download-options-title">Official Report Generation</h3>
+          </div>
+          <div className="download-content">
+            <button className="cta-button primary" onClick={handleDownloadAll}>
               Download Directory ({tasks.length} tasks)
             </button>
-            <p id="download-note">
+            <p className="download-note">
               Reports include official letterhead with {companyInfo.name} branding and contact details.
             </p>
           </div>
         </div>
 
-        <div className="completed-tasks-list" style={{ marginBottom: '40px' }}>
-          <h3 style={{ marginBottom: '10px' }}>My Completed Tasks</h3>
-          <div id="table-header">
-            <span id="table-task-count">Total Tasks: {tasks.length}</span>
-            <span id="filtered-count">
+        <div className="completed-tasks-list">
+          <div className="tasks-header">
+            <h3>My Completed Tasks</h3>
+            <span className="total-tasks-right">Total Tasks: {tasks.length}</span>
+          </div>
+          <div className="table-header">
+            <span className="filtered-count">
               {searchTerm && `(Showing ${filteredTasks.length} filtered results)`}
             </span>
           </div>
           {filteredTasks.length === 0 && !isLoading ? (
-            <p style={{ textAlign: 'center', color: '#666' }}>
-              No completed tasks found matching your search criteria.
-            </p>
+            <div className="empty-state">
+              <h3>No Tasks Found</h3>
+              <p className="empty-message">No completed tasks match your search criteria.</p>
+              <button className="cta-button" onClick={() => setSearchTerm('')}>
+                Clear Search
+              </button>
+              <div className="empty-animation"></div>
+            </div>
           ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #ddd' }}>
+            <table className="orders-table">
               <thead>
-                <tr style={{ backgroundColor: '#28a745', color: 'white' }}>
-                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>Payment ID</th>
-                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>User ID</th>
-                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>Customer</th>
-                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>Amount</th>
-                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>Payment Date</th>
-                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>Status</th>
-                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>Status of My</th>
-                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>Actions</th>
+                <tr>
+                  <th>Payment ID</th>
+                  <th>User ID</th>
+                  <th>Customer</th>
+                  <th>Amount</th>
+                  <th>Payment Date</th>
+                  <th>Status</th>
+                  <th>Status of My</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredTasks.map((task) => (
-                  <tr
-                    key={task.paymentId}
-                    style={{
-                      backgroundColor: 'white',
-                      border: '1px solid #ddd',
-                    }}
-                  >
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{task.paymentId || 'N/A'}</td>
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{task.userId || 'N/A'}</td>
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{task.customer || 'Unknown'}</td>
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                      Rs. {task.amount?.toLocaleString() || '0'}
-                    </td>
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                      {task.paymentDate ? new Date(task.paymentDate).toLocaleDateString() : 'N/A'}
-                    </td>
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{task.status || 'N/A'}</td>
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{task.statusofmy || 'Completed'}</td>
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
+                  <tr key={task.paymentId} className="task-row">
+                    <td>{task.paymentId || 'N/A'}</td>
+                    <td>{task.userId || 'N/A'}</td>
+                    <td>{task.customer || 'Unknown'}</td>
+                    <td>Rs. {task.amount?.toLocaleString() || '0'}</td>
+                    <td>{task.paymentDate ? new Date(task.paymentDate).toLocaleDateString() : 'N/A'}</td>
+                    <td>{task.status || 'N/A'}</td>
+                    <td>{task.statusofmy || 'Completed'}</td>
+                    <td>
                       <button
-                        className="action-btn download-btn"
+                        className="cta-button download-btn"
                         onClick={() => handleDownloadSingle(task)}
                         title="Download Task Report"
                       >
@@ -315,8 +321,8 @@ function FullCompletedTask() {
             </table>
           )}
           {filteredTasks.length === 0 && searchTerm && (
-            <div id="no-tasks-message">
-              <button id="clear-search-btn" onClick={() => setSearchTerm('')}>
+            <div className="no-tasks-message">
+              <button className="cta-button" onClick={() => setSearchTerm('')}>
                 Clear Search
               </button>
             </div>

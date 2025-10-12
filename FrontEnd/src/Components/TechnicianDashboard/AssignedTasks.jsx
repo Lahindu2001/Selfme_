@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import TechnicianLayout from './TechnicianLayout';
-import './TechnicianDashboard.css';
+import './AssignedTasks.css';
 
 function TechnicianDashboard() {
   const navigate = useNavigate();
@@ -42,12 +42,10 @@ function TechnicianDashboard() {
         timeout: 10000,
       });
       const paymentData = Array.isArray(res.data) ? res.data : [];
-      // Filter only Paid payments
       const paidPayments = paymentData.filter((payment) => payment?.status === 'Paid');
       setPayments(paidPayments);
       console.log('✅ Paid payments fetched:', paidPayments.length, paidPayments);
 
-      // Save paid payments to mypaidtask
       await saveToMyPaidTask(paidPayments);
     } catch (err) {
       console.error('💥 Payment fetch error:', err.response?.data, err.message);
@@ -65,7 +63,6 @@ function TechnicianDashboard() {
         return;
       }
 
-      // Map payments to the format expected by mypaidtask
       const tasks = payments.map((payment) => ({
         paymentId: payment.payment_id || 'N/A',
         userId: payment.customer_id?.userid || 'N/A',
@@ -73,7 +70,7 @@ function TechnicianDashboard() {
         amount: payment.amount || 0,
         paymentDate: payment.payment_date || new Date(),
         status: payment.status || 'Paid',
-        statusofmy: 'notyet', // Default value
+        statusofmy: 'notyet',
       }));
 
       const res = await axios.post('http://localhost:5000/api/tech/paidtasks', tasks, {
@@ -87,7 +84,6 @@ function TechnicianDashboard() {
     }
   };
 
-  // Logo Conversion
   const getLogoAsBase64 = () => {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -108,9 +104,12 @@ function TechnicianDashboard() {
     });
   };
 
-  // PDF Generation
   const generatePDF = async (data, title) => {
-    if (!data.length) return alert('No payments to download!');
+    if (!data.length) {
+      console.warn('No payments to download!');
+      alert('No payments to download!');
+      return;
+    }
     try {
       const logoBase64 = await getLogoAsBase64();
       const doc = new jsPDF();
@@ -241,6 +240,7 @@ function TechnicianDashboard() {
       const timestamp = new Date().toISOString().split('T')[0];
       const fileName = `${companyInfo.name}_${title.replace(/\s+/g, '_')}_${timestamp}.pdf`;
       doc.save(fileName);
+      console.log(`✅ PDF saved as ${fileName}`);
       alert(`Official report "${fileName}" downloaded successfully!`);
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -248,11 +248,16 @@ function TechnicianDashboard() {
     }
   };
 
-  // Download Functions
-  const handleDownloadAll = () => generatePDF(payments, 'Approved Payments Report');
-  const handleDownloadSingle = (payment) => generatePDF([payment], `Payment Report - ${payment.payment_id || 'Unnamed'}`);
+  const handleDownloadAll = () => {
+    console.log('Download All clicked');
+    generatePDF(payments, 'Approved Payments Report');
+  };
 
-  // Filtered Payments
+  const handleDownloadSingle = (payment) => {
+    console.log('Download Single clicked for payment:', payment.payment_id);
+    generatePDF([payment], `Payment Report - ${payment.payment_id || 'Unnamed'}`);
+  };
+
   const filteredPayments = payments.filter(
     (payment) =>
       (payment.payment_id?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
@@ -268,82 +273,80 @@ function TechnicianDashboard() {
 
   return (
     <TechnicianLayout firstName={firstName} handleLogout={handleLogout}>
-      <div id="technicianDashboard" style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Technician Dashboard - Approved Payments</h2>
+      <div id="technicianDashboard" className="animate-slide-in-left">
+        <h2 className="dashboard-title">Approved Payments</h2>
 
-        {isLoading && <p className="loading" style={{ textAlign: 'center' }}>Loading payments...</p>}
+        {isLoading && (
+          <div className="loading-overlay">
+            <div className="spinner animate-spin-slow"></div>
+            <p>Loading payments...</p>
+          </div>
+        )}
 
-        <div id="search-bar">
-          <input
-            type="text"
-            placeholder="Search by Payment ID, User ID, Customer, or Amount..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: '100%', padding: '8px', borderRadius: '4px', fontSize: '14px', marginBottom: '20px' }}
-          />
+        <div className="search-filter-container animate-slide-in-right">
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="Search by Payment ID, User ID, Customer, or Amount..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input employee-form"
+            />
+          </div>
         </div>
 
-        <div id="download-options">
-          <h3 id="download-options-title">Official Report Generation</h3>
-          <div id="download-buttons">
-            <button id="download-all-btn" onClick={handleDownloadAll}>
+        <div className="download-options animate-slide-in-right">
+          <h3 className="download-options-title">Official Report Generation</h3>
+          <div className="download-buttons">
+            <button className="cta-button primary" onClick={handleDownloadAll}>
               Download Directory ({payments.length} payments)
             </button>
-            <p id="download-note">
+            <p className="download-note">
               Reports include official letterhead with {companyInfo.name} branding and contact details.
             </p>
           </div>
         </div>
 
-        <div className="approved-payment-list" style={{ marginBottom: '40px' }}>
-          <h3 style={{ marginBottom: '10px' }}>Approved Payments</h3>
-          <div id="table-header">
-            <span id="table-payment-count">Total Payments: {payments.length}</span>
-            <span id="filtered-count">
+        <div className="approved-payment-list">
+          <h3>Approved Payments</h3>
+          <div className="table-header">
+            <span className="table-payment-count">Total Payments: {payments.length}</span>
+            <span className="filtered-count">
               {searchTerm && `(Showing ${filteredPayments.length} filtered results)`}
             </span>
           </div>
           {filteredPayments.length === 0 && !isLoading ? (
-            <p style={{ textAlign: 'center', color: '#666' }}>
-              No approved payments found matching your search criteria.
-            </p>
+            <div className="empty-state">
+              <h3>No Payments Found</h3>
+              <p className="empty-message">No approved payments match your search criteria.</p>
+              <button className="cta-button" onClick={() => setSearchTerm('')}>Clear Search</button>
+              <div className="empty-animation"></div>
+            </div>
           ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #ddd' }}>
+            <table className="orders-table">
               <thead>
-                <tr style={{ backgroundColor: '#28a745', color: 'white' }}>
-                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>Payment ID</th>
-                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>User ID</th>
-                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>Customer</th>
-                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>Amount</th>
-                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>Payment Date</th>
-                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>Status</th>
-                  <th style={{ padding: '10px', border: '1px solid #ddd' }}>Actions</th>
+                <tr>
+                  <th>Payment ID</th>
+                  <th>User ID</th>
+                  <th>Customer</th>
+                  <th>Amount</th>
+                  <th>Payment Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredPayments.map((payment) => (
-                  <tr
-                    key={payment.payment_id}
-                    style={{
-                      backgroundColor: 'white',
-                      border: '1px solid #ddd',
-                    }}
-                  >
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{payment.payment_id || 'N/A'}</td>
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{payment.customer_id?.userid || 'N/A'}</td>
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                      {`${payment.customer_id?.firstName || 'Unknown'} ${payment.customer_id?.lastName || ''}`.trim()}
-                    </td>
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                      Rs. {payment.amount?.toLocaleString() || '0'}
-                    </td>
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                      {payment.payment_date ? new Date(payment.payment_date).toLocaleDateString() : 'N/A'}
-                    </td>
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{payment.status || 'N/A'}</td>
-                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>
+                  <tr key={payment.payment_id} status={payment.status}>
+                    <td>{payment.payment_id || 'N/A'}</td>
+                    <td>{payment.customer_id?.userid || 'N/A'}</td>
+                    <td>{`${payment.customer_id?.firstName || 'Unknown'} ${payment.customer_id?.lastName || ''}`.trim()}</td>
+                    <td>Rs. {payment.amount?.toLocaleString() || '0'}</td>
+                    <td>{payment.payment_date ? new Date(payment.payment_date).toLocaleDateString() : 'N/A'}</td>
+                    <td>{payment.status || 'N/A'}</td>
+                    <td>
                       <button
-                        className="action-btn download-btn"
+                        className="cta-button"
                         onClick={() => handleDownloadSingle(payment)}
                         title="Download Payment Report"
                       >
@@ -356,8 +359,8 @@ function TechnicianDashboard() {
             </table>
           )}
           {filteredPayments.length === 0 && searchTerm && (
-            <div id="no-payments-message">
-              <button id="clear-search-btn" onClick={() => setSearchTerm('')}>
+            <div className="no-payments-message">
+              <button className="cta-button" onClick={() => setSearchTerm('')}>
                 Clear Search
               </button>
             </div>
