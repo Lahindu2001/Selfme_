@@ -37,10 +37,16 @@ function CompletedTasks() {
     website: 'www.selfme.com',
   };
 
-  // Calculate min start date (today + 7 days)
+  // Calculate min start date (today)
   const getMinStartDate = () => {
     const today = new Date();
-    today.setDate(today.getDate() + 7);
+    return today.toISOString().split('T')[0];
+  };
+
+  // Calculate max start date (today + 30 days)
+  const getMaxStartDate = () => {
+    const today = new Date();
+    today.setDate(today.getDate() + 30);
     return today.toISOString().split('T')[0];
   };
 
@@ -62,17 +68,22 @@ function CompletedTasks() {
 
   // Update end date constraints when start date changes
   useEffect(() => {
-    if (formData.startDate && formData.endDate) {
-      const minEnd = formData.startDate;
-      const maxEnd = getMaxEndDate(formData.startDate);
-      if (new Date(formData.endDate) < new Date(minEnd) || new Date(formData.endDate) > new Date(maxEnd)) {
-        setDateError('End date must be after start date and within 14 days of start date.');
-      } else {
-        setDateError('');
+    let error = '';
+    const maxStart = getMaxStartDate();
+    if (formData.startDate) {
+      if (new Date(formData.startDate) > new Date(maxStart)) {
+        error = 'Start date cannot be more than 30 days from today.';
+      } else if (formData.endDate) {
+        const minEnd = formData.startDate;
+        const maxEnd = getMaxEndDate(formData.startDate);
+        if (new Date(formData.endDate) < new Date(minEnd) || new Date(formData.endDate) > new Date(maxEnd)) {
+          error = 'End date must be after start date and within 14 days of start date.';
+        }
       }
     } else if (formData.endDate) {
-      setDateError('Please select a start date first.');
+      error = 'Please select a start date first.';
     }
+    setDateError(error);
   }, [formData.startDate, formData.endDate]);
 
   const fetchNotYetTasks = async () => {
@@ -629,6 +640,7 @@ function CompletedTasks() {
                       onChange={handleInputChange}
                       className="form-input"
                       min={getMinStartDate()}
+                      max={getMaxStartDate()}
                       required
                       disabled={isTaskAssigned}
                     />
