@@ -36,6 +36,7 @@ const View_All_Items = () => {
   const navigate = useNavigate();
 
   const categories = [
+    "Selfme packages",
     "Solar Panels",
     "Solar Batteries",
     "Solar Inverters",
@@ -221,6 +222,11 @@ const View_All_Items = () => {
     if (name === "quantity_in_stock" || name === "re_order_level") {
       validateReorderLevel();
     }
+
+    // Validate selling price vs purchase price when either changes
+    if (name === "purchase_price" || name === "selling_price") {
+      validatePriceComparison();
+    }
   };
 
   // Generate serial number
@@ -261,6 +267,29 @@ const View_All_Items = () => {
       setEditModal((prev) => ({
         ...prev,
         errors: { ...prev.errors, re_order_level: "" },
+      }));
+      return true;
+    }
+  };
+
+  // Validate that selling price is always greater than purchase price
+  const validatePriceComparison = () => {
+    const purchasePrice = parseFloat(editModal.formData.purchase_price) || 0;
+    const sellingPrice = parseFloat(editModal.formData.selling_price) || 0;
+
+    if (purchasePrice > 0 && sellingPrice > 0 && sellingPrice <= purchasePrice) {
+      setEditModal((prev) => ({
+        ...prev,
+        errors: {
+          ...prev.errors,
+          selling_price: "Selling price must be greater than purchase price",
+        },
+      }));
+      return false;
+    } else {
+      setEditModal((prev) => ({
+        ...prev,
+        errors: { ...prev.errors, selling_price: "" },
       }));
       return true;
     }
@@ -409,6 +438,13 @@ const View_All_Items = () => {
       }
     }
 
+    // Validate selling price is greater than purchase price
+    const purchasePrice = parseFloat(formData.purchase_price) || 0;
+    const sellingPrice = parseFloat(formData.selling_price) || 0;
+    if (purchasePrice > 0 && sellingPrice > 0 && sellingPrice <= purchasePrice) {
+      newErrors.selling_price = "Selling price must be greater than purchase price";
+    }
+
     if (
       (formData.status === "Damaged" || formData.status === "Returned") &&
       !formData.product_remark
@@ -443,6 +479,11 @@ const View_All_Items = () => {
 
     // First validate re-order level specifically
     if (!validateReorderLevel()) {
+      return;
+    }
+
+    // Then validate price comparison
+    if (!validatePriceComparison()) {
       return;
     }
 
@@ -943,7 +984,7 @@ const View_All_Items = () => {
                         </span>
                       )}
                       <div className="field-hint">
-                        <p style={{ fontSize: "12px" }}>
+                        <p style={{ fontSize: "12px", color: "#666", margin: "5px 0 0 0" }}>
                           *Set Quantity 0 to make Out of stock
                         </p>
                       </div>

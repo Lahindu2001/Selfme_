@@ -102,8 +102,14 @@ const Add_Items = () => {
 
     setFormData((prev) => ({ ...prev, [name]: processedValue }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
+    
     if (name === "quantity_in_stock" || name === "re_order_level") {
       validateReorderLevel();
+    }
+    
+    // Validate price relationship when either price field changes
+    if (name === "purchase_price" || name === "selling_price") {
+      validatePriceRelationship();
     }
   };
 
@@ -118,6 +124,20 @@ const Add_Items = () => {
       }));
     } else {
       setErrors((prev) => ({ ...prev, re_order_level: "" }));
+    }
+  };
+
+  const validatePriceRelationship = () => {
+    const purchasePrice = parseFloat(formData.purchase_price) || 0;
+    const sellingPrice = parseFloat(formData.selling_price) || 0;
+    
+    if (purchasePrice > 0 && sellingPrice > 0 && sellingPrice <= purchasePrice) {
+      setErrors((prev) => ({
+        ...prev,
+        selling_price: "Selling price must be greater than purchase price"
+      }));
+    } else {
+      setErrors((prev) => ({ ...prev, selling_price: "" }));
     }
   };
 
@@ -143,6 +163,8 @@ const Add_Items = () => {
       const formattedValue = formatPrice(value);
       setFormData((prev) => ({ ...prev, [name]: formattedValue }));
     }
+    // Validate price relationship after formatting
+    validatePriceRelationship();
   };
 
   // Form validation
@@ -181,6 +203,14 @@ const Add_Items = () => {
 
     if (!formData.selling_price) {
       newErrors.selling_price = "Selling price must be greater than 0";
+    }
+
+    // New validation: Selling price must be greater than purchase price
+    const purchasePrice = parseFloat(formData.purchase_price) || 0;
+    const sellingPrice = parseFloat(formData.selling_price) || 0;
+    
+    if (purchasePrice > 0 && sellingPrice > 0 && sellingPrice <= purchasePrice) {
+      newErrors.selling_price = "Selling price must be greater than purchase price";
     }
 
     setErrors(newErrors);
