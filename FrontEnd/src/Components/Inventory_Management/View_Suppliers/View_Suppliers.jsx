@@ -349,12 +349,12 @@ const View_Suppliers = () => {
             <p>Manage all supplier information and details</p>
           </div>
           <div className="header-actions">
-            <button
+            {/* <button
               className="btn-primary"
               onClick={() => (window.location.href = "/supplier")}
             >
               Add New Supplier
-            </button>
+            </button> */}
           </div>
         </div>
 

@@ -560,12 +560,7 @@ const View_All_Items = () => {
       <div className="view-items-container">
         <div className="page-header">
           <h2>Inventory Management</h2>
-          <button
-            className="add-item-btn"
-            onClick={() => navigate("/add-item")}
-          >
-            + Add New Item
-          </button>
+          
         </div>
 
         {/* Statistics */}

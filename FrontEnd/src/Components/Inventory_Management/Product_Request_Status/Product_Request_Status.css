@@ -340,6 +340,7 @@
 .btn-delete {
   background: #dc3545;
   color: white;
+  width: 35px;
 }
 
 .btn-delete:hover {
