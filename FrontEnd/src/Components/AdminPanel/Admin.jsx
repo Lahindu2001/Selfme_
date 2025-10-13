@@ -268,15 +268,6 @@ function Admin() {
               <span className="text">All Products</span>
             </NavLink>
           </li>
-          <li>
-            <NavLink
-              to="#"
-              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-              title="Test"
-            >
-              <span className="text">Test</span>
-            </NavLink>
-          </li>
         </ul>
         <div className="sidebar-user-info">
           <button className="logout-btn" onClick={handleLogout}>

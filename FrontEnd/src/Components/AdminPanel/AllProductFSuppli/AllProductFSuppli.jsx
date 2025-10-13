@@ -76,6 +76,7 @@ function AllProductFSuppli() {
     "Solar Lights & Devices",
     "Solar Pumps & Appliances",
     "Monitoring & Miscellaneous Accessories",
+    "Selfme Pakages",
   ];
 
   const statusOptions = ["Available", "Coming Soon", "Damaged", "Returned"];
@@ -166,6 +167,29 @@ function AllProductFSuppli() {
     };
   }, [products]);
 
+  const selfmePackagesStatusData = useMemo(() => {
+    const filteredProducts = products.filter(p => p.category === "Selfme Pakages");
+    const statusCounts = {};
+    filteredProducts.forEach(product => {
+      const stat = product.status || 'Unknown';
+      statusCounts[stat] = (statusCounts[stat] || 0) + 1;
+    });
+
+    return {
+      labels: Object.keys(statusCounts),
+      datasets: [{
+        data: Object.values(statusCounts),
+        backgroundColor: [
+          '#36A2EB',
+          '#FFCE56',
+          '#FF6384',
+          '#4BC0C0',
+        ],
+        borderWidth: 1,
+      }],
+    };
+  }, [products]);
+
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -190,6 +214,20 @@ function AllProductFSuppli() {
       title: {
         display: true,
         text: 'Product Status Distribution',
+      },
+    },
+  };
+
+  const selfmeChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Selfme Packages Status Distribution',
       },
     },
   };
@@ -296,6 +334,9 @@ function AllProductFSuppli() {
     if (name === "quantity_in_stock" || name === "re_order_level") {
       validateReorderLevel();
     }
+    if (name === "purchase_price" || name === "selling_price") {
+      validatePrices();
+    }
   };
 
   const validateReorderLevel = () => {
@@ -309,6 +350,19 @@ function AllProductFSuppli() {
       }));
     } else {
       setErrors((prev) => ({ ...prev, re_order_level: "" }));
+    }
+  };
+
+  const validatePrices = () => {
+    const purchase = parseFloat(formData.purchase_price) || 0;
+    const selling = parseFloat(formData.selling_price) || 0;
+    if (selling < purchase) {
+      setErrors((prev) => ({
+        ...prev,
+        selling_price: "Selling price must be greater than or equal to purchase price",
+      }));
+    } else {
+      setErrors((prev) => ({ ...prev, selling_price: "" }));
     }
   };
 
@@ -371,6 +425,8 @@ function AllProductFSuppli() {
 
     if (!formData.selling_price) {
       newErrors.selling_price = "Selling price must be greater than 0";
+    } else if (parseFloat(formData.selling_price) < parseFloat(formData.purchase_price || 0)) {
+      newErrors.selling_price = "Selling price must be greater than or equal to purchase price";
     }
 
     if ((formData.status === "Damaged" || formData.status === "Returned") && !formData.product_remark) {
@@ -634,6 +690,9 @@ function AllProductFSuppli() {
           </div>
           <div id="status-chart-container">
             <Pie data={statusData} options={statusOptionsChart} />
+          </div>
+          <div id="selfme-packages-chart-container">
+            <Pie data={selfmePackagesStatusData} options={selfmeChartOptions} />
           </div>
         </div>
 
